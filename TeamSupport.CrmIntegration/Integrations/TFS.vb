@@ -216,7 +216,6 @@ Namespace TeamSupport
 				'Search only for the tfs ids we have, those are the ones linked and the only ones that we need to check for updates
 				If (tfsIdList.Count > 0) Then
 					'//vv we might end up doing this in batches too. We'll see. Well now we have!! vsts only returns a max of 200 results
-					Dim batch As Integer = 1
 					Dim vstsMaxResults As Integer = 200
 					Dim workItemsList As TFSLibrary.WorkItems = New TFSLibrary.WorkItems()
 					Dim workItemsBatch As TFSLibrary.WorkItems = New TFSLibrary.WorkItems()
