@@ -108,7 +108,7 @@ function SetupDeflectionListener(organizationID, customerHubID) {
     }
 
     function doneTyping() {
-        $('#deflection-box').empty();
+        $('#deflection-results').empty();
         if ($input.val()) {
             deflector.FetchDeflections(organizationID, $input.val(), customerHubID, function (data) {
                 var deflectionResults = JSON.parse(data.Result);
