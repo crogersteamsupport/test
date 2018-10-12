@@ -105,6 +105,7 @@ button {
 
 
 #deflection-box {
+    display:none;
     padding:5px 0px;
     background-color:#cce5ff;
 }
