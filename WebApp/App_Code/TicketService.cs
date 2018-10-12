@@ -27,6 +27,7 @@ using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
+using System.Threading;
 
 namespace TSWebServices
 {
@@ -1321,9 +1322,9 @@ namespace TSWebServices
             // DEFLECTOR.
             DeflectorService Deflection = new DeflectorService();
             if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                Deflection.IndexTicket(ticket.TicketID);
+                Deflection.IndexTicket(ticket.TicketID).ConfigureAwait(false);
             } else {
-                Deflection.DeleteTicket(ticket.TicketID);
+                Deflection.DeleteTicket(ticket.TicketID).ConfigureAwait(false);
             }
 
             return ticket.IsVisibleOnPortal;
@@ -1345,7 +1346,7 @@ namespace TSWebServices
             // DEFLECTOR.
             DeflectorService Deflection = new DeflectorService();
             if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                Deflection.IndexTicket(ticket.TicketID);
+                Deflection.IndexTicket(ticket.TicketID).ConfigureAwait(false);
             } else {
                 Deflection.DeleteTicket(ticket.TicketID);
             }
@@ -3308,8 +3309,7 @@ WHERE t.TicketID = @TicketID
                 ticket.Collection.AddTags(tag, ticketID);
             }
 
-            try
-            {
+
                 // DEFLECTOR.
                 if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase)
                 {
@@ -3326,10 +3326,6 @@ WHERE t.TicketID = @TicketID
                     DeflectorService Deflection = new DeflectorService();
                     Deflection.IndexDeflector(json);
                 }
-            }
-            catch (Exception e) {
-
-            }
 
             return GetTicketTags(ticketID);
         }
