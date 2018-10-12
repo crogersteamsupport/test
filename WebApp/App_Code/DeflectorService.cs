@@ -167,7 +167,7 @@ namespace TSWebServices {
             try
             {
                 DeflectorAPI deflectorAPI = new DeflectorAPI();
-                await deflectorAPI.DeleteTicketAsync(ticketID);
+                return await deflectorAPI.DeleteTicketAsync(ticketID);
             }
             catch (Exception ex) {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
@@ -181,7 +181,7 @@ namespace TSWebServices {
             try
             {
                 DeflectorAPI deflectorAPI = new DeflectorAPI();
-                await deflectorAPI.DeleteTagAsync(organizationID, value);
+                return await deflectorAPI.DeleteTagAsync(organizationID, value);
             }
             catch (Exception ex)
             {

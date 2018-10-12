@@ -1110,14 +1110,23 @@ namespace TSWebServices
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
             if (ticket.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
             {
-                try
-                {
-                    int deleteTicketID = ticket.TicketID;
+                try {
                     ticket.Delete();
                     ticket.Collection.Save();
+                    if (!UserSession.CurrentUser.IsSystemAdmin) {
+                        return;
+                    } else {
+                        if (ticket.OrganizationID != UserSession.LoginUser.OrganizationID) {
+                            return;
+                        } else {
+                            DeflectorService deflectorService = new DeflectorService();
+                            
+                            ticket.Delete();
+                            ticket.Collection.Save();
 
-                    DeflectorService deflectorService = new DeflectorService();
-                    deflectorService.DeleteTicket(deleteTicketID);
+                            deflectorService.DeleteTicket(ticket.TicketID);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
