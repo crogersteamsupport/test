@@ -71,11 +71,10 @@
                     <div class="flex push" style="font-size:12px;">Would one of these articles help you?</div>
                 </div>
                 <div>
-                    <div id="deflection-results">
-                        <div id="deflection-result" class="flexbox align strip" style="display:none;">
-                            <div class="flex push link" style="padding:5px;font-size:12px;"></div>
-                            <div class="flex pull" style="padding:5px;vertical-align:top;"><i class="fas fa-external-link-square" style="font-size:16px;"></i></div>
-                        </div>
+                    <div id="deflection-results"></div>
+                    <div id="deflection-result" class="flexbox align strip" style="display:none;">
+                        <div class="flex push link" style="padding:5px;font-size:12px;"></div>
+                        <div class="flex pull" style="padding:5px;vertical-align:top;"><i class="fas fa-external-link-square" style="font-size:16px;"></i></div>
                     </div>
                 </div>
             </div>

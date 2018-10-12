@@ -108,7 +108,7 @@ function SetupDeflectionListener(organizationID, customerHubID) {
     }
 
     function doneTyping() {
-        $('#deflection-box').hide();
+        $('#deflection-box').empty();
         if ($input.val()) {
             deflector.FetchDeflections(organizationID, $input.val(), customerHubID, function (data) {
                 var deflectionResults = JSON.parse(data.Result);
@@ -118,7 +118,7 @@ function SetupDeflectionListener(organizationID, customerHubID) {
                     $('#deflection-box').hide();
                 }
                 for (x = 0; x < deflectionResults.length; x++) {
-                    $('#deflection-result').clone().find('.link').html('<a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a>').appendTo('#deflection-results').show();
+                    $('#deflection-result').clone().show().find('.link').html('<a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a>').appendTo('#deflection-results');
                 }
             });
         }
