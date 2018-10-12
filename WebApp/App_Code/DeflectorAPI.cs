@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using TeamSupport.Data;
 
 /// <summary>
 /// Class dedicated to calling and bundling the payload for the Deflector API
@@ -26,7 +27,7 @@ public class DeflectorAPI
         request.KeepAlive = false;
         request.ContentType = "application/json";
         
-        return await SendAPIRequest(request);
+        return await SendAPIAsyncRequest(request);
     }
 
     public async Task<string> IndexDeflectorAsync(string deflectionIndex)
@@ -43,7 +44,7 @@ public class DeflectorAPI
             streamWriter.Close();
         }
 
-        return await SendAPIRequest(request);
+        return await SendAPIAsyncRequest(request);
     }
 
     public async Task<string> BulkIndexDeflectorAsync(string json)
@@ -61,7 +62,7 @@ public class DeflectorAPI
             streamWriter.Close();
         }
 
-        return await SendAPIRequest(request);
+        return await SendAPIAsyncRequest(request);
     }
 
     public async Task<string> DeleteTicketAsync(int ticketID)
@@ -71,7 +72,7 @@ public class DeflectorAPI
         request.KeepAlive = false;
         request.ContentType = "application/json";
         
-        return await SendAPIRequest(request);
+        return await SendAPIAsyncRequest(request);
     }
 
     public async Task<string> DeleteTagAsync(int organizationID, string value)
@@ -81,7 +82,7 @@ public class DeflectorAPI
         request.KeepAlive = false;
         request.ContentType = "application/json";
 
-        return await SendAPIRequest(request);
+        return await SendAPIAsyncRequest(request);
     }
 
     public async Task<string> TestDeflectorAPIAsync(string tag)
@@ -91,10 +92,11 @@ public class DeflectorAPI
         request.KeepAlive = false;
         request.ContentType = "application/json";
 
-        return await SendAPIRequest(request);
+        return await SendAPIAsyncRequest(request);
     }
 
-    private async Task<string> SendAPIRequest(HttpWebRequest request) {
+    private async Task<string> SendAPIAsyncRequest(HttpWebRequest request)
+    {
         string ResponseText = "";
 
         try
@@ -110,13 +112,14 @@ public class DeflectorAPI
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            ResponseText = e.Message;
+            ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
         }
 
         return ResponseText;
     }
+    
 
     //private async Task<string> RenameTag(string jsonUpdate) {
     //    string ResponseText    = null;

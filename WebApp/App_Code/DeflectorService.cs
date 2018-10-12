@@ -77,21 +77,20 @@ namespace TSWebServices {
             }
         }
 
-        public async Task<string> IndexDeflector(string deflectorIndex)
+        public void IndexDeflector(string deflectorIndex)
         {
             try
             {
                 DeflectorAPI deflectorAPI = new DeflectorAPI();
-                return await deflectorAPI.IndexDeflectorAsync(deflectorIndex);
+                deflectorAPI.IndexDeflectorAsync(deflectorIndex);
             }
             catch (Exception ex)
             {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
-                return null;
             }
         }
 
-        public async Task<string> IndexTicket(int ticketID)
+        public void IndexTicket(int ticketID)
         {
             Ticket Ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
             Tags Tags = new Tags(TSAuthentication.GetLoginUser());
@@ -117,32 +116,30 @@ namespace TSWebServices {
             try
             {
                 DeflectorAPI deflectorAPI = new DeflectorAPI();
-                return await deflectorAPI.BulkIndexDeflectorAsync(Newtonsoft.Json.JsonConvert.SerializeObject(deflectorIndexList)).ConfigureAwait(false);
+                deflectorAPI.BulkIndexDeflectorAsync(Newtonsoft.Json.JsonConvert.SerializeObject(deflectorIndexList));
             }
             catch (Exception ex){
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
-                return null;
             }
         }
 
         [WebMethod]
-        public async Task<string> HydrateOrganization(int organizationID)
+        public void HydrateOrganization(int organizationID)
         {
             string response = TeamSupport.Data.Deflector.GetOrganizationIndeces(TSAuthentication.GetLoginUser(), organizationID);
 
             try
             {
                 DeflectorAPI deflectorAPI = new DeflectorAPI();
-                return await deflectorAPI.BulkIndexDeflectorAsync(response);
+                deflectorAPI.BulkIndexDeflectorAsync(response);
             }
             catch (Exception ex) {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
-                return null;
             }
         }
 
         [WebMethod]
-        public async Task<string> HydratePod()
+        public void HydratePod()
         {
             List<String> indeceses = TeamSupport.Data.Deflector.GetPodIndeces(TSAuthentication.GetLoginUser());
             foreach (string index in indeceses)
@@ -150,44 +147,39 @@ namespace TSWebServices {
                 try
                 {
                     DeflectorAPI deflectorAPI = new DeflectorAPI();
-                    await deflectorAPI.BulkIndexDeflectorAsync(index);
+                    deflectorAPI.BulkIndexDeflectorAsync(index);
                 }
                 catch (Exception ex)
                 {
                     ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
                 }
             }
-
-            return null;
         }
 
-        public async Task<string> DeleteTicket(int ticketID)
+        public void DeleteTicket(int ticketID)
         {
-
             try
             {
                 DeflectorAPI deflectorAPI = new DeflectorAPI();
-                return await deflectorAPI.DeleteTicketAsync(ticketID);
+                deflectorAPI.DeleteTicketAsync(ticketID);
             }
             catch (Exception ex) {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
             }
-            return null;
         }
 
-        public async Task<string> DeleteTag(int organizationID, string value)
+        public void DeleteTag(int organizationID, string value)
         {
 
             try
             {
                 DeflectorAPI deflectorAPI = new DeflectorAPI();
-                return await deflectorAPI.DeleteTagAsync(organizationID, value);
+                deflectorAPI.DeleteTagAsync(organizationID, value);
             }
             catch (Exception ex)
             {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
             }
-            return null;
         }
 
         private List<DeflectorReturn> GetHubDeflectionResults(int customerHubID, List<DeflectorReturn> deflectorMatches)

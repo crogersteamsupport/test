@@ -1313,9 +1313,9 @@ namespace TSWebServices
             // DEFLECTOR.
             DeflectorService Deflection = new DeflectorService();
             if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                Deflection.IndexTicket(ticket.TicketID).ConfigureAwait(false);
+                Deflection.IndexTicket(ticket.TicketID);
             } else {
-                Deflection.DeleteTicket(ticket.TicketID).ConfigureAwait(false);
+                Deflection.DeleteTicket(ticket.TicketID);
             }
 
             return ticket.IsVisibleOnPortal;
@@ -1337,7 +1337,7 @@ namespace TSWebServices
             // DEFLECTOR.
             DeflectorService Deflection = new DeflectorService();
             if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                Deflection.IndexTicket(ticket.TicketID).ConfigureAwait(false);
+                Deflection.IndexTicket(ticket.TicketID);
             } else {
                 Deflection.DeleteTicket(ticket.TicketID);
             }
