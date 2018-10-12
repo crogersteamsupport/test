@@ -119,7 +119,7 @@ function SetupDeflectionListener(organizationID, customerHubID) {
                 }
                 for (x = 0; x < deflectionResults.length; x++) {
                     var $clone = $('#deflection-result').clone().find('.link').html('<a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a>');
-                    $clone.show().appendTo('#deflection-results');
+                    $clone.removeAttr('id').show().appendTo('#deflection-results');
                 }
             });
         }
