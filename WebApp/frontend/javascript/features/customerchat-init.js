@@ -118,7 +118,8 @@ function SetupDeflectionListener(organizationID, customerHubID) {
                     $('#deflection-box').hide();
                 }
                 for (x = 0; x < deflectionResults.length; x++) {
-                    $('#deflection-result').clone().show().find('.link').html('<a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a>').appendTo('#deflection-results');
+                    var $clone = $('#deflection-result').clone().find('.link').html('<a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a>');
+                    $clone.removeAttr('id').show().appendTo('#deflection-results');
                 }
             });
         }
@@ -129,7 +130,6 @@ function GetChatSettings(chatID, customerHubID) {
     var chatObject = {
         chatGuid: chatID
     };
-
     IssueAjaxRequest("GetClientChatPropertiesByChatGUID", chatObject,
         function(result) {
 
