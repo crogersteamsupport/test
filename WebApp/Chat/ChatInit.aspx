@@ -1,9 +1,12 @@
-
 <%@ Page Language="C#" AutoEventWireup="true" CodeFile="ChatInit.aspx.cs" Inherits="Chat_ChatInit" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head runat="server">
     <title></title>
+
+
+    <link href="/frontend/library/fontawesome-5.3.1/css/all.min.css?1539270950" rel="stylesheet" />
     <link href="/frontend/css/core/flexbox.css" rel="stylesheet" />
     <link href="/frontend/css/features/customerchat-init.css?1539270950" rel="stylesheet" />
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
@@ -23,7 +26,8 @@
                 <div>Welcome to our live chat!</div>
             </div>
             <div cla="flex">
-                <div class="alert alert-info chatOfflineWarning" role="alert" style="display:none;">Our live chat is not available at this time. Please submit a ticket request in the form below, and a member of our team will follow up with you as soon as possible. Thank you for your patience.</div>
+                <div class="alert alert-info chatOfflineWarning" role="alert" style="display:none;">Our live chat is not available at this time. Please submit a ticket request in the form below, and a member of our team will follow up with you as
+                    soon as possible. Thank you for your patience.</div>
             </div>
         </div>
 
@@ -61,10 +65,17 @@
                 </div>
             </div>
 
-            <div id="deflection-box" class="flexbox column" style="width:100%;">
-                <div class="flex">
-                    <div>
-                        <div class="list-group" id="deflection-results" style="margin-top:20px;"></div>
+            <div id="deflection-box" class="" style="width:100%;">
+                <div class="flexbox align" style="margin:0px 10px 2px;">
+                    <div class="flex pull" style="padding:0px 5px 5px;vertical-align:top;"><i class="fas fa-exclamation-triangle" style="font-size:12px;"></i></div>
+                    <div class="flex push" style="font-size:12px;">Would one of these articles help you?</div>
+                </div>
+                <div>
+                    <div id="deflection-results">
+                        <div id="deflection-result" class="flexbox align strip" style="display:none;">
+                            <div class="flex push link" style="padding:5px;font-size:12px;"></div>
+                            <div class="flex pull" style="padding:5px;vertical-align:top;"><i class="fas fa-external-link-square" style="font-size:16px;"></i></div>
+                        </div>
                     </div>
                 </div>
             </div>

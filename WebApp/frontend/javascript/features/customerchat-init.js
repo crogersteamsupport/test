@@ -108,15 +108,17 @@ function SetupDeflectionListener(organizationID, customerHubID) {
     }
 
     function doneTyping() {
-        $('#deflection-results').html('');
+        $('#deflection-box').hide();
         if ($input.val()) {
             deflector.FetchDeflections(organizationID, $input.val(), customerHubID, function (data) {
                 var deflectionResults = JSON.parse(data.Result);
                 if (deflectionResults.length > 0) {
-                    $('#deflection-results').append('<h4>Suggested Solutions</h4>');
+                    $('#deflection-box').show();
+                } else {
+                    $('#deflection-box').hide();
                 }
                 for (x = 0; x < deflectionResults.length; x++) {
-                    $('#deflection-results').append('<p><a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a></p>');
+                    $('#deflection-result').clone().find('.link').html('<a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a>').appendTo('#deflection-results').show();
                 }
             });
         }
