@@ -99,24 +99,16 @@ public class DeflectorAPI
 
         try
         {
-            var response = await request.GetResponseAsync();
-            if (request.HaveResponse && response != null)
+            using (WebResponse response = await System.Threading.Tasks.Task.Run(() => request.GetResponseAsync()))
             {
-                using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                if (request.HaveResponse && response != null)
                 {
-                    ResponseText = reader.ReadToEnd();
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                    {
+                        ResponseText = reader.ReadToEnd();
+                    }
                 }
             }
-            //using (WebResponse response = request.GetResponse())
-            //{
-            //    if (request.HaveResponse && response != null)
-            //    {
-            //        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
-            //        {
-            //            ResponseText = reader.ReadToEnd();
-            //        }
-            //    }
-            //}
         }
         catch (Exception e)
         {
