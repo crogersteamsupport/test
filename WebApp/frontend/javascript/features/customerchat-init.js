@@ -108,20 +108,23 @@ function SetupDeflectionListener(organizationID, customerHubID) {
     }
 
     function doneTyping() {
-        $('#deflection-results').empty();
         if ($input.val()) {
             deflector.FetchDeflections(organizationID, $input.val(), customerHubID, function (data) {
                 var deflectionResults = JSON.parse(data.Result);
                 if (deflectionResults.length > 0) {
                     $('#deflection-box').show();
-                } else {
-                    $('#deflection-box').hide();
                 }
-                for (x = 0; x < deflectionResults.length; x++) {
-                    var $clone = $('#deflection-result').clone().find('.link').html('<a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a>');
-                    $clone.removeAttr('id').show().appendTo('#deflection-results');
-                }
+                var hbrs = Handlebars.templates['deflection'];
+                $.each(deflectionResults, function(key,value) {
+                    if (!$('#' + value.TicketID).length) {
+                        var enumerate = hbrs(value);
+                        $(enumerate).fadeIn('normal').attr('style','').appendTo('#deflection-results');
+                    }
+                });
             });
+        } else {
+            $('#deflection-results').empty();
+            $('#deflection-box').hide();
         }
     }
 }
