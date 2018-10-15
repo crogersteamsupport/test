@@ -708,6 +708,13 @@ namespace TeamSupport.Data
 
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 1, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
+
+            //check to see if ticket deflection is on
+                //Get deflection results
+                //TeamSupport.Data.Deflector.GetWhiteListHubTicketPaths(productFamilyID);
+               
+                //template.ReplaceParameter("Deflector", )
+            //template.ReplaceCommonParameters().ReplaceFields("Deflector", )
             template.ReplaceActions(ticket, true);
             if (creator != null) template.ReplaceFields("Creator", creator);
             template.ReplaceContacts(ticket);
