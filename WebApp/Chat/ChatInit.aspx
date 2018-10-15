@@ -4,17 +4,19 @@
 
 <head runat="server">
     <title></title>
-
-
-    <link href="/frontend/library/fontawesome-5.3.1/css/all.min.css?1539270950" rel="stylesheet" />
-    <link href="/frontend/css/core/flexbox.css" rel="stylesheet" />
-    <link href="/frontend/css/features/customerchat-init.css?1539270950" rel="stylesheet" />
+    <link href="/frontend/library/fontawesome-5.3.1/css/all.min.css?1539622898" rel="stylesheet" />
+    <link href="/frontend/css/core/flexbox.css?1539622898" rel="stylesheet" />
+    <link href="/frontend/css/features/customerchat-init.css?1539622898" rel="stylesheet" />
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
     <script src="/frontend/library/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="/frontend/library/jquery.placeholder.js" type="text/javascript"></script>
-    <script src="/frontend/javascript/features/deflector.js?1539270950" type="text/javascript"></script>
     <script src="../vcr/1_9_0/Js/Ts/ts.utils.js"></script>
-    <script src="/frontend/javascript/features/customerchat-init.js?1539270950"></script>
+
+    <!-- HANDLEBARS. -->
+    <script src="/frontend/library/handlebars/handlebars.runtime-v4.0.12.js"></script>
+    <script src="/frontend/handlebars/chatinit.js?1539622898" type="text/javascript"></script>
+
+    <script src="/frontend/javascript/features/customerchat-init.js?1539622898"></script>
 </head>
 
 <body>
@@ -65,17 +67,13 @@
                 </div>
             </div>
 
-            <div id="deflection-box" class="" style="width:100%;">
+            <div id="deflection-box" style="width:100%;">
                 <div class="flexbox align" style="margin:0px 10px 2px;">
                     <div class="flex pull" style="padding:0px 5px 5px;vertical-align:top;"><i class="fas fa-exclamation-triangle" style="font-size:12px;"></i></div>
                     <div class="flex push" style="font-size:12px;">Would one of these articles help you?</div>
                 </div>
                 <div>
                     <div id="deflection-results"></div>
-                    <div id="deflection-result" class="flexbox align strip" style="display:none;">
-                        <div class="flex push link" style="padding:5px 10px;font-size:12px;"></div>
-                        <div class="flex pull icon" style="padding:5px 10px;vertical-align:top;"><i class="fas fa-external-link-square" style="font-size:16px;"></i></div>
-                    </div>
                 </div>
             </div>
 
