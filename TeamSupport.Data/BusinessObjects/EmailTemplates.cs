@@ -710,11 +710,12 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
 
             //check to see if ticket deflection is on
-                //Get deflection results
-                //TeamSupport.Data.Deflector.GetWhiteListHubTicketPaths(productFamilyID);
-               
-                //template.ReplaceParameter("Deflector", )
-            //template.ReplaceCommonParameters().ReplaceFields("Deflector", )
+            TeamSupport.Data.DeflectorAPI deflectorAPI = new DeflectorAPI();
+            var deflectionResults = deflectorAPI.FetchDeflectionsAsync(ticket.OrganizationID, "cache and email are king!").Result.ToString();
+
+            template.ReplaceParameter("Deflector", deflectionResults);
+
+            //TeamSupport.Data.Deflector.GetWhiteListHubTicketPathsByProductLine(ticket.OrganizationID, productFamilyID);ector", )
             template.ReplaceActions(ticket, true);
             if (creator != null) template.ReplaceFields("Creator", creator);
             template.ReplaceContacts(ticket);
