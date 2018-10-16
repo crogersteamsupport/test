@@ -6,6 +6,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
+using System.IO;
 
 namespace TeamSupport.Data
 {
@@ -709,19 +711,85 @@ namespace TeamSupport.Data
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 1, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
 
-            //check to see if ticket deflection is on
+            //add flag check to see if ticket deflection is on
             TeamSupport.Data.DeflectorAPI deflectorAPI = new DeflectorAPI();
-            var deflectionResults = deflectorAPI.FetchDeflectionsAsync(ticket.OrganizationID, "cache and email are king!").Result.ToString();
+            string actionTextHtml = Actions.GetTicketFirstAction(loginUser, ticket.TicketID).Description;
+            string actionText = StripHTML(actionTextHtml);
 
-            template.ReplaceParameter("Deflector", deflectionResults);
-
+            var deflectionResults = deflectorAPI.FetchDeflectionsAsync(ticket.OrganizationID, actionText).Result.ToString();
             //TeamSupport.Data.Deflector.GetWhiteListHubTicketPathsByProductLine(ticket.OrganizationID, productFamilyID);ector", )
+            List<DeflectorReturn> deflectorReturn = new List<DeflectorReturn>
+            {
+                new DeflectorReturn()
+                {
+                    Name = "Email automation is neat!",
+                    ReturnURL = "https://www.google.com/",
+                    TicketID = 12345
+                },
+                new DeflectorReturn()
+                {
+                    Name = "Email is cool!",
+                    ReturnURL = "https://www.yahoo.com/",
+                    TicketID = 123456
+                },
+                new DeflectorReturn()
+                {
+                    Name = "Clearing your cache is a must",
+                    ReturnURL = "https://www.bing.com/",
+                    TicketID = 1234567
+                }
+            };
+
+            
+
+            template.ReplaceParameter("Deflector", GenerateEmailDeflectionTemplate(deflectorReturn));
+
             template.ReplaceActions(ticket, true);
             if (creator != null) template.ReplaceFields("Creator", creator);
             template.ReplaceContacts(ticket);
             template.ReplaceModifierAvatar(ticket, byCreator: true);
 
             return template.GetMessage();
+        }
+
+        private static string GenerateEmailDeflectionTemplate(List<DeflectorReturn> deflectionResults)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("<table><tr><td>Would one of these articles help you?</td></tr>");
+
+            foreach (var deflectionResult in deflectionResults)
+            {
+                sb.Append(GenerateEmailDeflectionRow(deflectionResult));
+            }
+
+            sb.Append("</table>");
+            return sb.ToString();
+        }
+
+        private static string GenerateEmailDeflectionRow(DeflectorReturn deflectionResult) {
+            return @"<tr><td><a href=\" + deflectionResult.ReturnURL + "target=\"_blank\">" + deflectionResult.Name + "</a></td></tr>";
+        }
+
+        private static string StripHTML(string html) {
+            var doc = new HtmlDocument();
+            var sb = new StringBuilder();
+
+            doc.LoadHtml(html);
+            var tags = doc.DocumentNode.SelectNodes("//*");
+            if (tags != null)
+            {
+                foreach (var tag in tags)
+                {
+                    tag.Attributes.RemoveAll();
+                }
+            }
+
+            using (var textwriter = new StringWriter(sb))
+            {
+                doc.Save(textwriter);
+            }
+
+            return sb.ToString();
         }
 
         public static MailMessage GetNewTicketInternal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
