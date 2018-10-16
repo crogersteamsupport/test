@@ -751,30 +751,21 @@ namespace TeamSupport.Data
 
         private static string GenerateEmailDeflectionRow(DeflectorReturn deflectionResult)
         {
-            return @"<tr><td><a href=\" + deflectionResult.ReturnURL + "target=\"_blank\">" + deflectionResult.Name + "</a></td></tr>\r\n";
+            return @"<tr><td><a href='" + deflectionResult.ReturnURL + "' target=\"_blank\">" + deflectionResult.Name + "</a></td></tr>\r\n";
         }
 
         private static string StripHTML(string html)
         {
+            var sanitizedStringBuilder = new StringBuilder();
+
             var doc = new HtmlDocument();
-            var sb = new StringBuilder();
-
             doc.LoadHtml(html);
-            var tags = doc.DocumentNode.SelectNodes("//*");
-            if (tags != null)
-            {
-                foreach (var tag in tags)
-                {
-                    tag.Attributes.RemoveAll();
-                }
+
+            foreach (var node in doc.DocumentNode.ChildNodes) { 
+                sanitizedStringBuilder.Append(node.InnerText);
             }
 
-            using (var textwriter = new StringWriter(sb))
-            {
-                doc.Save(textwriter);
-            }
-
-            return sb.ToString();
+            return sanitizedStringBuilder.ToString();
         }
 
         public static MailMessage GetNewTicketInternal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)

@@ -33,7 +33,13 @@ namespace TeamSupport.Data
             DeflectorAPI deflectorAPI = new DeflectorAPI();
 
             //Get deflections via the deflectorAPI
-            List<DeflectorReturn> deflectorMatches = JsonConvert.DeserializeObject<List<DeflectorReturn>>(deflectorAPI.FetchDeflectionsAsync(organizationID, phrase).Result.ToString());
+            List<DeflectorReturn> deflectorMatches = new List<DeflectorReturn>();
+            string deflectorResponse = deflectorAPI.FetchDeflectionsAsync(organizationID, phrase).Result.ToString();
+
+            if (!String.IsNullOrEmpty(deflectorResponse))
+            {
+                deflectorMatches = JsonConvert.DeserializeObject<List<DeflectorReturn>>(deflectorResponse);
+            }
 
             if (deflectorMatches.Any())
             {
@@ -69,7 +75,7 @@ namespace TeamSupport.Data
                 customerHubIDToProcess = customerHubID;
             }
             //Try by productFamilyID
-            else if (productFamilyID != null || productFamilyID != -1)
+            else if (productFamilyID != null && productFamilyID != -1)
             {
                 CustomerHubs hubHelper = new CustomerHubs(LoginUser.Anonymous);
                 hubHelper.LoadByProductFamilyID((int)productFamilyID);
