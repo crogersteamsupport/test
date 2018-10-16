@@ -108,11 +108,14 @@ function SetupDeflectionListener(organizationID, customerHubID) {
     }
 
     function doneTyping() {
+        $('#deflection-results').empty();
         if ($input.val()) {
             deflector.FetchDeflections(organizationID, $input.val(), customerHubID, function (data) {
                 var deflectionResults = JSON.parse(data.Result);
                 if (deflectionResults.length > 0) {
                     $('#deflection-box').show();
+                } else {
+                    $('#deflection-box').hide();
                 }
                 var hbrs = Handlebars.templates['deflection'];
                 $.each(deflectionResults, function(key,value) {
@@ -123,7 +126,6 @@ function SetupDeflectionListener(organizationID, customerHubID) {
                 });
             });
         } else {
-            $('#deflection-results').empty();
             $('#deflection-box').hide();
         }
     }
