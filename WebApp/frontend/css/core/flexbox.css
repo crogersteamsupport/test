@@ -23,6 +23,7 @@ div.flexbox.justify {
     justify-content:center;
 }
 
+div.flex,
 div.flex.push,
 div.flexpush {
     flex:auto;

@@ -27,6 +27,7 @@ using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
+using System.Threading;
 
 namespace TSWebServices
 {
@@ -512,8 +513,8 @@ namespace TSWebServices
                 command.Connection = connection;
                 connection.Open();
                 using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                {                   
-                    adapter.Fill(table);     
+                {
+                    adapter.Fill(table);
                 }
             }
 
@@ -528,13 +529,13 @@ namespace TSWebServices
 
                 resultItems.Add(resultItem);
             }
-        
+
 
             result.Items = resultItems.ToArray();
             return result;
-        
+
         }
-        
+
         [WebMethod]
         public TicketTypeProxy[] GetTicketTypes()
         {
@@ -692,36 +693,55 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void DeleteTag(int tagID)
-        {
-            if (!TSAuthentication.IsSystemAdmin) return;
-            Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
-            tag.Delete();
-            tag.Collection.Save();
+        public void DeleteTag(int tagID) {
+            if (!TSAuthentication.IsSystemAdmin) {
+                return;
+            } else {
+                Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
+                string tagValue = tag.Value;
+                tag.Delete();
+                tag.Collection.Save();
+
+                // DEFLECTOR.
+                DeflectorService Deflection = new DeflectorService();
+                Deflection.DeleteTag(TSAuthentication.OrganizationID, tagValue);
+            }
         }
 
         [WebMethod]
-        public int RenameTag(int tagID, string name)
-        {
-            int result = tagID;
-            if (!TSAuthentication.IsSystemAdmin) return result;
-            Tags tags = new Tags(TSAuthentication.GetLoginUser());
-            Tag tag = Tags.GetTag(tags.LoginUser, tagID);
-            tags.LoadByValue(TSAuthentication.OrganizationID, name);
-            if (tags.Count > 0 && tag.TagID != tags[0].TagID)
-            {
-                TagLinks links = new TagLinks(tags.LoginUser);
-                links.ReplaceTags(tag.TagID, tags[0].TagID);
-                tag.Delete();
-                tag.Collection.Save();
-                result = tags[0].TagID;
+        public int RenameTag (int TagId, string Value) {
+            int Result = TagId;
+            if (!TSAuthentication.IsSystemAdmin) {
+                // return Result;
             }
-            else
-            {
-                tag.Value = name;
-                tag.Collection.Save();
+            Tags Tags = new Tags(TSAuthentication.GetLoginUser());
+            Tag Tag = Tags.GetTag(Tags.LoginUser, TagId);
+            Tags.LoadByValue(TSAuthentication.OrganizationID, Value);
+
+            // MERGE TAG.
+            if (Tags.Count > 0 && Tag.TagID != Tags[0].TagID) {
+                TagLinks Links = new TagLinks(Tags.LoginUser);
+                Links.ReplaceTags(Tag.TagID, Tags[0].TagID);
+                Tag.Delete();
+                Tag.Collection.Save();
+                Result = Tags[0].TagID;
+
+                // DEFLECTOR.
+                DeflectorService Deflection = new DeflectorService();
+                //Deflection.MergeTag(TSAuthentication.OrganizationID, TagId, Value);
             }
-            return result;
+
+            // RENAME TAG.
+            else {
+                Tag.Value =Value;
+                Tag.Collection.Save();
+
+                // DEFLECTOR.
+                DeflectorService Deflection = new DeflectorService();
+                //Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
+            }
+
+            return Result;
         }
 
         [WebMethod]
@@ -1092,8 +1112,12 @@ namespace TSWebServices
             {
                 try
                 {
+                    int deleteTicketID = ticket.TicketID;
                     ticket.Delete();
                     ticket.Collection.Save();
+
+                    DeflectorService deflectorService = new DeflectorService();
+                    deflectorService.DeleteTicket(deleteTicketID);
                 }
                 catch (Exception ex)
                 {
@@ -1285,6 +1309,15 @@ namespace TSWebServices
             if (!CanEditTicket(ticket)) return value;
             ticket.IsVisibleOnPortal = value;
             ticket.Collection.Save();
+
+            // DEFLECTOR.
+            DeflectorService Deflection = new DeflectorService();
+            if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
+                Deflection.IndexTicket(ticket.TicketID);
+            } else {
+                Deflection.DeleteTicket(ticket.TicketID);
+            }
+
             return ticket.IsVisibleOnPortal;
         }
 
@@ -1300,18 +1333,39 @@ namespace TSWebServices
             if (!CanEditTicket(ticket)) return value;
             ticket.IsKnowledgeBase = value;
             ticket.Collection.Save();
+
+            // DEFLECTOR.
+            DeflectorService Deflection = new DeflectorService();
+            if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
+                Deflection.IndexTicket(ticket.TicketID);
+            } else {
+                Deflection.DeleteTicket(ticket.TicketID);
+            }
+
             return ticket.IsKnowledgeBase;
         }
 
         [WebMethod]
         public string SetTicketName(int ticketID, string name)
         {
-            if (name.Trim() == "") name = "[Untitled Ticket]";
+            if (name.Trim() == "") {
+                name = "[Untitled Ticket]";
+            }
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-            if (!CanEditTicket(ticket)) return name;
-            ticket.Name = name;// HttpUtility.HtmlEncode(name);
-            ticket.Collection.Save();
-            return ticket.Name;
+            if (!CanEditTicket(ticket)) {
+                return name;
+            } else {
+                ticket.Name = name;// HttpUtility.HtmlEncode(name);
+                ticket.Collection.Save();
+
+                if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase)
+                {
+                    DeflectorService Deflection = new DeflectorService();
+                    Deflection.IndexTicket(ticket.TicketID);
+                }
+
+                return ticket.Name;
+            }
         }
 
         [WebMethod]
@@ -1582,20 +1636,35 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public AutocompleteItem SetProduct(int ticketID, int? productID)
-        {
+        public AutocompleteItem SetProduct(int ticketID, int? productID) {
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-            if (!CanEditTicket(ticket)) return null;
+            if (!CanEditTicket(ticket)) {
+                return null;
+            } else {
+                Product product = productID != null ? Products.GetProduct(TSAuthentication.GetLoginUser(), (int)productID) : null;
+                if (productID == ticket.ProductID) {
+                    return null;
+                } else if (product != null && product.OrganizationID != TSAuthentication.OrganizationID) {
+                    return null;
+                } else {
+                    ticket.ProductID = productID;
+                    ticket.ReportedVersionID = null;
+                    ticket.SolvedVersionID = null;
+                    ticket.Collection.Save();
 
-            Product product = productID != null ? Products.GetProduct(TSAuthentication.GetLoginUser(), (int)productID) : null;
-            if (productID == ticket.ProductID) return null;
-            if (product != null && product.OrganizationID != TSAuthentication.OrganizationID) return null;
-            ticket.ProductID = productID;
-            ticket.ReportedVersionID = null;
-            ticket.SolvedVersionID = null;
-            ticket.Collection.Save();
-            if (product != null) return new AutocompleteItem(product.Name, product.ProductID.ToString(), product.ProductFamilyID);
-            return new AutocompleteItem(null, null);
+                    if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase)
+                    {
+                        DeflectorService Deflection = new DeflectorService();
+                        Deflection.IndexTicket(ticket.TicketID);
+                    }
+
+                    if (product != null) {
+                        return new AutocompleteItem(product.Name, product.ProductID.ToString(), product.ProductFamilyID);
+                    } else {
+                        return new AutocompleteItem(null, null);
+                    }
+                }
+            }
         }
 
         [WebMethod]
@@ -3212,8 +3281,7 @@ WHERE t.TicketID = @TicketID
             value = value.Trim();
             if (value == "") return null;
             Tag tag = Tags.GetTag(ticket.Collection.LoginUser, value);
-            if (tag == null)
-            {
+            if (tag == null) {
                 Tags tags = new Tags(ticket.Collection.LoginUser);
                 tag = tags.AddNewTag();
                 tag.OrganizationID = TSAuthentication.OrganizationID;
@@ -3222,17 +3290,33 @@ WHERE t.TicketID = @TicketID
             }
 
             TagLink link = TagLinks.GetTagLink(ticket.Collection.LoginUser, ReferenceType.Tickets, ticketID, tag.TagID);
-            if (link == null)
-            {
+            if (link == null) {
                 TagLinks links = new TagLinks(ticket.Collection.LoginUser);
                 link = links.AddNewTagLink();
                 link.RefType = ReferenceType.Tickets;
                 link.RefID = ticketID;
                 link.TagID = tag.TagID;
                 links.Save();
-
                 ticket.Collection.AddTags(tag, ticketID);
             }
+
+
+                // DEFLECTOR.
+                if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase)
+                {
+                    var item = new DeflectorItem
+                    {
+                        TicketID = ticket.TicketID,
+                        Name = ticket.Name,
+                        OrganizationID = ticket.OrganizationID,
+                        ProductID = ticket.ProductID,
+                        TagID = tag.TagID,
+                        Value = tag.Value
+                    };
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                    DeflectorService Deflection = new DeflectorService();
+                    Deflection.IndexDeflector(json);
+                }
 
             return GetTicketTags(ticketID);
         }
@@ -3244,15 +3328,19 @@ WHERE t.TicketID = @TicketID
             if (!CanEditTicket(ticket)) return null;
             TagLink link = TagLinks.GetTagLink(TSAuthentication.GetLoginUser(), ReferenceType.Tickets, ticketID, tagID);
             Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
+            string tagValue = tag.Value;
             ticket.Collection.RemoveTags(tag, ticketID);
             int count = tag.GetLinkCount();
             link.Delete();
             link.Collection.Save();
-            if (count < 2)
-            {
+            if (count < 2) {
                 tag.Delete();
                 tag.Collection.Save();
             }
+
+            // DEFLECTOR
+            DeflectorService Deflection = new DeflectorService();
+            Deflection.DeleteTag(ticket.OrganizationID, tagValue);
 
             return GetTicketTags(ticketID);
         }
@@ -3760,7 +3848,7 @@ WHERE t.TicketID = @TicketID
 							{
 								customValue.Value = customDate.ToShortDateString();
 							}
-							
+
 							break;
 						default:
                         customValue.Value = field.Value.ToString();
@@ -4026,7 +4114,7 @@ WHERE t.TicketID = @TicketID
                 log.Collection.Save();
 
                 errLocation = string.Format("Error merging ticket actions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }                    
+            }
 
             try
             {
@@ -4089,7 +4177,7 @@ WHERE t.TicketID = @TicketID
             }
             return messages;
         }
-       
+
         public void MergeContacts(int losingTicketID, int winningTicketID, Ticket ticket)
         {
             List<TicketCustomer> customers = new List<TicketCustomer>();
@@ -4116,7 +4204,7 @@ WHERE t.TicketID = @TicketID
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
             return;
         }
-       
+
         public void MergeTags(int losingTicketID, int winningTicketID, Ticket ticket)
         {
             Tags tags = new Tags(TSAuthentication.GetLoginUser());
@@ -4127,7 +4215,7 @@ WHERE t.TicketID = @TicketID
                 RemoveTag(losingTicketID, tag.TagID);
                 AddTag(winningTicketID, tag.Value);
             }
-        }              
+        }
 
         public void MergeSubscribers(int losingTicketID, int winningTicketID, Ticket ticket)
         {
@@ -4143,7 +4231,7 @@ WHERE t.TicketID = @TicketID
             string description = "Merged '" + losingticket.TicketNumber + "' Subscribers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
 
-        }        
+        }
 
         public void MergeQueres(int losingTicketID, int winningTicketID, Ticket ticket)
         {
@@ -4159,7 +4247,7 @@ WHERE t.TicketID = @TicketID
             Ticket losingticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
             string description = "Merged '" + ticket.TicketNumber + "' Queuers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
-        }               
+        }
 
         private TicketLinkToJiraItemProxy GetLinkToJira(int ticketID)
         {
@@ -4675,7 +4763,7 @@ WHERE t.TicketID = @TicketID
 
     }
 
-   
+
 
 
     [DataContract]
@@ -4703,7 +4791,6 @@ WHERE t.TicketID = @TicketID
         public TicketsViewItemProxy[] Tickets { get; set; }
         [DataMember]
         public TicketLoadFilter Filter { get; set; }
-
     }
 
     [DataContract]
@@ -4956,5 +5043,21 @@ WHERE t.TicketID = @TicketID
         public string Tags { get; set; }
         [DataMember]
         public string KBCategory { get; set; }
+    }
+
+    [DataContract]
+    public class DeflectorItem {
+        [DataMember]
+        public int TicketID { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+        [DataMember]
+        public int OrganizationID { get; set; }
+        [DataMember]
+        public int? ProductID { get; set; }
+        [DataMember]
+        public int TagID { get; set; }
+        [DataMember]
+        public string Value { get; set; }
     }
 }
