@@ -115,6 +115,8 @@ namespace TSWebServices
                 if (organization.ParentID != TSAuthentication.OrganizationID) return null;
             }
 
+			user.CryptedPassword = string.Empty;
+
             return user.GetProxy();
         }
 

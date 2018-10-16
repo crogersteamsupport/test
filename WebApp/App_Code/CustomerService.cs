@@ -33,6 +33,7 @@ namespace TSWebServices
         public UserProxy GetUser(int userID)
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+			user.CryptedPassword = string.Empty;
             return user.GetProxy();
         }
 
