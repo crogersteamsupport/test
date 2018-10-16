@@ -738,7 +738,8 @@ namespace TeamSupport.Data
 
             if (deflectionResults.Any())
             {
-                sb.Append("<table border=\"0\" cellpadding=\"5\">\r\n<tr><td>Would one of these articles help you?</td></tr>\r\n");
+                sb.Append("<table border=\"0\" style\"margin-top:10px;\">\r\n");
+                sb.Append("<tr><td style=\"margin-bottom:7px;font-size:12px;font-weight:normal;font-family:Arial;color:#555555;\">Would one of these articles help you?</td></tr>\r\n");
                 foreach (var deflectionResult in deflectionResults)
                 {
                     sb.Append(GenerateEmailDeflectionRow(deflectionResult));
@@ -751,7 +752,7 @@ namespace TeamSupport.Data
 
         private static string GenerateEmailDeflectionRow(DeflectorReturn deflectionResult)
         {
-            return @"<tr><td><a href='" + deflectionResult.ReturnURL + "' target=\"_blank\">" + deflectionResult.Name + "</a></td></tr>\r\n";
+            return @"<tr><td><a href='" + deflectionResult.ReturnURL + "' target='_blank' style='margin-bottom:7px;font-size:12px;font-weight:normal;font-family:Arial;'>" + deflectionResult.Name + "</a></td></tr>\r\n";
         }
 
         private static string StripHTML(string html)
@@ -761,7 +762,7 @@ namespace TeamSupport.Data
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
-            foreach (var node in doc.DocumentNode.ChildNodes) { 
+            foreach (var node in doc.DocumentNode.ChildNodes) {
                 sanitizedStringBuilder.Append(node.InnerText);
             }
 
