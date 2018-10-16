@@ -548,7 +548,7 @@ namespace TeamSupport.Data
                             OR IsTSOnly = 0
                         )
                         AND EmailTemplateID NOT IN (22,23,24)
-                    ORDER BY 
+                    ORDER BY
                         Position";
                 }
                 else
@@ -565,7 +565,7 @@ namespace TeamSupport.Data
                             OR IsTSOnly = 0
                         )
                         AND EmailTemplateID NOT IN (35,36,37,38,39)
-                    ORDER BY 
+                    ORDER BY
                         Position";
                 }
                 command.CommandType = CommandType.Text;
@@ -738,7 +738,7 @@ namespace TeamSupport.Data
 
             if (deflectionResults.Any())
             {
-                sb.Append("<table><tr><td>Would one of these articles help you?</td></tr>");
+                sb.Append("<table border=\"0\" cellpadding=\"5\">\r\n<tr><td>Would one of these articles help you?</td></tr>\r\n");
                 foreach (var deflectionResult in deflectionResults)
                 {
                     sb.Append(GenerateEmailDeflectionRow(deflectionResult));
@@ -751,7 +751,7 @@ namespace TeamSupport.Data
 
         private static string GenerateEmailDeflectionRow(DeflectorReturn deflectionResult)
         {
-            return @"<tr><td><a href=\" + deflectionResult.ReturnURL + "target=\"_blank\">" + deflectionResult.Name + "</a></td></tr>";
+            return @"<tr><td><a href=\" + deflectionResult.ReturnURL + "target=\"_blank\">" + deflectionResult.Name + "</a></td></tr>\r\n";
         }
 
         private static string StripHTML(string html)
