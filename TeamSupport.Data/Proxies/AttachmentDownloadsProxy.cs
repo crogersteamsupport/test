@@ -8,6 +8,18 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(AttachmentDownloadProxy))]
+  public class AttachmentDownloadProxy
+  {
+    public AttachmentDownloadProxy() {}
+    [DataMember] public int AttachmentDownloadID { get; set; }
+    [DataMember] public int AttachmentID { get; set; }
+    [DataMember] public int UserID { get; set; }
+    [DataMember] public DateTime DateDownloaded { get; set; }
+          
+  }
+  
   public partial class AttachmentDownload : BaseItem
   {
     public AttachmentDownloadProxy GetProxy()

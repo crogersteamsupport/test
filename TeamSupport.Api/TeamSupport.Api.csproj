@@ -173,10 +173,6 @@
       <Project>{1943ac11-1f2d-4b85-9f0f-4d67284814be}</Project>
       <Name>TeamSupport.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
-      <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
-      <Name>TeamSupport.Proxy</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

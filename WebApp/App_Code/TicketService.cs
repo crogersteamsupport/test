@@ -4791,7 +4791,6 @@ WHERE t.TicketID = @TicketID
         public TicketsViewItemProxy[] Tickets { get; set; }
         [DataMember]
         public TicketLoadFilter Filter { get; set; }
-
     }
 
     [DataContract]

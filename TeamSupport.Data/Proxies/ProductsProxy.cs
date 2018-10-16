@@ -8,6 +8,30 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(ProductProxy))]
+  public class ProductProxy
+  {
+    public ProductProxy() {}
+    [DataMember] public int ProductID { get; set; }
+    [DataMember] public int OrganizationID { get; set; }
+    [DataMember] public string Name { get; set; }
+    [DataMember] public string Description { get; set; }
+    [DataMember] public string ImportID { get; set; }
+    [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public int CreatorID { get; set; }
+    [DataMember] public int ModifierID { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public string JiraProjectKey { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
+    [DataMember] public string EmailReplyToAddress { get; set; }
+    [DataMember] public int? SlaLevelID { get; set; }
+    [DataMember] public string TFSProjectName { get; set; }
+          
+  }
+  
   public partial class Product : BaseItem
   {
     public ProductProxy GetProxy()

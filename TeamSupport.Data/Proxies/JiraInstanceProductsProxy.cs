@@ -8,6 +8,17 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(JiraInstanceProductProxy))]
+  public class JiraInstanceProductProxy
+  {
+    public JiraInstanceProductProxy() {}
+    [DataMember] public int JiraInstanceProductsId { get; set; }
+    [DataMember] public int CrmLinkId { get; set; }
+    [DataMember] public int ProductId { get; set; }
+          
+  }
+  
   public partial class JiraInstanceProduct : BaseItem
   {
     public JiraInstanceProductProxy GetProxy()

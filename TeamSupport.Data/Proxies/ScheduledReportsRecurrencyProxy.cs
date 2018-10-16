@@ -8,6 +8,16 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(ScheduledReportsRecurrencyItemProxy))]
+  public class ScheduledReportsRecurrencyItemProxy
+  {
+    public ScheduledReportsRecurrencyItemProxy() {}
+    [DataMember] public byte id { get; set; }
+    [DataMember] public string recurrency { get; set; }
+          
+  }
+  
   public partial class ScheduledReportsRecurrencyItem : BaseItem
   {
     public ScheduledReportsRecurrencyItemProxy GetProxy()
