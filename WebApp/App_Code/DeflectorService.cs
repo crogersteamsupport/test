@@ -58,9 +58,7 @@ namespace TSWebServices {
                 //Customer Hub
                 if (customerHubID != null)
                 {
-                    DeflectorAPI deflectorAPI = new DeflectorAPI();
-                    var deflectorMatches = await deflectorAPI.FetchDeflectionsAsync(organization, phrase);
-                    filteredList = GetHubDeflectionResults((int)customerHubID, JsonConvert.DeserializeObject<List<DeflectorReturn>>(deflectorMatches));
+                    filteredList = Deflector.FetchHubDeflections(organization, phrase, (int)customerHubID);
                 }
                 ////Portal
                 //else if (!String.IsNullOrEmpty(portalName))
@@ -182,34 +180,29 @@ namespace TSWebServices {
             }
         }
 
-        private List<DeflectorReturn> GetHubDeflectionResults(int customerHubID, List<DeflectorReturn> deflectorMatches)
-        {
+        //private List<DeflectorReturn> GetHubDeflectionResults(int organizationID, string phrase, int customerHubID)
+        //{
 
-            List<DeflectorReturn> result = new List<DeflectorReturn>();
-            string baseHubURL = SystemSettings.GetHubURL();
+        //    List<DeflectorReturn> result = new List<DeflectorReturn>();
+        //    Deflector.FetchHubDeflections(organizationID, phrase, null, customerHubID);
 
-            //if we want to open this up to multiple hubs, we can pass the parent organizationID and modify the query to "unlock" the record set
-            List<DataRow> whiteListTickets = Deflector.GetWhiteListHubTicketPaths((int)customerHubID);
+        //    //if we want to open this up to multiple hubs, we can pass the parent organizationID and modify the query to "unlock" the record set
+        //    //List<DataRow> whiteListTickets = Deflector.GetWhiteListHubTicketPaths((int)customerHubID);
 
-            result = deflectorMatches.Join(whiteListTickets,
-                        deflectorMatch => deflectorMatch.TicketID,
-                        whiteListItem => (int)whiteListItem["TicketID"],
-                        (deflectorMatch, whiteListItem) => new DeflectorReturn
-                        {
-                            TicketID = deflectorMatch.TicketID,
-                            Name = deflectorMatch.Name,
-                            ReturnURL = formatHubKBURL(deflectorMatch.TicketID, (string)whiteListItem["CNameURL"], (string)whiteListItem["PortalName"], baseHubURL)
-                        }).ToList();
+        //    //result = deflectorMatches.Join(whiteListTickets,
+        //    //            deflectorMatch => deflectorMatch.TicketID,
+        //    //            whiteListItem => (int)whiteListItem["TicketID"],
+        //    //            (deflectorMatch, whiteListItem) => new DeflectorReturn
+        //    //            {
+        //    //                TicketID = deflectorMatch.TicketID,
+        //    //                Name = deflectorMatch.Name,
+        //    //                ReturnURL = formatHubKBURL(deflectorMatch.TicketID, (string)whiteListItem["CNameURL"], (string)whiteListItem["PortalName"], baseHubURL)
+        //    //            }).ToList();
 
-            //an additional step with a ranking system can be utilized here if we open this up to multiple hubs
+        //    //an additional step with a ranking system can be utilized here if we open this up to multiple hubs
 
-            return result;
-        }
-
-        private string formatHubKBURL(int ticketID, string cnameURL, string portalName, string baseHubURL)
-        {
-            return "https://" + (!string.IsNullOrEmpty(cnameURL) ? cnameURL : portalName + "." + baseHubURL) + "/knowledgeBase/" + ticketID.ToString();
-        }
+        //    return result;
+        //}
  }
 
 }
