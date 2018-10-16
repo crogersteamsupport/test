@@ -59,7 +59,7 @@ namespace TeamSupport.Data
                         {
                             TicketID = deflectorMatch.TicketID,
                             Name = deflectorMatch.Name,
-                            ReturnURL = formatHubKBURL(deflectorMatch.TicketID, (string)whiteListItem["CNameURL"], (string)whiteListItem["PortalName"], baseHubURL)
+                            ReturnURL = FormatHubKBURL(deflectorMatch.TicketID, (string)whiteListItem["CNameURL"], (string)whiteListItem["PortalName"], baseHubURL)
                         }).ToList());
             }
 
@@ -228,55 +228,7 @@ namespace TeamSupport.Data
             return result;
         }
 
-        //This can likely be refactored and merged with GetWhiteListTicketPathsByHubID
-        public static List<DataRow> GetWhiteListTicketPathsByProductFamily(int productFamilyID)
-        {
-            List<DataRow> result = new List<DataRow>();
-
-            using (SqlConnection connection = new SqlConnection(LoginUser.Anonymous.ConnectionString))
-            {
-                DataTable dt = new DataTable();
-
-                SqlCommand command = new SqlCommand();
-                command.Connection = connection;
-                command.CommandType = CommandType.Text;
-                command.CommandText = @"SELECT TicketID, CNameURL, PortalName
-                                        FROM [Tickets] AS Tickets
-                                        INNER JOIN [CustomerHubs] AS Hubs
-	                                        ON Tickets.OrganizationID = Hubs.OrganizationID
-                                        INNER JOIN [CustomerHubFeatureSettings] AS HubFeatures
-	                                        ON Hubs.CustomerHubID = HubFeatures.CustomerHubID
-		                                        AND HubFeatures.EnableKnowledgeBase = 1 
-		                                        AND HubFeatures.EnableAnonymousProductAssociation = 0
-		                                        AND HubFeatures.EnableCustomerSpecificKB = 0
-                                        LEFT JOIN Products AS Products
-	                                        ON Products.ProductFamilyID = Hubs.ProductFamilyID
-                                        WHERE 
-	                                        IsKnowledgeBase = 1 
-	                                        AND IsVisibleOnPortal = 1
-	                                        AND Hubs.CustomerHubID = @CustomerHubID
-	                                        AND (Hubs.ProductFamilyID IS NULL OR Products.ProductFamilyID = @ProductFamilyID)";
-                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
-                connection.Open();
-                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                {
-                    try
-                    {
-                        adapter.Fill(dt);
-                        result.AddRange(dt.AsEnumerable().Select(x => x).ToList());
-                    }
-                    catch (Exception ex)
-                    {
-                        ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
-                        return null;
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private static string formatHubKBURL(int ticketID, string cnameURL, string portalName, string baseHubURL)
+        private static string FormatHubKBURL(int ticketID, string cnameURL, string portalName, string baseHubURL)
         {
             return "https://" + (!string.IsNullOrEmpty(cnameURL) ? cnameURL : portalName + "." + baseHubURL) + "/knowledgeBase/" + ticketID.ToString();
         }
