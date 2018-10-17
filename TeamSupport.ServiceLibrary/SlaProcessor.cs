@@ -133,7 +133,7 @@ namespace TeamSupport.ServiceLibrary
 																										businessPausedTimes,
 																										Logs,
 																										false,
-																										lastActionDateCreated.Value);
+																										lastActionDateCreated.HasValue ? lastActionDateCreated.Value : (DateTime?)null);
 								Logs.WriteEventFormat("Total Paused Time: {0}", pausedTimeSpanSinceLastAction.ToString());
 
 								if (lastActionDateCreated == null)
