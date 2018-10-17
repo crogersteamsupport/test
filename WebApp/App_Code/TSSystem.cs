@@ -46,7 +46,9 @@ namespace TSWebServices
         [WebMethod]
         public UserProxy GetCurrentUser()
         {
-            return TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).GetProxy();
+			UserProxy user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).GetProxy();
+			user.CryptedPassword = string.Empty;
+			return user;
         }
 
 		[WebMethod]

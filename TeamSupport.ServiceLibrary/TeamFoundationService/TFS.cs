@@ -272,26 +272,32 @@ namespace TeamSupport.ServiceLibrary
 			catch (WebException webEx)
 			{
 				LogTFS(string.Format("GET: {0}/_apis/wit/wiql?api-version=2.2", HostName));
-				LogTFS("webexception: " + webEx.Message);
-				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
 				if (responseStream != null)
 				{
+					TFSErrorsResponse tfsError = new TFSErrorsResponse();
+
 					using (var reader = new StreamReader(responseStream))
 					{
 						exceptionResponse = reader.ReadToEnd();
 						try
 						{
-							TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-							throw new TFSClientException(tfsError);
+							tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
 						}
 						catch (Exception ex)
 						{
 							throw new Exception(exceptionResponse);
 						}
 					}
+
+					throw new TFSClientException(tfsError);
+				}
+				else
+				{
+					LogTFS("WebException: " + webEx.Message);
+					LogTFS("WebException: " + webEx.StackTrace);
 				}
 			}
 			catch (Exception ex)

@@ -6,6 +6,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
+using System.IO;
 
 namespace TeamSupport.Data
 {
@@ -546,7 +548,7 @@ namespace TeamSupport.Data
                             OR IsTSOnly = 0
                         )
                         AND EmailTemplateID NOT IN (22,23,24)
-                    ORDER BY 
+                    ORDER BY
                         Position";
                 }
                 else
@@ -563,7 +565,7 @@ namespace TeamSupport.Data
                             OR IsTSOnly = 0
                         )
                         AND EmailTemplateID NOT IN (35,36,37,38,39)
-                    ORDER BY 
+                    ORDER BY
                         Position";
                 }
                 command.CommandType = CommandType.Text;
@@ -701,6 +703,7 @@ namespace TeamSupport.Data
         {
             int productFamilyID = -1;
             Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
+
             if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
             {
                 productFamilyID = (int)ticket.ProductFamilyID;
@@ -708,12 +711,62 @@ namespace TeamSupport.Data
 
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 1, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
+
+            //add flag check to see if ticket deflection is on
+            DeflectorAPI deflectorAPI = new DeflectorAPI();
+            List<DeflectorReturn> deflectionResults = Deflector.FetchHubDeflections(ticket.OrganizationID, GetDeflectorActionText(loginUser, ticket.TicketID), null, productFamilyID);
+
+            template.ReplaceParameter("Deflector", GenerateEmailDeflectionTemplate(deflectionResults));
+
             template.ReplaceActions(ticket, true);
             if (creator != null) template.ReplaceFields("Creator", creator);
             template.ReplaceContacts(ticket);
             template.ReplaceModifierAvatar(ticket, byCreator: true);
 
             return template.GetMessage();
+        }
+
+        private static string GetDeflectorActionText(LoginUser loginUser, int ticketID)
+        {
+            string actionTextHtml = Actions.GetTicketFirstAction(loginUser, ticketID).Description;
+            return StripHTML(actionTextHtml);
+        }
+
+        private static string GenerateEmailDeflectionTemplate(List<DeflectorReturn> deflectionResults)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (deflectionResults.Any())
+            {
+                sb.Append("<table border=\"0\" style\"margin-top:10px;\">\r\n");
+                sb.Append("<tr><td style=\"margin-bottom:7px;font-size:12px;font-weight:normal;font-family:Arial;color:#555555;\">Would one of these articles help you?</td></tr>\r\n");
+                foreach (var deflectionResult in deflectionResults)
+                {
+                    sb.Append(GenerateEmailDeflectionRow(deflectionResult));
+                }
+                sb.Append("</table>");
+            }
+
+            return sb.ToString();
+        }
+
+        private static string GenerateEmailDeflectionRow(DeflectorReturn deflectionResult)
+        {
+            return @"<tr><td><a href='" + deflectionResult.ReturnURL + "' target='_blank' style='margin-bottom:7px;font-size:12px;font-weight:normal;font-family:Arial;'>" + deflectionResult.Name + "</a></td></tr>\r\n";
+        }
+
+        private static string StripHTML(string html)
+        {
+            var sanitizedStringBuilder = new StringBuilder();
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+
+            foreach (var node in doc.DocumentNode.ChildNodes) {
+                sanitizedStringBuilder.Append(node.InnerText);
+            }
+
+            return sanitizedStringBuilder.ToString();
         }
 
         public static MailMessage GetNewTicketInternal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)

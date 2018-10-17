@@ -32,6 +32,13 @@
                     }
                 });
             });
+            $('#btnHydratePodDeflector').click(function (e) {
+                e.preventDefault();
+
+                top.Ts.Services.Deflector.HydratePod(function (result) {
+
+                });
+            });
         });
     </script>
 
@@ -42,6 +49,9 @@
     <div style="height:100%; overflow:auto;">
         <div class="utils-content ui-widget ui-widget-content">
             <button id="btnGenKeys">Generate Machine Keys</button>&nbsp
+        </div>
+        <div class="utils-content ui-widget ui-widget-content">
+            <button id="btnHydratePodDeflector">Hydrate Pod Deflector</button>&nbsp
         </div>
         <div class="utils-content ui-widget ui-widget-content">
             <div class="keys"></div>

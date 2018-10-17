@@ -1,7 +1,7 @@
 ﻿Imports Newtonsoft.Json.Linq
 Imports System.ComponentModel
 Imports System.IO
-Imports System.Net
+Imports System.Runtime.CompilerServices
 Imports System.Reflection
 Imports System.Text
 Imports TeamSupport.Data
@@ -11,52 +11,67 @@ Imports TFSLibrary = TeamSupport.ServiceLibrary.TFS
 
 Namespace TeamSupport
 	Namespace CrmIntegration
+		Public Module TFSExtensions
+			<Extension()>
+			Public Sub Add(Of T)(ByRef arr As T(), item As T)
+				Array.Resize(arr, arr.Length + 1)
+				arr(arr.Length - 1) = item
+			End Sub
+
+			<Extension()>
+			Public Function SplitBy(Of T)(ByRef source As List(Of T), ByVal splitSize As Integer) As List(Of List(Of T))
+				Return source.Select(Function(x, i) New With {.Index = i, .Value = x}) _
+				.GroupBy(Function(x) x.Index \ splitSize) _
+				.Select(Function(x) x.Select(Function(v) v.Value).ToList()).ToList()
+			End Function
+		End Module
+
 		Public Class TFS
 			Inherits Integration
 
 			Private _baseURI As String
-            'Private _encodedCredentials As String
-            Private _tfs As TFSLibrary = New TFSLibrary()
-            Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
-            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
-                MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
-            End Sub
+			'Private _encodedCredentials As String
+			Private _tfs As TFSLibrary = New TFSLibrary()
+			Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
+			Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
+				MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
+			End Sub
 
-            Public Overrides Function PerformSync() As Boolean
-                Dim Success As Boolean = True
+			Public Overrides Function PerformSync() As Boolean
+				Dim Success As Boolean = True
 
-                If ValidateSyncData() Then
-                    Success = SyncTickets()
-                Else
-                    Success = False
-                End If
+				If ValidateSyncData() Then
+					Success = SyncTickets()
+				Else
+					Success = False
+				End If
 
-                Return Success
-            End Function
+				Return Success
+			End Function
 
-            Private Function ValidateSyncData() As Boolean
-                Dim result As Boolean = True
+			Private Function ValidateSyncData() As Boolean
+				Dim result As Boolean = True
 
-                If CRMLinkRow.HostName Is Nothing Then
-                    result = False
-                    AddLog("HostName is missing and it is required to sync.")
-                Else
-                    Dim protocol As String = String.Empty
-                    If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
-                        protocol = "https://"
-                    End If
-                    _baseURI = protocol + CRMLinkRow.HostName
-                End If
+				If CRMLinkRow.HostName Is Nothing Then
+					result = False
+					AddLog("HostName is missing and it is required to sync.")
+				Else
+					Dim protocol As String = String.Empty
+					If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
+						protocol = "https://"
+					End If
+					_baseURI = protocol + CRMLinkRow.HostName
+				End If
 
-                If CRMLinkRow.SecurityToken1 Is Nothing Then
-                    If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
-                        result = False
-                        AddLog("The API Token and the Username and or Password are missing and they are required to sync.")
-                    End If
-                End If
+				If CRMLinkRow.SecurityToken1 Is Nothing Then
+					If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+						result = False
+						AddLog("The API Token and the Username and or Password are missing and they are required to sync.")
+					End If
+				End If
 
-                'Make sure credentials are good
-                If (result) Then
+				'Make sure credentials are good
+				If (result) Then
 					Try
 						Dim logFile As String = Log.Path & "\" & Log.FileNamePath
 						If (Not String.IsNullOrEmpty(CRMLinkRow.SecurityToken1)) Then
@@ -94,6 +109,11 @@ Namespace TeamSupport
 				If ticketLinkToTFS.Any AndAlso ticketLinkToTFS.Count > 0 Then
 					Try
 						workItemsToPullAsTickets = GetWorkItemsToPullAsTickets(ticketLinkToTFS, numberOfWorkItemsToPullAsTickets)
+					Catch tfsEx As TFSLibrary.TFSClientException
+						Dim tfsExMessage As String = String.Empty
+						tfsExMessage = tfsEx.ErrorResponse.ErrorMessage + vbNewLine + "EventId: " + tfsEx.ErrorResponse.eventId.ToString() + ". TypeKey: " + tfsEx.ErrorResponse.typeKey
+						_exception = New IntegrationException(tfsExMessage, tfsEx)
+						Return False
 					Catch ex As Exception
 						Log.Write(Exception.Message)
 						Log.Write(Exception.StackTrace)
@@ -195,11 +215,26 @@ Namespace TeamSupport
 
 				'Search only for the tfs ids we have, those are the ones linked and the only ones that we need to check for updates
 				If (tfsIdList.Count > 0) Then
-					'//vv we might end up doing this in batches too. We'll see.
-					Dim workItemsList As TFSLibrary.WorkItems = _tfs.GetWorkItemsBy(tfsIdList, CRMLinkRow.LastLinkUtc)
+					'//vv we might end up doing this in batches too. We'll see. Well now we have!! vsts only returns a max of 200 results
+					Dim vstsMaxResults As Integer = 200
+					Dim workItemsList As TFSLibrary.WorkItems = New TFSLibrary.WorkItems()
+					Dim workItemsBatch As TFSLibrary.WorkItems = New TFSLibrary.WorkItems()
+					Dim tfsIdListBatches As List(Of List(Of Integer)) = tfsIdList.SplitBy(vstsMaxResults)
 
-					If (workItemsList IsNot Nothing AndAlso workItemsList.count > 0) Then
-						'ToDo //vv is there anything else we need from this Function??
+					For Each batchIds As List(Of Integer) In tfsIdListBatches
+						workItemsBatch = _tfs.GetWorkItemsBy(batchIds, CRMLinkRow.LastLinkUtc)
+
+						If (workItemsList Is Nothing OrElse workItemsList.value Is Nothing OrElse workItemsList.value.Count = 0) Then
+							workItemsList = workItemsBatch
+						Else
+							For Each singleWorkItem In workItemsBatch.value
+								workItemsList.value.Add(singleWorkItem)
+							Next
+						End If
+					Next
+
+					If (workItemsList IsNot Nothing AndAlso workItemsList.value IsNot Nothing AndAlso workItemsList.count > 0) Then
+						workItemsList.count = workItemsList.value.Count
 						numberOfWorkItemsToPull += workItemsList.count
 						result = workItemsList
 					End If
