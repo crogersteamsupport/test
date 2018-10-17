@@ -4,9 +4,9 @@
 
 <head runat="server">
     <title></title>
-    <link href="/frontend/library/fontawesome-5.3.1/css/all.min.css?1539707067" rel="stylesheet" />
-    <link href="/frontend/css/core/flexbox.css?1539707067" rel="stylesheet" />
-    <link href="/frontend/css/features/customerchat-init.css?1539707067" rel="stylesheet" />
+    <link href="/frontend/library/fontawesome-5.3.1/css/all.min.css?1539799225" rel="stylesheet" />
+    <link href="/frontend/css/core/flexbox.css?1539799225" rel="stylesheet" />
+    <link href="/frontend/css/features/customerchat-init.css?1539799225" rel="stylesheet" />
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
     <script src="/frontend/library/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="/frontend/library/jquery.placeholder.js" type="text/javascript"></script>
@@ -14,9 +14,9 @@
 
     <!-- HANDLEBARS. -->
     <script src="/frontend/library/handlebars/handlebars.runtime-v4.0.12.js"></script>
-    <script src="/frontend/handlebars/chatinit.js?1539707067" type="text/javascript"></script>
+    <script src="/frontend/handlebars/chatinit.js?1539799225" type="text/javascript"></script>
 
-    <script src="/frontend/javascript/features/customerchat-init.js?1539707067"></script>
+    <script src="/frontend/javascript/features/customerchat-init.js?1539799225"></script>
 </head>
 
 <body>
@@ -42,24 +42,31 @@
             </asp:ScriptManager>
 
             <div class="flexbox" style="max-width:100%;width:100%;">
-                <div class="flex1">
-                    <div style="padding:10px;">
-                        <input type="text" id="userFirstName" placeholder="First Name" style="width:100%;">
+                <div class="flex push">
+                    <div class="flexbox column" style="max-width:100%;width:100%;">
+                        <div class="flex1">
+                            <div style="padding:10px;">
+                                <input type="text" id="userFirstName" placeholder="First Name" style="width:100%;">
+                            </div>
+                        </div>
+                        <div class="flex1">
+                            <div style="padding:10px;">
+                                <input type="text" id="userLastName" placeholder="Last Name" style="width:100%;">
+                            </div>
+                        </div>
+                        <div class="flex1">
+                            <div style="padding:10px;">
+                                <input type="text" id="userEmail" placeholder="Email Address" style="width:100%;">
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="flex1">
-                    <div style="padding:10px;">
-                        <input type="text" id="userLastName" placeholder="Last Name" style="width:100%;">
-                    </div>
+                <div class="flex pull">
+                    <div class="chat-logo pull-right"></div>
                 </div>
             </div>
 
             <div class="flexbox column" style="width:100%;">
-                <div class="flex">
-                    <div style="padding:10px;">
-                        <input type="text" id="userEmail" placeholder="Email Address" style="width:100%;">
-                    </div>
-                </div>
                 <div class="flex">
                     <div style="padding:10px;">
                         <textarea id="userIssue" rows="5" placeholder="How can we help you?" style="width:100%;"></textarea>
@@ -80,7 +87,7 @@
             <div class="flexbox column" style="max-width:100%;">
                 <div class="flex">
                     <div style="text-align:right;padding:15px;">
-                        <button type="submit">SUBMIT NEW TICKET</button>
+                        <button type="submit">SUBMIT</button>
                     </div>
                 </div>
             </div>

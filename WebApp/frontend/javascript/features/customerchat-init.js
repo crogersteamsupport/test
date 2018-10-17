@@ -137,20 +137,16 @@ function GetChatSettings(chatID, customerHubID) {
     };
     IssueAjaxRequest("GetClientChatPropertiesByChatGUID", chatObject,
         function(result) {
-
             if (!chatOffline) {
                 $('.panel-heading').text(result.ChatIntro);
             }
-
             $("input:text:visible:first").focus();
-
             var imageUrl = '/dc/' + result.OrganizationID + '/chat/logo';
-            $('.chat-logo').css('background-image', 'url(' + imageUrl + ')');
-
+            var image = $('<img>').attr('src',imageUrl).css('margin-right','10px');
+            $('.chat-logo').html(image);
             SetupDeflectionListener(result.OrganizationID, customerHubID);
         },
         function(error) {
-
         });
 }
 
