@@ -28,14 +28,14 @@ namespace TeamSupport.Data
             return jsonResultList;
         }
 
-        public static async Task<List<DeflectorReturn>> FetchHubDeflections(int organizationID, string phrase, int? customerHubID = null, int ? productFamilyID = null)
+        public static List<DeflectorReturn> FetchHubDeflections(int organizationID, string phrase, int? customerHubID = null, int ? productFamilyID = null)
         {
             List<DeflectorReturn> result = new List<DeflectorReturn>();
             DeflectorAPI deflectorAPI = new DeflectorAPI();
 
             //Get deflections via the deflectorAPI
             List<DeflectorReturn> deflectorMatches = new List<DeflectorReturn>();
-            string deflectorResponse = await deflectorAPI.FetchDeflections(organizationID, phrase);
+            string deflectorResponse = deflectorAPI.FetchDeflections(organizationID, phrase);
 
             if (!String.IsNullOrEmpty(deflectorResponse))
             {

@@ -715,7 +715,7 @@ namespace TeamSupport.Data
 
             //add flag check to see if ticket deflection is on
             DeflectorAPI deflectorAPI = new DeflectorAPI();
-            List<DeflectorReturn> deflectionResults = await Deflector.FetchHubDeflections(ticket.OrganizationID, GetDeflectorActionText(loginUser, ticket.TicketID), null, productFamilyID);
+            List<DeflectorReturn> deflectionResults = Deflector.FetchHubDeflections(ticket.OrganizationID, GetDeflectorActionText(loginUser, ticket.TicketID), null, productFamilyID);
 
             template.ReplaceParameter("Deflector", GenerateEmailDeflectionTemplate(deflectionResults));
 
