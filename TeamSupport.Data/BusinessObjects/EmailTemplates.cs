@@ -8,6 +8,7 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace TeamSupport.Data
 {
@@ -699,7 +700,7 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetNewTicketAdvPortal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
+        public static async Task<MailMessage> GetNewTicketAdvPortal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
         {
             int productFamilyID = -1;
             Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
@@ -714,7 +715,7 @@ namespace TeamSupport.Data
 
             //add flag check to see if ticket deflection is on
             DeflectorAPI deflectorAPI = new DeflectorAPI();
-            List<DeflectorReturn> deflectionResults = Deflector.FetchHubDeflections(ticket.OrganizationID, GetDeflectorActionText(loginUser, ticket.TicketID), null, productFamilyID);
+            List<DeflectorReturn> deflectionResults = await Deflector.FetchHubDeflections(ticket.OrganizationID, GetDeflectorActionText(loginUser, ticket.TicketID), null, productFamilyID);
 
             template.ReplaceParameter("Deflector", GenerateEmailDeflectionTemplate(deflectionResults));
 

@@ -9,6 +9,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using System.Data.Linq;
 using TeamSupport.Data.BusinessObjects;
+using System.Threading.Tasks;
 
 namespace TeamSupport.Data
 {
@@ -27,14 +28,14 @@ namespace TeamSupport.Data
             return jsonResultList;
         }
 
-        public static List<DeflectorReturn> FetchHubDeflections(int organizationID, string phrase, int? customerHubID = null, int ? productFamilyID = null)
+        public static async Task<List<DeflectorReturn>> FetchHubDeflections(int organizationID, string phrase, int? customerHubID = null, int ? productFamilyID = null)
         {
             List<DeflectorReturn> result = new List<DeflectorReturn>();
             DeflectorAPI deflectorAPI = new DeflectorAPI();
 
             //Get deflections via the deflectorAPI
             List<DeflectorReturn> deflectorMatches = new List<DeflectorReturn>();
-            string deflectorResponse = deflectorAPI.FetchDeflectionsAsync(organizationID, phrase).Result.ToString();
+            string deflectorResponse = await deflectorAPI.FetchDeflections(organizationID, phrase);
 
             if (!String.IsNullOrEmpty(deflectorResponse))
             {

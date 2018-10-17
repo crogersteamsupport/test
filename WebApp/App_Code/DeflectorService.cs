@@ -58,7 +58,7 @@ namespace TSWebServices {
                 //Customer Hub
                 if (customerHubID != null)
                 {
-                    filteredList = Deflector.FetchHubDeflections(organization, phrase, (int)customerHubID);
+                    filteredList = await Deflector.FetchHubDeflections(organization, phrase, (int)customerHubID);
                 }
                 ////Portal
                 //else if (!String.IsNullOrEmpty(portalName))
