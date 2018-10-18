@@ -8,6 +8,7 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace TeamSupport.Data
 {
