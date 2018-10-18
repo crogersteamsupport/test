@@ -60,7 +60,7 @@ namespace TeamSupport.Data
                         {
                             TicketID = deflectorMatch.TicketID,
                             Name = deflectorMatch.Name,
-                            ReturnURL = FormatHubKBURL(deflectorMatch.TicketID, (string)whiteListItem["CNameURL"], (string)whiteListItem["PortalName"], baseHubURL)
+                            ReturnURL = FormatHubKBURL(deflectorMatch.TicketID, whiteListItem["CNameURL"].ToString(), whiteListItem["PortalName"].ToString(), baseHubURL)
                         }).ToList());
             }
 
