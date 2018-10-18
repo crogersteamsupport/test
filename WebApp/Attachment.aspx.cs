@@ -22,8 +22,13 @@ public partial class Attachment : System.Web.UI.Page
   {
     int attachmentID = Request["AttachmentID"] == null ? -1 : int.Parse(Request["AttachmentID"]);
     _attachment = (TeamSupport.Data.Attachment)Attachments.GetAttachment(UserSession.LoginUser, attachmentID);
-
     if (_attachment == null)
+    {
+      Response.Redirect("Message.aspx?Message=invalid_request");
+      return;
+    }
+
+    if (!TeamSupport.Permissions.UserRights.CanOpenAttachment(UserSession.LoginUser, _attachment))
     {
       Response.Redirect("Message.aspx?Message=invalid_request");
       return;
