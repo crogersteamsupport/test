@@ -9,6 +9,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using System.Data.Linq;
 using TeamSupport.Data.BusinessObjects;
+using System.Threading.Tasks;
 
 namespace TeamSupport.Data
 {
@@ -34,7 +35,7 @@ namespace TeamSupport.Data
 
             //Get deflections via the deflectorAPI
             List<DeflectorReturn> deflectorMatches = new List<DeflectorReturn>();
-            string deflectorResponse = deflectorAPI.FetchDeflectionsAsync(organizationID, phrase).Result.ToString();
+            string deflectorResponse = deflectorAPI.FetchDeflections(organizationID, phrase);
 
             if (!String.IsNullOrEmpty(deflectorResponse))
             {

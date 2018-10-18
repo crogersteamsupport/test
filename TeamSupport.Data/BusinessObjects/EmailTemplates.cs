@@ -8,6 +8,7 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace TeamSupport.Data
 {
@@ -699,7 +700,7 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetNewTicketAdvPortal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
+        public static async Task<MailMessage> GetNewTicketAdvPortal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
         {
             int productFamilyID = -1;
             Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);

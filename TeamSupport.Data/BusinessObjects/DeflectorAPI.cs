@@ -22,14 +22,14 @@ namespace TeamSupport.Data
             BaseURL = ConfigurationManager.AppSettings["DeflectorBaseURL"] ?? String.Empty;
         }
 
-        public async Task<string> FetchDeflectionsAsync(int organization, string phrase)
+        public string FetchDeflections(int organization, string phrase)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + "/fetch/" + organization + "/" + phrase);
             request.Method = "GET";
             request.KeepAlive = false;
             request.ContentType = "application/json";
 
-            return await SendAPIAsyncRequest(request);
+            return SendAPIRequest(request);
         }
 
         public async Task<string> IndexDeflectorAsync(string deflectionIndex)
@@ -103,7 +103,32 @@ namespace TeamSupport.Data
 
             try
             {
-                using (WebResponse response = await System.Threading.Tasks.Task.Run(() => request.GetResponseAsync()))
+                using (WebResponse response = await request.GetResponseAsync().ConfigureAwait(false))
+                {
+                    if (request.HaveResponse && response != null)
+                    {
+                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                        {
+                            ResponseText = reader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+            }
+
+            return ResponseText;
+        }
+
+        private string SendAPIRequest(HttpWebRequest request)
+        {
+            string ResponseText = "";
+
+            try
+            {
+                using (WebResponse response = request.GetResponse())
                 {
                     if (request.HaveResponse && response != null)
                     {
