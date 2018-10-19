@@ -180,7 +180,7 @@ WHERE EmailID IN (
         public static int GetMaxEmailsForTrial(LoginUser loginUser, int organizationID)
         {
             int maxEmails = 5;
-            int.TryParse(OrganizationSettings.ReadString(loginUser, organizationID, "Emails_MaxForTrial", "5"), out maxEmails);
+            int.TryParse(OrganizationSettings.ReadString(loginUser, organizationID, "Emails_MaxForTrial", "50"), out maxEmails);
             return maxEmails;
         }
 
