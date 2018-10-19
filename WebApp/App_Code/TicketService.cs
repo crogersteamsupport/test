@@ -725,20 +725,19 @@ namespace TSWebServices
                 Tag.Delete();
                 Tag.Collection.Save();
                 Result = Tags[0].TagID;
-
-                // DEFLECTOR.
-                DeflectorService Deflection = new DeflectorService();
-                //Deflection.MergeTag(TSAuthentication.OrganizationID, TagId, Value);
             }
-
             // RENAME TAG.
             else {
-                Tag.Value =Value;
+                Tag.Value = Value;
                 Tag.Collection.Save();
+            }
 
-                // DEFLECTOR.
-                DeflectorService Deflection = new DeflectorService();
-                //Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
+            try {
+                DeflectorAPI deflectorAPI = new DeflectorAPI();
+                deflectorAPI.RenameTagAsync(TSAuthentication.OrganizationID, Tag.Value, Value);
+            }
+            catch (Exception ex) {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
             }
 
             return Result;
