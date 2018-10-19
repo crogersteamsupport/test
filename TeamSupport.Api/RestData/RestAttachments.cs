@@ -18,6 +18,10 @@ namespace TeamSupport.Api
     {
       Attachment attachment = Attachments.GetAttachment(command.LoginUser, attachmentID);
       if (attachment.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+
+      if (!TeamSupport.Permissions.UserRights.CanOpenAttachment(command.LoginUser, attachment))
+        throw new RestException(HttpStatusCode.Unauthorized);
+
       if (!File.Exists(attachment.Path))
       {
         command.Context.Response.Write("Invalid attachment.");

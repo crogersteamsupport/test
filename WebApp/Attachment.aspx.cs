@@ -28,12 +28,6 @@ public partial class Attachment : System.Web.UI.Page
       return;
     }
 
-    if (!TeamSupport.Permissions.UserRights.CanOpenAttachment(UserSession.LoginUser, _attachment))
-    {
-      Response.Redirect("Message.aspx?Message=invalid_request");
-      return;
-    }
-
     if (!File.Exists(_attachment.Path))
     {
       Response.Redirect("Message.aspx?Message=invalid_request");
@@ -72,6 +66,12 @@ public partial class Attachment : System.Web.UI.Page
   
   private void OpenAttachment()
   {
+    if (!TeamSupport.Permissions.UserRights.CanOpenAttachment(UserSession.LoginUser, _attachment))
+    {
+      Response.Redirect("Message.aspx?Message=invalid_request");
+      return;
+    }
+
     Response.Clear();
     Response.ClearContent();
     Response.ClearHeaders();
