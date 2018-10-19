@@ -148,6 +148,14 @@ namespace TeamSupport.Handlers
 			{
 				WriteImage(context, fileName);
 			}
+            else
+            {
+                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images, 3), path);
+                if (File.Exists(fileName))
+                {
+                    WriteImage(context, fileName);
+                }
+            }
 
 			//Organization organization = Organizations.GetOrganization(LoginUser.Anonymous, organizationID);
 			//bool isAuthenticated = organizationID == TSAuthentication.OrganizationID;
