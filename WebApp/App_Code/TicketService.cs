@@ -718,6 +718,8 @@ namespace TSWebServices
             Tag Tag = Tags.GetTag(Tags.LoginUser, TagId);
             Tags.LoadByValue(TSAuthentication.OrganizationID, Value);
 
+            string OldTagValue = Tag.Value;
+
             // MERGE TAG.
             if (Tags.Count > 0 && Tag.TagID != Tags[0].TagID) {
                 TagLinks Links = new TagLinks(Tags.LoginUser);
@@ -734,7 +736,7 @@ namespace TSWebServices
 
             try {
                 DeflectorAPI deflectorAPI = new DeflectorAPI();
-                deflectorAPI.RenameTagAsync(TSAuthentication.OrganizationID, Tag.Value, Value);
+                deflectorAPI.RenameTagAsync(TSAuthentication.OrganizationID, OldTagValue, Value);
             }
             catch (Exception ex) {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
