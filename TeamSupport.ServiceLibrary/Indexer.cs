@@ -367,6 +367,23 @@ namespace TeamSupport.ServiceLibrary
 
                 job.IndexingFlags = IndexingFlags.dtsAlwaysAdd;
 
+                bool doCompress = false;
+                if (_threadPosition % 2 == 0 && (DateTime.Now.DayOfWeek == DayOfWeek.Saturday))
+                {
+                    IndexInfo info = new IndexInfo();
+                    info = IndexJob.GetIndexInfo(path);
+                    LogVerbose("Info - Doc Count:" + info.DocCount.ToString());
+                    LogVerbose("Info - Obsolete:" + info.ObsoleteCount.ToString());
+
+                    doCompress = info.DocCount > 0 && (info.ObsoleteCount / info.DocCount) > 0.2;
+                    if (doCompress)
+                    {
+                        job.ActionCompress = true;
+                        job.ActionVerify = true;
+                        LogVerbose("Compressing");
+                    }
+                }
+
                 try
                 {
                     job.ExecuteInThread();
@@ -386,6 +403,16 @@ namespace TeamSupport.ServiceLibrary
                     ExceptionLogs.LogException(LoginUser, ex, "Index Job Processor - " + referenceType.ToString() + " - " + organization.OrganizationID.ToString());
                     Logs.WriteException(ex);
                     throw;
+                }
+
+
+                if (doCompress)
+                {
+                    IndexInfo info = new IndexInfo();
+                    info = IndexJob.GetIndexInfo(path);
+                    LogVerbose("Compressed");
+                    LogVerbose("Info - Doc Count:" + info.DocCount.ToString());
+                    LogVerbose("Info - Obsolete:" + info.ObsoleteCount.ToString());
                 }
 
                 if (!IsStopped)
