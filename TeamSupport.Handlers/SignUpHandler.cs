@@ -38,8 +38,8 @@ namespace TeamSupport.Handlers
         /// <summary>
         /// Processes HTTP web requests directed to this HttpHandler.
         /// </summary>
-        /// <param name="context">An HttpContext object that provides references 
-        /// to the intrinsic server objects (for example, Request, Response, 
+        /// <param name="context">An HttpContext object that provides references
+        /// to the intrinsic server objects (for example, Request, Response,
         /// Session, and Server) used to service HTTP requests.</param>
         public void ProcessRequest(HttpContext context)
         {
@@ -85,12 +85,10 @@ namespace TeamSupport.Handlers
                                 NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
                                 try
                                 {
-									if (IsReCaptchaVerified(values))
-									{
                                     User user = ProcessSignUp(context, values);
                                     string url = string.Format("{0}://{1}/{2}?userid={3}", context.Request.UrlReferrer.Scheme, context.Request.UrlReferrer.Host, GetValueString(values["success"]), user.UserID.ToString());
                                     context.Response.Redirect(url, false);
-									}
+
                                 }
                                 catch (Exception ex)
                                 {
@@ -569,7 +567,7 @@ namespace TeamSupport.Handlers
                 LoginUser loginUser = LoginUser.Anonymous;
                 Organizations orgs = new Organizations(loginUser);
                 orgs.LoadByImportID(data.PodName.ToString() + "-" + data.OrganizationID.ToString(), 1078);
-                Organization tsOrg = orgs[0]; 
+                Organization tsOrg = orgs[0];
                 tsOrg.Name = data.Company;
                 tsOrg.Collection.Save();
 

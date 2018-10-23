@@ -46,6 +46,8 @@ namespace TSWebServices
             item.UserID = user.UserID;
             watercooler.Save();
 
+			user.CryptedPassword = string.Empty;
+
             return user.GetProxy();
         }
 
@@ -167,6 +169,7 @@ namespace TSWebServices
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
+			user.CryptedPassword = string.Empty;
             return user.GetProxy();
         }
 
@@ -312,7 +315,7 @@ namespace TSWebServices
             item.OrganizationID = user.OrganizationID;
             item.TimeStamp = DateTime.UtcNow;
             item.UserID = user.UserID;
-            //watercooler.Save();
+			user.CryptedPassword = string.Empty;
             return user.GetProxy();
         }
 
@@ -1297,6 +1300,7 @@ namespace TSWebServices
         {
           if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
           User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+		  user.CryptedPassword = string.Empty;
           return user.GetProxy();
         }
 

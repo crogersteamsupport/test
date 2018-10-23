@@ -267,6 +267,7 @@
     <Compile Include="BusinessObjects\CustomPortalColumns.cs" />
     <Compile Include="BusinessObjects\CustomValues.cs" />
     <Compile Include="BusinessObjects\DeflectionLog.cs" />
+    <Compile Include="BusinessObjects\Deflector.cs" />
     <Compile Include="BusinessObjects\DeletedIndexItems.cs" />
     <Compile Include="BusinessObjects\DeletedTickets.cs" />
     <Compile Include="BusinessObjects\EMailActions.cs" />
@@ -375,7 +376,9 @@
     <Compile Include="Classes\SqlExecutor.cs" />
     <Compile Include="Classes\TeamSupportSync.cs" />
     <Compile Include="Classes\TSEventLog.cs" />
+    <Compile Include="DataTransferObjects\Deflector.cs" />
     <Compile Include="DataTransferObjects\Tasks.cs" />
+    <Compile Include="BusinessObjects\DeflectorAPI.cs" />
     <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\ActionLinkToSnowFieldMap.cs" />
     <Compile Include="FieldMaps\ActionLinkToTFSFieldMap.cs" />

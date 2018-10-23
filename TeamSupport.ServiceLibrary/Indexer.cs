@@ -361,11 +361,27 @@ namespace TeamSupport.ServiceLibrary
                 job.ActionAdd = true;
                 job.CreateRelativePaths = false;
                 job.StoredFields = Server.Tokenize(storedFields);
+                job.IndexingFlags = IndexingFlags.dtsAlwaysAdd;
                 //string tempPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "TempIndexFiles" + indexPath);
                 //if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
                 //job.TempFileDir = tempPath;
+                bool doCompress = false;
+                if (_threadPosition % 2 == 0 && (DateTime.Now.DayOfWeek == DayOfWeek.Saturday || DateTime.Now.DayOfWeek == DayOfWeek.Sunday))
+                {
+                    IndexInfo info = new IndexInfo();
+                    info = IndexJob.GetIndexInfo(path);
+                    LogVerbose("Info - Doc Count:" + info.DocCount.ToString());
+                    LogVerbose("Info - Obsolete:" + info.ObsoleteCount.ToString());
 
-                job.IndexingFlags = IndexingFlags.dtsAlwaysAdd;
+                    doCompress = (info.ObsoleteCount / info.DocCount) > 0.2;
+                    if (doCompress)
+                    {
+                        job.ActionCompress = true;
+                        job.ActionVerify = true;
+                        LogVerbose("Compressing");
+                    }
+                }
+
 
                 try
                 {
@@ -387,6 +403,16 @@ namespace TeamSupport.ServiceLibrary
                     Logs.WriteException(ex);
                     throw;
                 }
+
+                if (doCompress)
+                {
+                    IndexInfo info = new IndexInfo();
+                    info = IndexJob.GetIndexInfo(path);
+                    LogVerbose("Compressed");
+                    LogVerbose("Info - Doc Count:" + info.DocCount.ToString());
+                    LogVerbose("Info - Obsolete:" + info.ObsoleteCount.ToString());
+                }
+
 
                 if (!IsStopped)
                 {

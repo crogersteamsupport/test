@@ -46,7 +46,14 @@ namespace TeamSupport.Data.Quarantine
             {
                 WriteImage(context, fileName);
             }
-
+            else
+            {
+                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images, 3), path);
+                if (File.Exists(fileName))
+                {
+                    WriteImage(context, fileName);
+                }
+            }
         }
 
         private static void WriteImage(HttpContext context, string fileName)
