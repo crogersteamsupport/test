@@ -87,6 +87,20 @@ namespace TeamSupport.Data
             return await SendAPIAsyncRequest(request);
         }
 
+        public async Task<string> RenameTagAsync(int organizationID, string oldTag, string newTag) {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + "/update/organization/" + organizationID + "/tag/rename");
+            request.Method = "POST";
+            request.KeepAlive = false;
+            request.ContentType = "application/json";
+            string Output = "{\"OldTag\":\"" + oldTag + "\",\"NewTag\":\"" + newTag + "\"}";
+            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+                streamWriter.Write(Output);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+            return await SendAPIAsyncRequest(request);
+        }
+
         public async Task<string> TestDeflectorAPIAsync(string tag)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + "/deflector/check");
