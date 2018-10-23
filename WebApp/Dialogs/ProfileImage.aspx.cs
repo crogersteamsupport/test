@@ -22,7 +22,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 {
     private int _userID = -1;
     private int _organizationID = -1;
-	 private static string uploadedFileName ="";
+    private static string uploadedFileName = "";
     protected override void OnInit(EventArgs e)
     {
         base.OnInit(e);
@@ -68,11 +68,9 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         Boolean FileOK = false;
         Boolean FileSaved = false;
 
-        //String path = HttpContext.Current.Request.PhysicalApplicationPath + "images\\tempupload\\";
-        //string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages, 3);
-        string fileName = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
-		  uploadedFileName = fileName;
-		  string testpath = "";
+        string fileName = "tmpavatar" + Upload.FileName.Replace(" ", string.Empty);
+        uploadedFileName = fileName;
+
         if (Upload.HasFile)
         {
             Session["WorkingImage"] = fileName;
@@ -91,7 +89,6 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         {
             try
             {
-                //testpath = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), fileName);
                 string path = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath7(UserSession.LoginUser, fileName);
                 Upload.PostedFile.SaveAs(path);
                 FileSaved = true;
@@ -111,10 +108,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 
         if (FileSaved)
         {
-            //pnlUpload.Visible = false;
-            //pnlCrop.Visible = true;
-			  imgCrop.ImageUrl = "dc/"+UserSession.LoginUser.OrganizationID+"/images/temp/"+ fileName +"?height=300";
-            //imgCrop.ImageUrl = "../Images/" +  Session["WorkingImage"].ToString() + ".ashx?height=300";
+            imgCrop.ImageUrl = "dc/" + UserSession.LoginUser.OrganizationID + "/images/temp/" + fileName + "?height=300";
             croppanel.Visible = true;
         }
     }
@@ -138,7 +132,6 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
     {
         try
         {
-            //String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
             string path = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath8(UserSession.LoginUser);
             RemoveCachedImages(UserSession.LoginUser.OrganizationID, _userID);
 
@@ -156,7 +149,6 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                     ExceptionLogs.LogException(UserSession.LoginUser, ex2, "ImageBuilder", string.Format("source:{0},  dest:{1}", source, dest));
                     throw;
                 }
-
 
                 File.Delete(source);
 
@@ -198,10 +190,11 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
             File.Delete(temppath + Session["WorkingImage"].ToString());
             return true;
         }
-        catch {
+        catch
+        {
             return false;
         }
-         
+
     }
 
 }
