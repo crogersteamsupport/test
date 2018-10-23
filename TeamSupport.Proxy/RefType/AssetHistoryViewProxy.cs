@@ -12,7 +12,9 @@ namespace TeamSupport.Data
     [KnownType(typeof(AssetHistoryViewItemProxy))]
     public class AssetHistoryViewItemProxy
     {
+        public AssetHistoryViewItemProxy() { }
         public AssetHistoryViewItemProxy(ReferenceType referenceType) { }
+        public AssetHistoryViewItemProxy(References refType) : this((ReferenceType)refType) { }
         [DataMember] public int HistoryID { get; set; }
         [DataMember] public int AssetID { get; set; }
         [DataMember] public int OrganizationID { get; set; }
@@ -29,7 +31,7 @@ namespace TeamSupport.Data
         [DataMember] public DateTime? DateCreated { get; set; }
         [DataMember] public int? Actor { get; set; }
         [DataMember] public string ActorName { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public int? RefType { get; set; }
         [DataMember] public DateTime? DateModified { get; set; }
         [DataMember] public int? ModifierID { get; set; }
         [DataMember] public string ModifierName { get; set; }
@@ -55,21 +57,21 @@ namespace TeamSupport.Data
 
     internal class OrganizationsAssetHistoryViewItemProxy : AssetHistoryViewItemProxy
     {
-        public OrganizationsAssetHistoryViewItemProxy() : base(ReferenceType.Organizations)
+        public OrganizationsAssetHistoryViewItemProxy() : base(References.Organizations)
         {
         }
     }
 
     internal class NotesAssetHistoryViewItemProxy : AssetHistoryViewItemProxy
     {
-        public NotesAssetHistoryViewItemProxy() : base(ReferenceType.Notes)
+        public NotesAssetHistoryViewItemProxy() : base(References.Notes)
         {
         }
     }
 
     internal class ContactsAssetHistoryViewItemProxy : AssetHistoryViewItemProxy
     {
-        public ContactsAssetHistoryViewItemProxy() : base(ReferenceType.Contacts)
+        public ContactsAssetHistoryViewItemProxy() : base(References.Contacts)
         {
         }
     }

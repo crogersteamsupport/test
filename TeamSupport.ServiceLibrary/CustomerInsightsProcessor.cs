@@ -33,6 +33,12 @@ namespace TeamSupport.ServiceLibrary
 	private bool	_noMoreRemainingContactCalls = false;
 	private bool	_noMoreRemainingCompanyCalls = false;
 
+    public CustomerInsightsProcessor()
+    {
+        if (Environment.UserInteractive)
+            Run();
+    }
+
     public override void Run()
     {
       try
@@ -426,51 +432,51 @@ namespace TeamSupport.ServiceLibrary
 
 
         if (!string.IsNullOrEmpty(customerInsightsOrganizationInfo.logo))
-        {
-          string resultMessage  = string.Empty;
-          string logoPath       = AttachmentPath.GetPath(LoginUser, (int)currentCompanyInfo.ParentID, AttachmentPath.Folder.OrganizationsLogo);
-          string logoFullPath   = string.Format("{0}\\{1}.png", logoPath, currentCompanyInfo.OrganizationID);
-
-          if (CustomerInsightsUtilities.DownloadImage(customerInsightsOrganizationInfo.logo, logoFullPath, currentCompanyInfo.OrganizationID, TeamSupport.Data.ReferenceType.Organizations, LoginUser, out resultMessage))
-          {
-            string description = string.Format("TeamSupport System updated Logo for '{0}'", currentCompanyInfo.Name);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Organizations, currentCompanyInfo.OrganizationID, description);
-
-            //delete cached image
-            string cachePath = string.Empty;
-            string pattern = string.Empty;
-            try
             {
-              cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(LoginUser), "CompanyLogo\\" + currentCompanyInfo.ParentID.ToString());
+                string resultMessage = string.Empty;
+                string logoPath = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentPath10(LoginUser, (int)currentCompanyInfo.ParentID);
+                string logoFullPath = string.Format("{0}\\{1}.png", logoPath, currentCompanyInfo.OrganizationID);
 
-              if (System.IO.Directory.Exists(cachePath))
-              {
-                pattern = currentCompanyInfo.OrganizationID.ToString() + "-*.*";
-                string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
-
-                foreach (String file in files)
+                if (CustomerInsightsUtilities.DownloadImage(customerInsightsOrganizationInfo.logo, logoFullPath, currentCompanyInfo.OrganizationID, AttachmentProxy.References.Organizations, LoginUser, out resultMessage))
                 {
-                  System.IO.File.Delete(file);
-                  Logs.WriteEvent(string.Format("Cached file {0} deleted.", file));
-                }
-              }
-            }
-            catch (Exception ex)
-            {
-              Logs.WriteEvent("Exception deleting cached images for company.");
-              Logs.WriteEventFormat("CachePath: {0}", cachePath.ToString());
-              Logs.WriteEventFormat("Pattern: {0}", pattern.ToString());
-              Logs.WriteEventFormat("Exception Message: {0}", ex.Message.ToString());
-              Logs.WriteEventFormat("Exception StackTrace: {0}", ex.StackTrace.ToString());
-            }
-          }
+                    string description = string.Format("TeamSupport System updated Logo for '{0}'", currentCompanyInfo.Name);
+                    ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Organizations, currentCompanyInfo.OrganizationID, description);
 
-          if (!string.IsNullOrEmpty(resultMessage))
-          {
-            Logs.WriteEvent(resultMessage);
-          }
-        }
-        else
+                    //delete cached image
+                    string cachePath = string.Empty;
+                    string pattern = string.Empty;
+                    try
+                    {
+                        cachePath = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentPath11(LoginUser, currentCompanyInfo.ParentID.ToString());
+
+                        if (System.IO.Directory.Exists(cachePath))
+                        {
+                            pattern = currentCompanyInfo.OrganizationID.ToString() + "-*.*";
+                            string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
+
+                            foreach (String file in files)
+                            {
+                                System.IO.File.Delete(file);
+                                Logs.WriteEvent(string.Format("Cached file {0} deleted.", file));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logs.WriteEvent("Exception deleting cached images for company.");
+                        Logs.WriteEventFormat("CachePath: {0}", cachePath.ToString());
+                        Logs.WriteEventFormat("Pattern: {0}", pattern.ToString());
+                        Logs.WriteEventFormat("Exception Message: {0}", ex.Message.ToString());
+                        Logs.WriteEventFormat("Exception StackTrace: {0}", ex.StackTrace.ToString());
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(resultMessage))
+                {
+                    Logs.WriteEvent(resultMessage);
+                }
+            }
+            else
         { 
           Logs.WriteEvent("No logo found");
         }
@@ -486,7 +492,7 @@ namespace TeamSupport.ServiceLibrary
         return isUpdated;
       }
 
-    private bool UpdateContactInformation(ContactObjects.RootObject customerInsightsContactInfo, User currentContactInfo, int organizationParentId)
+        private bool UpdateContactInformation(ContactObjects.RootObject customerInsightsContactInfo, User currentContactInfo, int organizationParentId)
     {
         bool    isTitleUpdated    = false;
         bool    isLinkedInUpdated = false;
@@ -564,46 +570,46 @@ namespace TeamSupport.ServiceLibrary
         }
 
         if (!string.IsNullOrEmpty(photoUrl))
-        {
-            string resultMessage  = string.Empty;
-            string logoPath       = AttachmentPath.GetPath(LoginUser, organizationParentId, AttachmentPath.Folder.ContactImages);
-            string logoFullPath   = string.Format("{0}\\{1}avatar.jpg", logoPath, currentContactInfo.UserID.ToString());
-
-            if (CustomerInsightsUtilities.DownloadImage(photoUrl, logoFullPath, currentContactInfo.OrganizationID, TeamSupport.Data.ReferenceType.Contacts, LoginUser, out resultMessage))
             {
-              string description = "TeamSupport System updated Photo for  '" + currentContactInfo.DisplayName + "'";
-              ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, currentContactInfo.UserID, description);
+                string resultMessage = string.Empty;
+                string logoPath = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentPath12(LoginUser, organizationParentId);
+                string logoFullPath = string.Format("{0}\\{1}avatar.jpg", logoPath, currentContactInfo.UserID.ToString());
 
-              //delete cached image
-              string cachePath = string.Empty;
-              string pattern = string.Empty;
-              try
-              {
-                cachePath = System.IO.Path.Combine(AttachmentPath.GetImageCachePath(LoginUser), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
-                pattern = currentContactInfo.UserID.ToString() + "-*.*";
-                string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
-
-                foreach (String file in files)
+                if (CustomerInsightsUtilities.DownloadImage(photoUrl, logoFullPath, currentContactInfo.OrganizationID, AttachmentProxy.References.Contacts, LoginUser, out resultMessage))
                 {
-                  System.IO.File.Delete(file);
-                }
-              }
-              catch (Exception ex)
-              {
-                Logs.WriteEvent("Exception deleting cached images for contact.");
-                Logs.WriteEventFormat("CachePath: {0}", cachePath.ToString());
-                Logs.WriteEventFormat("Pattern: {0}", pattern.ToString());
-                Logs.WriteEventFormat("Exception Message: {0}", ex.Message.ToString());
-                Logs.WriteEventFormat("Exception StackTrace: {0}", ex.StackTrace.ToString());
-              }
-            }
+                    string description = "TeamSupport System updated Photo for  '" + currentContactInfo.DisplayName + "'";
+                    ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, currentContactInfo.UserID, description);
 
-            if (!string.IsNullOrEmpty(resultMessage))
-            {
-              Logs.WriteEvent(resultMessage);
+                    //delete cached image
+                    string cachePath = string.Empty;
+                    string pattern = string.Empty;
+                    try
+                    {
+                        cachePath = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentPath13(LoginUser, organizationParentId);
+                        pattern = currentContactInfo.UserID.ToString() + "-*.*";
+                        string[] files = System.IO.Directory.GetFiles(cachePath, pattern, System.IO.SearchOption.TopDirectoryOnly);
+
+                        foreach (String file in files)
+                        {
+                            System.IO.File.Delete(file);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logs.WriteEvent("Exception deleting cached images for contact.");
+                        Logs.WriteEventFormat("CachePath: {0}", cachePath.ToString());
+                        Logs.WriteEventFormat("Pattern: {0}", pattern.ToString());
+                        Logs.WriteEventFormat("Exception Message: {0}", ex.Message.ToString());
+                        Logs.WriteEventFormat("Exception StackTrace: {0}", ex.StackTrace.ToString());
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(resultMessage))
+                {
+                    Logs.WriteEvent(resultMessage);
+                }
             }
-        }
-        else
+            else
         {
           Logs.WriteEvent("No photo url found");
         }
@@ -611,7 +617,7 @@ namespace TeamSupport.ServiceLibrary
         return isLinkedInUpdated || isTitleUpdated;
       }
 
-    private bool CanUpdateCompanyBio(Organization organization, string bio)
+        private bool CanUpdateCompanyBio(Organization organization, string bio)
     {
       bool canUpdate = false;
       bool wasUpdatedByUser = false;

@@ -11,7 +11,7 @@ namespace TeamSupport.IDTree
 {
     public class TSDataTable : IDisposable
     {
-        Proxy.AuthenticationModel _authentication;
+        AuthenticationModel _authentication;
         SqlConnection _connection;
         SqlTransaction _transaction;
 
@@ -20,7 +20,7 @@ namespace TeamSupport.IDTree
 
         public TSDataTable(string query, params object[] args)
         {
-            _authentication = new Proxy.AuthenticationModel();
+            _authentication = new AuthenticationModel();
             _connection = new SqlConnection(_authentication.ConnectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction(IsolationLevel.ReadUncommitted);

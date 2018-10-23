@@ -195,10 +195,9 @@ namespace TSWebServices
         [WebMethod]
         public AttachmentProxy[] GetAttachments(int reminderID)
         {
-            Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-            attachments.LoadByReference(ReferenceType.Tasks, reminderID);
-            return attachments.GetAttachmentProxies();
+            return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies5(reminderID, TSAuthentication.GetLoginUser());
         }
+
 
         [WebMethod]
         public TaskAssociationsViewItemProxy[] LoadAssociations(int taskID)
@@ -346,32 +345,32 @@ namespace TSWebServices
 
             foreach (int ticketID in info.Tickets)
             {
-                AddAssociation(newTask.TaskID, ticketID, ReferenceType.Tickets);
+                AddAssociation(newTask.TaskID, ticketID, (int)ReferenceType.Tickets);
             }
 
             foreach (int productID in info.Products)
             {
-                AddAssociation(newTask.TaskID, productID, ReferenceType.Products);
+                AddAssociation(newTask.TaskID, productID, (int)ReferenceType.Products);
             }
 
             foreach (int CompanyID in info.Company)
             {
-                AddAssociation(newTask.TaskID, CompanyID, ReferenceType.Organizations);
+                AddAssociation(newTask.TaskID, CompanyID, (int)ReferenceType.Organizations);
             }
 
             foreach (int UserID in info.Contacts)
             {
-                AddAssociation(newTask.TaskID, UserID, ReferenceType.Contacts);
+                AddAssociation(newTask.TaskID, UserID, (int)ReferenceType.Contacts);
             }
 
             foreach (int groupID in info.Groups)
             {
-                AddAssociation(newTask.TaskID, groupID, ReferenceType.Groups);
+                AddAssociation(newTask.TaskID, groupID, (int)ReferenceType.Groups);
             }
 
             foreach (int UserID in info.User)
             {
-                AddAssociation(newTask.TaskID, UserID, ReferenceType.Users);
+                AddAssociation(newTask.TaskID, UserID, (int)ReferenceType.Users);
             }
 
             foreach (int ActivityID in info.Activities)
@@ -384,11 +383,11 @@ namespace TSWebServices
                     var note = notes[0];
                     if(note.RefType == ReferenceType.Organizations)
                     {
-                        AddAssociation(newTask.TaskID, ActivityID, ReferenceType.CompanyActivity);
+                        AddAssociation(newTask.TaskID, ActivityID, (int)ReferenceType.CompanyActivity);
                     }
                     else if (note.RefType == ReferenceType.Users)
                     {
-                        AddAssociation(newTask.TaskID, ActivityID, ReferenceType.ContactActivity);
+                        AddAssociation(newTask.TaskID, ActivityID, (int)ReferenceType.ContactActivity);
                     }
                 }
             }
@@ -730,7 +729,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool AddAssociation(int taskID, int refID, ReferenceType refType)
+        public bool AddAssociation(int taskID, int refID, int refType)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             try
@@ -738,7 +737,7 @@ namespace TSWebServices
                 TaskAssociation taskAssociation = (new TaskAssociations(loginUser).AddNewTaskAssociation());
                 taskAssociation.TaskID = taskID;
                 taskAssociation.RefID = refID;
-                taskAssociation.RefType = (int)refType;
+                taskAssociation.RefType = refType;
                 taskAssociation.DateCreated = DateTime.UtcNow;
                 taskAssociation.CreatorID = loginUser.UserID;
                 taskAssociation.Collection.Save();
@@ -751,7 +750,7 @@ namespace TSWebServices
                     SendModifiedNotification(loginUser.UserID, task.TaskID);
                 }
 
-                if (refType == ReferenceType.Contacts)
+                if (refType == (int)ReferenceType.Contacts)
                 {
                     TeamSupport.Data.User user = Users.GetUser(loginUser, refID);
                     taskAssociation = (new TaskAssociations(loginUser).AddNewTaskAssociation());

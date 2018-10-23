@@ -45,11 +45,10 @@ public partial class Frames_Attachments : BaseFramePage
 
   protected void gridAttachments_NeedDataSource(object source, GridNeedDataSourceEventArgs e)
   {
-    Attachments attachments = new Attachments(UserSession.LoginUser);
-    attachments.LoadByReference(_refType, _refID);
-    gridAttachments.DataSource = attachments;
-
+    gridAttachments.DataSource = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentsDataSource(UserSession.LoginUser, _refType, _refID);
   }
+
+
   protected void gridAttachments_ItemDataBound(object sender, GridItemEventArgs e)
   {
     if (e.Item is GridDataItem)

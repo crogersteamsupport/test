@@ -428,7 +428,14 @@ namespace TeamSupport.Api
                     case "/assets/{id}/": data = RestAssets.JunkAsset(_command, GetId(1)); break;
                     case "/assets/{id}/assignments/": data = RestAssetAssignments.ReturnAsset(_command, GetId(1)); break;
                     case "/assets/{id}/tickets/{id}/": data = RestAssets.DeleteTicketAsset(_command, GetId(1), GetId(3)); break;
-                    case "/assets/{id}/attachments/{id}/": data = RestAttachments.DeleteAttachment(_command, GetId(1), GetId(3)); break;
+                    case "/assets/{id}/attachments/{id}/":
+                        {
+                            int attachmentID = GetId(3);
+                            ModelAPI.AttachmentAPI.DeleteAttachment(attachmentID, AttachmentProxy.References.Assets, GetId(1));
+                            //data = RestAttachments.DeleteAttachment(_command, GetId(1), GetId(3));
+                            data = RestAttachments.GetAttachmentsAsXML(_command, attachmentID);
+                        }
+                        break;
                     case "/users/{id}/": RestUsers.DeleteUser(_command, GetId(1)); break;
                     case "/products/{id}/": data = RestProducts.DeleteProduct(_command, GetId(1)); break;
                     case "/products/{id}/versions/{id}/": data = RestVersions.DeleteVersion(_command, GetId(3)); break;

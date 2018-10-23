@@ -10,6 +10,9 @@ using TeamSupport.IDTree;
 
 namespace TeamSupport.DataAPI
 {
+    /// <summary>
+    /// prototype code for ticket merge
+    /// </summary>
     [Obsolete ("use DataAPI CRUD")]
     public static class TicketAPI
     {

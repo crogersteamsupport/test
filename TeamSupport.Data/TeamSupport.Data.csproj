@@ -192,6 +192,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -573,7 +574,6 @@
     <Compile Include="Classes\BaseCollection.cs" />
     <Compile Include="Classes\DataUtils.cs" />
     <Compile Include="Classes\EmailHtml.cs" />
-    <Compile Include="Classes\Enums.cs" />
     <Compile Include="Classes\IDataCache.cs" />
     <Compile Include="Classes\LoginUser.cs" />
     <Compile Include="Classes\FieldMap.cs" />
@@ -833,6 +833,7 @@
     <Compile Include="Proxies\ActionLinkToSnowProxy.cs" />
     <Compile Include="Proxies\ActionLinkToTFSProxy.cs" />
     <Compile Include="Proxies\ActivityTypesProxy.cs" />
+    <Compile Include="Proxies\AttachmentsProxy.cs" />
     <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
     <Compile Include="Proxies\CalendarRefProxy.cs" />
@@ -906,7 +907,6 @@
     <Compile Include="Proxies\AssetsProxy.cs" />
     <Compile Include="Proxies\AssetsViewProxy.cs" />
     <Compile Include="Proxies\AttachmentDownloadsProxy.cs" />
-    <Compile Include="Proxies\AttachmentsProxy.cs" />
     <Compile Include="Proxies\BillingInfoProxy.cs" />
     <Compile Include="Proxies\CDI_SettingsProxy.cs" />
     <Compile Include="Proxies\ChatClientsProxy.cs" />
@@ -1036,6 +1036,15 @@
     <Compile Include="Proxies\WikiArticlesProxy.cs" />
     <Compile Include="Proxies\WikiArticlesViewProxy.cs" />
     <Compile Include="Proxies\WikiHistoryCollectionProxy.cs" />
+    <Compile Include="Quarantine\ContentHandlerQ.cs" />
+    <Compile Include="Quarantine\RestAttachmentsQ.cs" />
+    <Compile Include="Quarantine\RestCommand.cs" />
+    <Compile Include="Quarantine\RestException.cs" />
+    <Compile Include="Quarantine\ServiceLog.cs" />
+    <Compile Include="Quarantine\ServiceQ.cs" />
+    <Compile Include="Quarantine\UploadHandlerQ.cs" />
+    <Compile Include="Quarantine\UploadUtils.cs" />
+    <Compile Include="Quarantine\WebAppQ.cs" />
     <Compile Include="WebHooks\Slack.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1068,6 +1077,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
+      <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
+      <Name>TeamSupport.Proxy</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

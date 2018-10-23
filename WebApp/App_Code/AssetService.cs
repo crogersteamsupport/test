@@ -809,10 +809,7 @@ namespace TSWebServices
     [WebMethod]
     public AttachmentProxy[] LoadFiles(int refID, ReferenceType refType)
     {
-      Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-      attachments.LoadByReference(refType, refID);
-
-      return attachments.GetAttachmentProxies();
+        return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies(refID, refType, TSAuthentication.GetLoginUser());
     }
 
   }

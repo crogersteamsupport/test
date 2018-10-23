@@ -6,8 +6,7 @@ using System.IO;
 
 namespace TeamSupport.Data
 {
-
-  public class AttachmentPath
+  internal class AttachmentPath
   {
     public enum Folder
     {
@@ -186,25 +185,24 @@ namespace TeamSupport.Data
     /// </summary>
     /// <param name="folder"></param>
     /// <returns></returns>
-    public static ReferenceType GetFolderReferenceType(Folder folder)
+    public static AttachmentProxy.References GetFolderReferenceType(Folder folder)
     {
-      ReferenceType result;
+      AttachmentProxy.References result;
       switch (folder)
       {
-        case Folder.Organizations: result = ReferenceType.Organizations; break;
-        case Folder.Products: result = ReferenceType.ProductVersions; break;
-        case Folder.Actions: result = ReferenceType.Actions; break;
-        case Folder.WaterCooler: result = ReferenceType.WaterCooler; break;
-        case Folder.OrganizationAttachments: result = ReferenceType.Organizations; break;
-        case Folder.UserAttachments: result = ReferenceType.Users; break;
-        case Folder.AssetAttachments: result = ReferenceType.Assets; break;
-        case Folder.Imports: result = ReferenceType.Imports; break;
-		case Folder.CustomerHubLogo: result = ReferenceType.CustomerHubLogo; break;
-        case Folder.ChatUploads: result = ReferenceType.ChatAttachments; break;
-        case Folder.Tasks: result = ReferenceType.Tasks; break;
-        case Folder.ContactActivityAttachments: result = ReferenceType.ContactActivity; break;
-        case Folder.CompanyActivityAttachments: result = ReferenceType.CompanyActivity; break;
-        default: result = ReferenceType.None; break;
+        case Folder.Organizations: result = AttachmentProxy.References.Organizations; break;
+        case Folder.Products: result = AttachmentProxy.References.ProductVersions; break;
+        case Folder.Actions: result = AttachmentProxy.References.Actions; break;
+        case Folder.WaterCooler: result = AttachmentProxy.References.WaterCooler; break;
+        case Folder.OrganizationAttachments: result = AttachmentProxy.References.Organizations; break;
+        case Folder.UserAttachments: result = AttachmentProxy.References.Users; break;
+        case Folder.AssetAttachments: result = AttachmentProxy.References.Assets; break;
+		case Folder.CustomerHubLogo: result = AttachmentProxy.References.CustomerHubLogo; break;
+        case Folder.ChatUploads: result = AttachmentProxy.References.ChatAttachments; break;
+        case Folder.Tasks: result = AttachmentProxy.References.Tasks; break;
+        case Folder.ContactActivityAttachments: result = AttachmentProxy.References.ContactActivity; break;
+        case Folder.CompanyActivityAttachments: result = AttachmentProxy.References.CompanyActivity; break;
+        default: result = AttachmentProxy.References.None; break;
       }
       return result;
     }

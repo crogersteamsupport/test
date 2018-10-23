@@ -53,34 +53,35 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
 
   [WebMethod]
   public static ImageComboBoxData[] GetTicketTypeImagesComboData()
-  {
-    List<ImageComboBoxData> data = new List<ImageComboBoxData>();
-    string[] files = Directory.GetFiles(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TicketTypeImages), "*.*", SearchOption.TopDirectoryOnly);
-
-    foreach (string file in files)
     {
-      ImageComboBoxData item = new ImageComboBoxData();
-      item.Text = Path.GetFileName(file);
-      item.Value = ("dc/" + UserSession.LoginUser.OrganizationID + "/images/tickettypes/" + item.Text).ToLower();
-      item.ImageUrl = "../" + item.Value;
-      data.Add(item);
+        List<ImageComboBoxData> data = new List<ImageComboBoxData>();
+        string[] files = TeamSupport.Data.Quarantine.WebAppQ.GetFiles(UserSession.LoginUser);
+
+        foreach (string file in files)
+        {
+            ImageComboBoxData item = new ImageComboBoxData();
+            item.Text = Path.GetFileName(file);
+            item.Value = ("dc/" + UserSession.LoginUser.OrganizationID + "/images/tickettypes/" + item.Text).ToLower();
+            item.ImageUrl = "../" + item.Value;
+            data.Add(item);
+        }
+
+        string path = HttpContext.Current.Request.MapPath("../images/TicketTypes/");
+        files = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly);
+        foreach (string file in files)
+        {
+            ImageComboBoxData item = new ImageComboBoxData();
+            item.Text = Path.GetFileName(file);
+            item.Value = ("images/TicketTypes/" + item.Text).ToLower();
+            item.ImageUrl = "../" + item.Value;
+            data.Add(item);
+        }
+
+        return data.ToArray();
     }
 
-    string path = HttpContext.Current.Request.MapPath("../images/TicketTypes/");
-    files = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly);
-    foreach (string file in files)
-    {
-      ImageComboBoxData item = new ImageComboBoxData();
-      item.Text = Path.GetFileName(file);
-      item.Value = ("images/TicketTypes/" + item.Text).ToLower();
-      item.ImageUrl = "../" + item.Value;
-      data.Add(item);
-    }
 
-    return data.ToArray();
-  }
-
-  [WebMethod]
+    [WebMethod]
   public static ImageComboBoxData[] GetTicketTypeProductFamilyComboData()
   {
       List<ImageComboBoxData> data = new List<ImageComboBoxData>();

@@ -222,9 +222,7 @@ namespace TSWebServices
     [WebMethod]
     public AttachmentProxy[] GetAttachments(int msgid)
     {
-        Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-        attachments.LoadByWatercoolerID(msgid);
-        return attachments.GetAttachmentProxies();
+        return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies9(msgid, TSAuthentication.GetLoginUser());
     }
 
     [WebMethod]

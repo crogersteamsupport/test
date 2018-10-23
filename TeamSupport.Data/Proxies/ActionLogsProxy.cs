@@ -8,25 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(ActionLogProxy))]
-  public class ActionLogProxy
-  {
-    public ActionLogProxy() {}
-    [DataMember] public int ActionLogID { get; set; }
-    [DataMember] public int? OrganizationID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
-    [DataMember] public int RefID { get; set; }
-    [DataMember] public ActionLogType ActionLogType { get; set; }
-    [DataMember] public string Description { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
-    [DataMember] public string CreatorName { get; set; }
-    
-          
-  }
   
   public partial class ActionLog : BaseItem
   {

@@ -9,60 +9,63 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
-    [KnownType(typeof(AssetAssignmentsViewItemProxy))]
-    public class AssetAssignmentsViewItemProxy
+    [KnownType(typeof(AssetHistoryItemProxy))]
+    public class AssetHistoryItemProxy
     {
-        public AssetAssignmentsViewItemProxy(ReferenceType referenceType) { }
-        [DataMember] public int AssetAssignmentsID { get; set; }
+        public AssetHistoryItemProxy() { }
+        public AssetHistoryItemProxy(ReferenceType referenceType) { }
         [DataMember] public int HistoryID { get; set; }
         [DataMember] public int AssetID { get; set; }
         [DataMember] public int OrganizationID { get; set; }
         [DataMember] public DateTime? ActionTime { get; set; }
         [DataMember] public string ActionDescription { get; set; }
         [DataMember] public int? ShippedFrom { get; set; }
-        [DataMember] public string NameAssignedFrom { get; set; }
         [DataMember] public int? ShippedTo { get; set; }
-        [DataMember] public string NameAssignedTo { get; set; }
         [DataMember] public string TrackingNumber { get; set; }
         [DataMember] public string ShippingMethod { get; set; }
         [DataMember] public string ReferenceNum { get; set; }
         [DataMember] public string Comments { get; set; }
         [DataMember] public DateTime? DateCreated { get; set; }
         [DataMember] public int? Actor { get; set; }
-        [DataMember] public string ActorName { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public int? RefType { get; set; }
         [DataMember] public DateTime? DateModified { get; set; }
         [DataMember] public int? ModifierID { get; set; }
-        [DataMember] public string ModifierName { get; set; }
         [DataMember] public int? ShippedFromRefType { get; set; }
+        [DataMember] public int? ImportFileID { get; set; }
 
-        public static AssetAssignmentsViewItemProxy ClassFactory(References refType)
+        public static AssetHistoryItemProxy ClassFactory(References refType)
         {
             switch (refType)
             {
-                case References.Organizations: return new OrganizationsAssetAssignmentsViewItemProxy();
-                case References.Contacts: return new ContactsAssetAssignmentsViewItemProxy();
-                default: throw new Exception("Invalid AssetAssignmentsViewItem Reference Type");
+                case References.Contacts:
+                    return new ContactsAssetHistoryItemProxy();
+                case References.Organizations:
+                    return new OrganizationsAssetHistoryItemProxy();
+                default: throw new Exception("Invalid AssetHistory Reference Type");
             }
         }
         public enum References
         {
             Organizations = ReferenceType.Organizations,
-            Contacts = ReferenceType.Contacts,
+            Contacts = ReferenceType.Contacts
         }
 
     }
 
-    internal class OrganizationsAssetAssignmentsViewItemProxy : AssetAssignmentsViewItemProxy
+    public class OrganizationsAssetHistoryItemProxy : AssetHistoryItemProxy
     {
-        public OrganizationsAssetAssignmentsViewItemProxy() : base(ReferenceType.Organizations)
+        public OrganizationsAssetHistoryItemProxy() : base(ReferenceType.Organizations)
         {
+
         }
     }
-    internal class ContactsAssetAssignmentsViewItemProxy : AssetAssignmentsViewItemProxy
+
+    public class ContactsAssetHistoryItemProxy : AssetHistoryItemProxy
     {
-        public ContactsAssetAssignmentsViewItemProxy() : base(ReferenceType.Contacts)
+        public ContactsAssetHistoryItemProxy() : base(ReferenceType.Contacts)
         {
+
         }
     }
+
 }

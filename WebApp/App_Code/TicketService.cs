@@ -27,6 +27,7 @@ using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
+using TeamSupport.ModelAPI;
 using System.Threading;
 
 namespace TSWebServices
@@ -3227,12 +3228,8 @@ WHERE t.TicketID = @TicketID
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
 
-            //if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // Read action attachments
-            //{
-            //    actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
-            //}
-            //else
-                actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
+            actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
+
             return actionInfo;
         }
 
@@ -3680,19 +3677,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            //if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // delete action attachment
-            //{
-            //    Model_API.DeleteActionAttachment(attachmentID);
-            //    return;
-            //}
-
-            Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
-            if (attachment == null || attachment.RefType != ReferenceType.Actions) return;
-            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-            if (!CanEditAction(action)) return;
-            attachment.DeleteFile();
-            attachment.Delete();
-            attachment.Collection.Save();
+            AttachmentAPI.DeleteAttachment(attachmentID, AttachmentProxy.References.Actions);
         }
 
         [WebMethod]
@@ -3968,7 +3953,7 @@ WHERE t.TicketID = @TicketID
             {
 
                 String temppath = HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
-                string path = AttachmentPath.GetPath(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, AttachmentPath.Folder.Images);
+                string path = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath2(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser());
                 string filename = Guid.NewGuid().ToString();
 
                 if (source.StartsWith("data:image/png;base64,"))

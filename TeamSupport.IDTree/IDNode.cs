@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Data.Linq;
+using TeamSupport.Data;
 
 namespace TeamSupport.IDTree
 {
     public abstract class IDNode
     {
-        public ConnectionContext Connection { get; private set; }
+        public ConnectionContext Connection { get; protected set; }
         
         protected IDNode(ConnectionContext request)
         {
@@ -46,6 +47,8 @@ namespace TeamSupport.IDTree
             }
             throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
         }
+
+
 
     }
 }

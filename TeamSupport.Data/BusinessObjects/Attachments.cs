@@ -8,7 +8,7 @@ using System.IO;
 
 namespace TeamSupport.Data
 {
-  public partial class Attachment 
+  partial class Attachment 
   {
     public string CreatorName
     {
@@ -44,8 +44,8 @@ namespace TeamSupport.Data
         public static void CreateActionAttachment(AttachmentProxy attachmentProxy)
         {
             Attachment attachment = (new Attachments(new LoginUser(attachmentProxy.CreatorID, attachmentProxy.OrganizationID))).AddNewAttachment();
-            attachment.RefType = ReferenceType.Actions;
-            attachment.RefID = attachmentProxy.AttachmentID;
+            attachment.RefType = AttachmentProxy.References.Actions;
+            attachment.RefID = ((ActionAttachmentProxy)attachmentProxy).ActionID;
             attachment.OrganizationID = attachmentProxy.OrganizationID;
             attachment.FileName = attachmentProxy.FileName;
             attachment.Path = attachmentProxy.Path;
@@ -58,7 +58,7 @@ namespace TeamSupport.Data
         }
     }
 
-  public partial class Attachments
+    internal partial class Attachments
   {
 
     public void LoadByAttachmentGUID(Guid attachmentGUID)
@@ -325,79 +325,23 @@ order by o.Name, a.DateCreated desc
       }
     }
 
-    public static string GetAttachmentPath(LoginUser loginUser, ReferenceType refType, int refID)
+    public static string GetAttachmentPath(LoginUser loginUser, AttachmentProxy.References refType, int refID)
     {
       string root = AttachmentPath.GetRoot(loginUser, loginUser.OrganizationID);
       string type = null;
       switch (refType)
       {
-        case ReferenceType.None:
+        case AttachmentProxy.References.None:
           break;
-        case ReferenceType.Actions: type = "Actions"; break;
-        case ReferenceType.ActionTypes:
+        case AttachmentProxy.References.Actions: type = "Actions"; break;
+        case AttachmentProxy.References.Organizations: type = "OrganizationAttachments"; break;
+        case AttachmentProxy.References.ProductVersions:
           break;
-        case ReferenceType.Addresses:
+        case AttachmentProxy.References.Users:
           break;
-        case ReferenceType.Attachments:
+        case AttachmentProxy.References.Contacts:
           break;
-        case ReferenceType.CustomFields:
-          break;
-        case ReferenceType.CustomValues:
-          break;
-        case ReferenceType.Groups:
-          break;
-        case ReferenceType.GroupUsers:
-          break;
-        case ReferenceType.OrganizationProducts:
-          break;
-        case ReferenceType.Organizations: type = "OrganizationAttachments"; break;
-        case ReferenceType.OrganizationTickets:
-          break;
-        case ReferenceType.PhoneNumbers:
-          break;
-        case ReferenceType.PhoneTypes:
-          break;
-        case ReferenceType.Products:
-          break;
-        case ReferenceType.ProductVersions:
-          break;
-        case ReferenceType.ProductVersionStatuses:
-          break;
-        case ReferenceType.TechDocs:
-          break;
-        case ReferenceType.Tickets:
-          break;
-        case ReferenceType.TicketSeverities:
-          break;
-        case ReferenceType.TicketStatuses:
-          break;
-        case ReferenceType.Subscriptions:
-          break;
-        case ReferenceType.TicketTypes:
-          break;
-        case ReferenceType.Users:
-          break;
-        case ReferenceType.ActionLogs:
-          break;
-        case ReferenceType.BillingInfo:
-          break;
-        case ReferenceType.ExceptionLogs:
-          break;
-        case ReferenceType.Invoices:
-          break;
-        case ReferenceType.SystemSettings:
-          break;
-        case ReferenceType.TicketNextStatuses:
-          break;
-        case ReferenceType.UserSettings:
-          break;
-        case ReferenceType.TicketQueue:
-          break;
-        case ReferenceType.CreditCards:
-          break;
-        case ReferenceType.Contacts:
-          break;
-        case ReferenceType.UserPhoto:
+        case AttachmentProxy.References.UserPhoto:
           type = "UserPhoto";
           break;
         default:
@@ -409,79 +353,23 @@ order by o.Name, a.DateCreated desc
       return Path.Combine(Path.Combine(root, type), refID.ToString()) + "\\";
     }
 
-    public static string GetAttachmentPath(LoginUser loginUser, ReferenceType refType, int refID, int filePathID)
+    public static string GetAttachmentPath(LoginUser loginUser, AttachmentProxy.References refType, int refID, int filePathID)
     {
       string root = AttachmentPath.GetRoot(loginUser, loginUser.OrganizationID, filePathID);
       string type = null;
       switch (refType)
       {
-        case ReferenceType.None:
+        case AttachmentProxy.References.None:
           break;
-        case ReferenceType.Actions: type = "Actions"; break;
-        case ReferenceType.ActionTypes:
+        case AttachmentProxy.References.Actions: type = "Actions"; break;
+        case AttachmentProxy.References.Organizations: type = "OrganizationAttachments"; break;
+        case AttachmentProxy.References.ProductVersions:
           break;
-        case ReferenceType.Addresses:
+        case AttachmentProxy.References.Users:
           break;
-        case ReferenceType.Attachments:
+        case AttachmentProxy.References.Contacts:
           break;
-        case ReferenceType.CustomFields:
-          break;
-        case ReferenceType.CustomValues:
-          break;
-        case ReferenceType.Groups:
-          break;
-        case ReferenceType.GroupUsers:
-          break;
-        case ReferenceType.OrganizationProducts:
-          break;
-        case ReferenceType.Organizations: type = "OrganizationAttachments"; break;
-        case ReferenceType.OrganizationTickets:
-          break;
-        case ReferenceType.PhoneNumbers:
-          break;
-        case ReferenceType.PhoneTypes:
-          break;
-        case ReferenceType.Products:
-          break;
-        case ReferenceType.ProductVersions:
-          break;
-        case ReferenceType.ProductVersionStatuses:
-          break;
-        case ReferenceType.TechDocs:
-          break;
-        case ReferenceType.Tickets:
-          break;
-        case ReferenceType.TicketSeverities:
-          break;
-        case ReferenceType.TicketStatuses:
-          break;
-        case ReferenceType.Subscriptions:
-          break;
-        case ReferenceType.TicketTypes:
-          break;
-        case ReferenceType.Users:
-          break;
-        case ReferenceType.ActionLogs:
-          break;
-        case ReferenceType.BillingInfo:
-          break;
-        case ReferenceType.ExceptionLogs:
-          break;
-        case ReferenceType.Invoices:
-          break;
-        case ReferenceType.SystemSettings:
-          break;
-        case ReferenceType.TicketNextStatuses:
-          break;
-        case ReferenceType.UserSettings:
-          break;
-        case ReferenceType.TicketQueue:
-          break;
-        case ReferenceType.CreditCards:
-          break;
-        case ReferenceType.Contacts:
-          break;
-        case ReferenceType.UserPhoto:
+        case AttachmentProxy.References.UserPhoto:
           type = "UserPhoto";
           break;
         default:

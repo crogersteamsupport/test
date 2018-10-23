@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class Attachment : BaseItem
+  partial class Attachment : BaseItem
   {
     private Attachments _attachments;
     
@@ -82,9 +82,9 @@ namespace TeamSupport.Data
       set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
-    public ReferenceType RefType
+    public AttachmentProxy.References RefType
     {
-      get { return (ReferenceType)Row["RefType"]; }
+      get { return (AttachmentProxy.References)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
@@ -167,7 +167,7 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class Attachments : BaseCollection, IEnumerable<Attachment>
+  internal partial class Attachments : BaseCollection, IEnumerable<Attachment>
   {
     public Attachments(LoginUser loginUser): base (loginUser)
     {
@@ -601,7 +601,7 @@ namespace TeamSupport.Data
       return null;
     }
 
-    public virtual Attachment AddNewAttachment()
+    internal virtual Attachment AddNewAttachment()
     {
       if (Table.Columns.Count < 1) LoadColumns("Attachments");
       DataRow row = Table.NewRow();

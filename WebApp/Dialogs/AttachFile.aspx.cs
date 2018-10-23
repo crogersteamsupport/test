@@ -18,7 +18,7 @@ using System.IO;
 public partial class Dialogs_AttachFile : BaseDialogPage
 {
   private int _refID = -1;
-  private ReferenceType _refType;
+  private AttachmentProxy.References _refType;
 
   protected override void OnLoad(EventArgs e)
   {
@@ -27,7 +27,7 @@ public partial class Dialogs_AttachFile : BaseDialogPage
     _manager.AjaxSettings.Clear();
 
     _refID = int.Parse(Request["RefID"]);
-    _refType = (ReferenceType)int.Parse(Request["RefType"]);
+    _refType = (AttachmentProxy.References)int.Parse(Request["RefType"]);
 
   }
 
@@ -61,13 +61,12 @@ public partial class Dialogs_AttachFile : BaseDialogPage
     }
     */
 
-    Attachments attachments = new Attachments(UserSession.LoginUser);
 
     string folderName = "Unknown";
 
     switch (_refType)
     {
-      case ReferenceType.Organizations:
+      case AttachmentProxy.References.Organizations:
         folderName = "OrganizationAttachments";
         break;
       default:
@@ -76,29 +75,20 @@ public partial class Dialogs_AttachFile : BaseDialogPage
     }
 
     foreach (UploadedFile file in ulFile.UploadedFiles)
-    {
-      string directory = TSUtils.GetAttachmentPath(folderName, _refID, 3);
-      string fileName = file.GetName();
-	  fileName = Path.GetFileName(fileName);
-      fileName = DataUtils.VerifyUniqueFileName(directory, fileName);
+        {
+            string root = TeamSupport.ModelAPI.AttachmentAPI.GetOrganizationAttachmentPath();
+            string directory = Path.Combine(Path.Combine(root, folderName), _refID.ToString()) + "\\";
+            //string directory = TSUtils.GetAttachmentPath(folderName, _refID, 3);
 
-      Attachment attachment = attachments.AddNewAttachment();
-      attachment.RefType = _refType;
-      attachment.RefID = _refID;
-      attachment.OrganizationID = UserSession.LoginUser.OrganizationID;
-      attachment.FileName = fileName;
-      //attachment.Path = Path.Combine(directory, fileName);
-      attachment.FilePathID = 3;
-      attachment.FileType = string.IsNullOrEmpty(file.ContentType) ? "application/octet-stream" : file.ContentType;
-      attachment.FileSize = file.ContentLength;
-      attachment.Description = textDescription.Text;
+            string fileName = file.GetName();
+            fileName = Path.GetFileName(fileName);
+            fileName = DataUtils.VerifyUniqueFileName(directory, fileName);
 
-      Directory.CreateDirectory(directory);
-      file.SaveAs(attachment.Path, true);
-      attachments.Save();
-    }
+            string path = TeamSupport.Data.Quarantine.WebAppQ.SaveAttachment(UserSession.LoginUser, file.ContentType, file.ContentLength, directory, fileName, _refType, _refID, textDescription.Text);
+            file.SaveAs(path, true);
+        }
 
-    return true;
+        return true;
   }
 
 }

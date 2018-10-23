@@ -1548,30 +1548,21 @@ namespace TSWebServices
         [WebMethod]
         public AttachmentProxy[] LoadFiles(int refID, ReferenceType refType)
         {
-            Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-            attachments.LoadByReference(refType, refID, "DateCreated desc");
-
-            return attachments.GetAttachmentProxies();
+            return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies1(refID, refType, TSAuthentication.GetLoginUser());
         }
 
         [WebMethod]
         public AttachmentProxy[] LoadFiles2(int refID, ReferenceType refType, bool includeChildren)
         {
-            Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-            attachments.LoadByReference(refType, refID, "DateCreated desc", includeChildren);
-
-            return attachments.GetAttachmentProxies();
+            return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies2(refID, refType, includeChildren, TSAuthentication.GetLoginUser());
         }
 
         [WebMethod]
         public AttachmentProxy[] LoadFilesByUserRights(int refID, ReferenceType refType, bool includeChildren)
         {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Attachments attachments = new Attachments(loginUser);
-            attachments.LoadByReferenceAndUserRights(refType, refID, loginUser.UserID, "DateCreated desc", includeChildren);
-
-            return attachments.GetAttachmentProxies();
+            return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies3(refID, refType, includeChildren, TSAuthentication.GetLoginUser());
         }
+
 
         [WebMethod]
         public OrganizationCustomProduct[] LoadProducts(int organizationID, string sortColumn, string sortDirection)

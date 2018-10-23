@@ -380,7 +380,7 @@ Namespace TeamSupport
 
 							'Check if Ticket Description Action has Attachment
 							If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
-								Dim actionDescriptionAttachment As Data.Attachment = Attachments.GetAttachment(User, actionDescriptionId)
+								Dim actionDescriptionAttachment As Data.AttachmentProxy = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentProxy(User, actionDescriptionId)
 								'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
 								Dim actionPosition As Integer = 1
 								PushAttachments(actionDescriptionId, ticket.TicketNumber, workItem, attachmentFileSizeLimit, actionPosition)
@@ -846,8 +846,7 @@ Namespace TeamSupport
 			ByVal fileSizeLimit As Integer,
 			ByVal actionPosition As Integer)
 
-				Dim attachments As Attachments = New Attachments(User)
-				attachments.LoadForTFS(actionID)
+				Dim attachments As AttachmentProxy() = TeamSupport.Data.Quarantine.ServiceQ.LoadForTFS(User, actionID)
 
 				Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(User)
 				crmLinkAttachmentErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
@@ -856,109 +855,105 @@ Namespace TeamSupport
 																GetDescription(ObjectType.Attachment),
 																attachments.Select(Function(p) p.AttachmentID.ToString()).ToList(),
 																isCleared:=False)
-				Dim updateAttachments As Boolean = False
-				Dim crmLinkError As CRMLinkError = Nothing
-				Dim attachmentError As String = String.Empty
+                Dim crmLinkError As CRMLinkError = Nothing
+                Dim attachmentError As String = String.Empty
 
-				For Each attachment As Data.Attachment In attachments
-					crmLinkError = crmLinkAttachmentErrors.FindByObjectIDAndFieldName(attachment.AttachmentID.ToString(), "file")
+                For Each attachment As Data.AttachmentProxy In attachments
+                    crmLinkError = crmLinkAttachmentErrors.FindByObjectIDAndFieldName(attachment.AttachmentID.ToString(), "file")
 
-					If (Not File.Exists(attachment.Path)) Then
-						attachmentError = "Attachment was not sent as it was not found on server"
-						AddLog(attachmentError,
-							LogType.TextAndReport,
-							crmLinkError,
-							attachmentError,
-							Orientation.OutToJira,
-							ObjectType.Attachment,
-							attachment.AttachmentID,
-							"file",
-							attachment.FileName,
-							OperationType.Create)
-					Else
-						Dim fs = New FileStream(attachment.Path, FileMode.Open, FileAccess.Read)
+                    If (Not File.Exists(attachment.Path)) Then
+                        attachmentError = "Attachment was not sent as it was not found on server"
+                        AddLog(attachmentError,
+                            LogType.TextAndReport,
+                            crmLinkError,
+                            attachmentError,
+                            Orientation.OutToJira,
+                            ObjectType.Attachment,
+                            attachment.AttachmentID,
+                            "file",
+                            attachment.FileName,
+                            OperationType.Create)
+                    Else
+                        Dim fs = New FileStream(attachment.Path, FileMode.Open, FileAccess.Read)
 
-						'ToDo //vv attachmentFileSizeLimit is always zero at this point because I have not found if TFS limits the attachments or not.
-						If (fileSizeLimit > 0 AndAlso fs.Length > fileSizeLimit) Then
-							attachmentError = String.Format("Attachment was not sent as its file size ({0}) exceeded the file size limit of {1}", fs.Length.ToString(), fileSizeLimit.ToString())
-							AddLog(attachmentError,
-								LogType.TextAndReport,
-								crmLinkError,
-								attachmentError,
-								Orientation.OutToJira,
-								ObjectType.Attachment,
-								attachment.AttachmentID,
-								"file",
-								attachment.FileName,
-								OperationType.Create)
-						Else
-							Try
-								_tfs.UploadAttachment(workItem.Id, attachment.Path, attachment.FileName)
+                        'ToDo //vv attachmentFileSizeLimit is always zero at this point because I have not found if TFS limits the attachments or not.
+                        If (fileSizeLimit > 0 AndAlso fs.Length > fileSizeLimit) Then
+                            attachmentError = String.Format("Attachment was not sent as its file size ({0}) exceeded the file size limit of {1}", fs.Length.ToString(), fileSizeLimit.ToString())
+                            AddLog(attachmentError,
+                                LogType.TextAndReport,
+                                crmLinkError,
+                                attachmentError,
+                                Orientation.OutToJira,
+                                ObjectType.Attachment,
+                                attachment.AttachmentID,
+                                "file",
+                                attachment.FileName,
+                                OperationType.Create)
+                        Else
+                            Try
+                                _tfs.UploadAttachment(workItem.Id, attachment.Path, attachment.FileName)
 
-								'Dim URIString As String = ""
-								'Dim request As HttpWebRequest = WebRequest.Create(URIString)
-								'request.Headers.Add("Authorization", "Basic " + _encodedCredentials)
-								''request.Headers.Add("X-Atlassian-Token", "nocheck")
-								'request.Method = "POST"
-								'Dim boundary As String = String.Format("----------{0:N}", Guid.NewGuid())
-								'request.ContentType = String.Format("multipart/form-data; boundary={0}", boundary)
-								'request.UserAgent = Client
+                                'Dim URIString As String = ""
+                                'Dim request As HttpWebRequest = WebRequest.Create(URIString)
+                                'request.Headers.Add("Authorization", "Basic " + _encodedCredentials)
+                                ''request.Headers.Add("X-Atlassian-Token", "nocheck")
+                                'request.Method = "POST"
+                                'Dim boundary As String = String.Format("----------{0:N}", Guid.NewGuid())
+                                'request.ContentType = String.Format("multipart/form-data; boundary={0}", boundary)
+                                'request.UserAgent = Client
 
-								'Dim content = New MemoryStream()
-								'Dim writer = New StreamWriter(content)
-								'writer.WriteLine("--{0}", boundary)
-								'writer.WriteLine("Content-Disposition: form-data; name=""file""; filename=""{0}""", ("TeamSupport Ticket #" + ticketNumber.ToString() + " action #" + actionPosition.ToString() + " - " + attachment.FileName))
-								'writer.WriteLine("Content-Type: application/octet-stream")
-								'writer.WriteLine()
-								'writer.Flush()
-								'Dim data(fs.Length) As Byte
-								'fs.Read(data, 0, data.Length)
-								'fs.Close()
-								'content.Write(data, 0, data.Length)
-								'writer.WriteLine()
-								'writer.WriteLine("--" + boundary + "--")
-								'writer.Flush()
-								'content.Seek(0, SeekOrigin.Begin)
-								'request.ContentLength = content.Length
+                                'Dim content = New MemoryStream()
+                                'Dim writer = New StreamWriter(content)
+                                'writer.WriteLine("--{0}", boundary)
+                                'writer.WriteLine("Content-Disposition: form-data; name=""file""; filename=""{0}""", ("TeamSupport Ticket #" + ticketNumber.ToString() + " action #" + actionPosition.ToString() + " - " + attachment.FileName))
+                                'writer.WriteLine("Content-Type: application/octet-stream")
+                                'writer.WriteLine()
+                                'writer.Flush()
+                                'Dim data(fs.Length) As Byte
+                                'fs.Read(data, 0, data.Length)
+                                'fs.Close()
+                                'content.Write(data, 0, data.Length)
+                                'writer.WriteLine()
+                                'writer.WriteLine("--" + boundary + "--")
+                                'writer.Flush()
+                                'content.Seek(0, SeekOrigin.Begin)
+                                'request.ContentLength = content.Length
 
-								'Using requestStream As Stream = request.GetRequestStream()
-								'	content.WriteTo(requestStream)
-								'	requestStream.Close()
-								'End Using
+                                'Using requestStream As Stream = request.GetRequestStream()
+                                '	content.WriteTo(requestStream)
+                                '	requestStream.Close()
+                                'End Using
 
-								'Using response As HttpWebResponse = request.GetResponse()
-								'	Log.Write("Attachment """ + attachment.FileName + """ sent.")
-								'	response.Close()
-								'End Using
+                                'Using response As HttpWebResponse = request.GetResponse()
+                                '	Log.Write("Attachment """ + attachment.FileName + """ sent.")
+                                '	response.Close()
+                                'End Using
 
-								'content.Flush()
-								'content.Close()
-								attachment.SentToTFS = True
-								updateAttachments = True
+                                'content.Flush()
+                                'content.Close()
+                                attachment.SentToTFS = True
+                                TeamSupport.Data.Quarantine.ServiceQ.SetAttachmentSentToTFS(User, attachment.AttachmentID)
 
-								ClearCrmLinkError(crmLinkError)
-							Catch ex As Exception
-								AddLog(String.Format("{0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace),
-									LogType.TextAndReport,
-									crmLinkError,
-									"Attachment could not be sent. " + ex.Message.ToString(),
-									Orientation.OutToJira,
-									ObjectType.Attachment,
-									attachment.AttachmentID,
-									"file",
-									attachment.FileName,
-									OperationType.Create)
-							End Try
-						End If
-					End If
-				Next
+                                ClearCrmLinkError(crmLinkError)
+                            Catch ex As Exception
+                                AddLog(String.Format("{0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace),
+                                    LogType.TextAndReport,
+                                    crmLinkError,
+                                    "Attachment could not be sent. " + ex.Message.ToString(),
+                                    Orientation.OutToJira,
+                                    ObjectType.Attachment,
+                                    attachment.AttachmentID,
+                                    "file",
+                                    attachment.FileName,
+                                    OperationType.Create)
+                            End Try
+                        End If
+                    End If
+                Next
 
-				If updateAttachments Then
-					attachments.Save()
-				End If
-			End Sub
+            End Sub
 
-			Private Sub PushActionsAsComments(
+            Private Sub PushActionsAsComments(
 				ByVal ticketID As Integer,
 				ByVal ticketNumber As Integer,
 				ByVal workItem As WorkItem,

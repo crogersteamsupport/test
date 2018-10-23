@@ -1539,7 +1539,7 @@ namespace TSWebServices
         }
 
 
-        [WebMethod]                                 
+        [WebMethod]
         public string[] SearchCompaniesAndContactsDt(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -1737,10 +1737,10 @@ SELECT
         {
             searchTerm = AntiXss.HtmlEncode(searchTerm);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string[] resultItems= new string[] { };
+            string[] resultItems = new string[] { };
 
             Stopwatch stopWatch = Stopwatch.StartNew();
-            if(!String.IsNullOrEmpty(searchTerm))
+            if (!String.IsNullOrEmpty(searchTerm))
                 resultItems = sendResults(GetAllCompaniesAndContactsWithTerm(searchTerm, from, count, searchCompanies, searchContacts, active, parentsOnly));
             else
             {
@@ -1748,7 +1748,7 @@ SELECT
                     resultItems = sendResults(GetSearchForAll(from, count, "CustomerList", active, parentsOnly));
                 if (searchContacts && !searchCompanies)
                     resultItems = sendResults(GetSearchForAll(from, count, "ContactList", active, parentsOnly));
-                if(searchContacts && searchCompanies)
+                if (searchContacts && searchCompanies)
                     resultItems = sendResults(GetSearchForAll(from, count, "ContactCustomerList", active, parentsOnly));
             }
             stopWatch.Stop();
@@ -1784,18 +1784,18 @@ SELECT
             command.Parameters.AddWithValue("@ToIndex", from + count);
             command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
             command.Parameters.AddWithValue("@UserID", loginUser.UserID);
-            command.Parameters.AddWithValue("@SearchTerm",  searchTerm);
+            command.Parameters.AddWithValue("@SearchTerm", searchTerm);
             command.Parameters.AddWithValue("@IncludeCompanies", searchCompanies);
             command.Parameters.AddWithValue("@IncludeContacts", searchContacts);
             command.Parameters.AddWithValue("@ActiveOnly", active);
             command.Parameters.AddWithValue("@ParentsOnly", parentsOnly);
 
 
-            return SqlExecutor.ExecuteQuery(loginUser, command);       
-           
+            return SqlExecutor.ExecuteQuery(loginUser, command);
+
 
         }
-        private DataTable GetSearchForAll( int from, int count, string sprocName, bool? active, bool? parentsOnly = false)
+        private DataTable GetSearchForAll(int from, int count, string sprocName, bool? active, bool? parentsOnly = false)
         {
 
             LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -1815,9 +1815,9 @@ SELECT
             command.Parameters.AddWithValue("@ParentsOnly", parentsOnly);
 
 
-           return SqlExecutor.ExecuteQuery(loginUser, command);  
+            return SqlExecutor.ExecuteQuery(loginUser, command);
 
-        }      
+        }
 
         private string[] sendResults(DataTable table)
         {
@@ -1829,14 +1829,14 @@ SELECT
                 if (row["UserID"] == DBNull.Value)
                 {
                     CustomerSearchCompany company = new CustomerSearchCompany();
-                    company.name = (string) row["Organization"];
-                    company.organizationID = (int) row["OrganizationID"];
-                    company.isPortal = (bool) row["HasPortalAccess"];
+                    company.name = (string)row["Organization"];
+                    company.organizationID = (int)row["OrganizationID"];
+                    company.isPortal = (bool)row["HasPortalAccess"];
                     company.openTicketCount = 0;// (int)row["OrgOpenTickets"];
                     company.website = GetDBString(row["Website"]);
 
-                List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
-                PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                    List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                    PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
                     foreach (PhoneNumber number in phoneNumbers)
                     {
                         phones.Add(new CustomerSearchPhone(number));
@@ -1848,19 +1848,19 @@ SELECT
                 else
                 {
                     CustomerSearchContact contact = new CustomerSearchContact();
-                    contact.organizationID = (int) row["OrganizationID"];
-                    contact.isPortal = (bool) row["IsPortalUser"];
+                    contact.organizationID = (int)row["OrganizationID"];
+                    contact.isPortal = (bool)row["IsPortalUser"];
                     contact.openTicketCount = 0;// (int)row["ContactOpenTickets"];
 
-                    contact.userID = (int) row["UserID"];
+                    contact.userID = (int)row["UserID"];
                     contact.fName = GetDBString(row["FirstName"]);
                     contact.lName = GetDBString(row["LastName"]);
                     contact.email = GetDBString(row["Email"]);
                     contact.title = GetDBString(row["Title"]);
                     contact.organization = GetDBString(row["Organization"]);
 
-                List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
-                PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                    List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                    PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
                     foreach (PhoneNumber number in phoneNumbers)
                     {
                         phones.Add(new CustomerSearchPhone(number));
@@ -1872,7 +1872,7 @@ SELECT
             return results.ToArray();
         }
 
-        
+
         public static string GetDBString(object o)
         {
             if (o == null || o == DBNull.Value) return "";
@@ -1996,7 +1996,7 @@ SELECT
   a.ProductVersionID
   FROM Assets a WHERE a.OrganizationID = @OrganizationID
 ";
-            if(!string.IsNullOrEmpty(searchTerm))
+            if (!string.IsNullOrEmpty(searchTerm))
             {
                 assetQuery += " and (CONTAINS(Name,@SearchTerm) or CONTAINS(a.notes,@SearchTerm) or CONTAINS(a.serialnumber,@SearchTerm) ) ";
                 command.Parameters.AddWithValue("@SearchTerm", string.Format("\"{0}*\"", searchTerm));

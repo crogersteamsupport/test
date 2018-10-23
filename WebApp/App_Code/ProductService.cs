@@ -177,19 +177,14 @@ namespace TSWebServices
         [WebMethod]
         public AttachmentProxy[] GetAttachments(int versionID)
         {
-            Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-            attachments.LoadByReference(ReferenceType.ProductVersions, versionID);
-            return attachments.GetAttachmentProxies();
+            return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies4(versionID, TSAuthentication.GetLoginUser());
         }
+
 
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
-            ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItem(attachment.Collection.LoginUser, attachment.RefID);
-            if (version.OrganizationID != TSAuthentication.OrganizationID) return;
-            attachment.Delete();
-            attachment.Collection.Save();
+            TeamSupport.ModelAPI.AttachmentAPI.DeleteAttachment(attachmentID, AttachmentProxy.References.ProductVersions);
         }
 
         [WebMethod]

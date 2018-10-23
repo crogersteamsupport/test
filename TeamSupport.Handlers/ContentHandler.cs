@@ -32,6 +32,8 @@ using System.Drawing.Text;
 using System.Collections.Specialized;
 using System.Dynamic;
 using PusherServer;
+using TeamSupport.ModelAPI;
+using TeamSupport.IDTree;
 
 
 namespace TeamSupport.Handlers
@@ -115,116 +117,12 @@ namespace TeamSupport.Handlers
 
 		private void ProcessImages(HttpContext context, string[] segments, int organizationID)
 		{
-			StringBuilder builder = new StringBuilder();
-			for (int i = 2; i < segments.Length; i++)
-			{
-				if (i != 2) builder.Append("\\");
-				builder.Append(segments[i]);
-			}
-			string path = builder.ToString();
-			string fileName = "";
-
-			if (Path.GetExtension(path) == "")
-			{
-				path = Path.ChangeExtension(path, ".jpg");
-				string imageFile = Path.GetFileName(path);
-				path = Path.GetDirectoryName(path);
-				string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-				if (!Directory.Exists(imagePath)) Directory.CreateDirectory(imagePath);
-				fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-				if (!File.Exists(fileName))
-				{
-					imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.Images), path);
-					fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-				}
-
-			}
-			else
-			{
-				fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-			}
-
-			if (File.Exists(fileName))
-			{
-				WriteImage(context, fileName);
-			}
-            else
-            {
-                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images, 3), path);
-                if (File.Exists(fileName))
-                {
-                    WriteImage(context, fileName);
-                }
-            }
-
-			//Organization organization = Organizations.GetOrganization(LoginUser.Anonymous, organizationID);
-			//bool isAuthenticated = organizationID == TSAuthentication.OrganizationID;
-
-			//if (isAuthenticated || organization.AllowUnsecureAttachmentViewing)
-			//{
-			//	if (Path.GetExtension(path) == "")
-			//	{
-			//		path = Path.ChangeExtension(path, ".jpg");
-			//		string imageFile = Path.GetFileName(path);
-			//		path = Path.GetDirectoryName(path);
-			//		string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-			//		if (!Directory.Exists(imagePath)) Directory.CreateDirectory(imagePath);
-			//		fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-			//		if (!File.Exists(fileName))
-			//		{
-			//			imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.Images), path);
-			//			fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-			//		}
-
-			//	}
-			//	else
-			//	{
-			//		fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-			//	}
-
-			//	if (File.Exists(fileName))
-			//	{
-			//		WriteImage(context, fileName);
-			//	}
-			//}
-			//else
-			//{
-			//	context.Response.Write("Unauthorized");
-			//	context.Response.ContentType = "text/html";
-			//	return;
-			//}
+            TeamSupport.Data.Quarantine.ContentHandlerQ.ProcessImages(context, segments, organizationID);
         }
 
         private void ProcessRatingImages(HttpContext context, string[] segments, int organizationID)
         {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 1; i < segments.Length; i++)
-            {
-                if (i != 1)
-                    builder.Append("\\");
-                builder.Append(segments[i]);
-            }
-            string path = builder.ToString();
-            string fileName = "";
-            if (Path.GetExtension(path) == "")
-            {
-                path = Path.ChangeExtension(path, ".png");
-                string imageFile = Path.GetFileName(path);
-                path = Path.GetDirectoryName(path);
-                string imagePath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.AgentRating);
-                fileName = Path.Combine(imagePath, imageFile);
-                if (!File.Exists(fileName))
-                {
-                    imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.AgentRating), path);
-                    fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-                }
-
-            }
-            else
-            {
-                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-            }
-            if (File.Exists(fileName)) WriteImage(context, fileName);
+            TeamSupport.Data.Quarantine.ContentHandlerQ.ProcessRatingImages(context, segments, organizationID);
         }
 
         private void ProcessChatStatus(HttpContext context, int organizationID)
@@ -278,21 +176,7 @@ namespace TeamSupport.Handlers
 
         private void ProcessChat(HttpContext context, string command, int organizationID)
         {
-            System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
-            if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-
-            if (command == "image")
-            {
-                bool isAvailable = ChatRequests.IsOperatorAvailable(LoginUser.Anonymous, organizationID);
-                string fileName = isAvailable ? "chat_available" : "chat_unavailable";
-                fileName = AttachmentPath.FindImageFileName(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatImages, fileName);
-                WriteImage(context, fileName);
-            }
-            else if (command == "logo")
-            {
-                string fileName = AttachmentPath.FindImageFileName(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatImages, "chat_logo");
-                WriteImage(context, fileName);
-            }
+            TeamSupport.Data.Quarantine.ContentHandlerQ.ProcessChat(context, command, organizationID);
         }
 
         /* USER: UserAvatar instead. This is old style.  It will be going away */
@@ -305,31 +189,8 @@ namespace TeamSupport.Handlers
                 builder.Append(segments[i]);
             }
             string path = builder.ToString();
-
-            TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, Int32.Parse(path));
-
-            path = attachment.FileName;
-
-            string fileName = "";
-            if (Path.GetExtension(path) == "")
-            {
-                path = Path.ChangeExtension(path, ".jpg");
-                string imageFile = Path.GetFileName(path);
-                path = Path.GetDirectoryName(path);
-                string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachment.FilePathID), path);
-                fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-                if (!File.Exists(fileName))
-                {
-                    imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.ProfileImages, (int)attachment.FilePathID), path);
-                    fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-                }
-
-            }
-            else
-            {
-                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachment.FilePathID), path);
-            }
-            if (File.Exists(fileName)) WriteImage(context, fileName);
+            AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(Int32.Parse(path));
+            TeamSupport.Data.Quarantine.ContentHandlerQ.ProcessAvatar(context, segments, organizationID, path, (int)attachment.FilePathID);
         }
 
         private void ProcessCalendarFeed(HttpContext context, string[] segments, int organizationID)
@@ -472,10 +333,7 @@ namespace TeamSupport.Handlers
             int userID = int.Parse(segments[2]);
             int size = int.Parse(segments[3]);
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationID.ToString());
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-
-            cacheFileName = Path.Combine(cachePath, userID.ToString() + "-" + size.ToString() + ".jpg");
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetCacheFileName(organizationID, userID, size);
             // found the last cache
             if (File.Exists(cacheFileName))
             {
@@ -494,18 +352,9 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            Attachments attachments = new Attachments(LoginUser.Anonymous);
-            attachments.LoadByReference(ReferenceType.UserPhoto, userID);
-            StringBuilder path = new StringBuilder();
-            if (attachments.Count > 0)
-            {
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachments[0].FilePathID));
-            }
-            else
-            {
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages));
-            }
-            string originalFileName = AttachmentPath.GetImageFileName(path.ToString(), userID.ToString() + "avatar");
+            string originalFileName;
+            originalFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.OrignalFileName(organizationID, userID);
+
             if (File.Exists(originalFileName))
             {
                 // original image, resize, make circle, cache it
@@ -534,7 +383,6 @@ namespace TeamSupport.Handlers
             return;
 
         }
-
 
 
         private void ProcessInitialAvatar(HttpContext context, string[] segments, int organizationID)
@@ -543,12 +391,10 @@ namespace TeamSupport.Handlers
 
             string initial = segments[2].ToUpper();
             int size = int.Parse(segments[3]);
+
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Initials");
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetCacheFileName1(initial, size);
 
-
-            cacheFileName = Path.Combine(cachePath, initial + "-" + size.ToString() + ".jpg");
             // found the last cache
             if (File.Exists(cacheFileName))
             {
@@ -565,16 +411,14 @@ namespace TeamSupport.Handlers
 
         }
 
+
         private void ProcessHubLogo(HttpContext context, string[] segments, int organizationID)
         {
 
             int userID = int.Parse(segments[2]);
             int size = int.Parse(segments[3]);
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "HubLogo\\" + organizationID.ToString());
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-
-            cacheFileName = Path.Combine(cachePath, userID.ToString() + "-" + size.ToString() + ".jpg");
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetCacheFileName2(organizationID, userID, size);
             // found the last cache
             if (File.Exists(cacheFileName))
             {
@@ -583,7 +427,7 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), userID.ToString() + "avatar");
+            string originalFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.OriginalFileName1(organizationID, userID);
             if (File.Exists(originalFileName))
             {
                 // original image, resize, make circle, cache it
@@ -613,6 +457,8 @@ namespace TeamSupport.Handlers
 
         }
 
+
+
         //https://app.ts.com/dc/{OrganizationID}/CompanyLogo/{orgIdLogo}/{Size}/{page}
         private void ProcessCompanyLogo(HttpContext context, string[] segments, int organizationID)
         {
@@ -620,12 +466,8 @@ namespace TeamSupport.Handlers
             int size = int.Parse(segments[3]);
             string type = segments.Length == 5 ? segments[4] : string.Empty;
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "CompanyLogo\\" + organizationID.ToString());
-            bool isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
-
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-
-            cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", logoOrganizationId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
+            bool isIndexPage;
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetChacheFileName3(organizationID, logoOrganizationId, size, type, out isIndexPage);
 
             // found the last cache
             if (File.Exists(cacheFileName))
@@ -635,7 +477,7 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.OrganizationsLogo), logoOrganizationId.ToString());
+            string originalFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.OriginalFileName2(organizationID, logoOrganizationId);
 
             if (File.Exists(originalFileName))
             {
@@ -682,6 +524,8 @@ namespace TeamSupport.Handlers
             return;
         }
 
+
+
         //https://app.ts.com/dc/{OrganizationID}/contactavatar/{userId}/{Size}/{page}
         private void ProcessContactAvatar(HttpContext context, string[] segments, int organizationID)
         {
@@ -690,12 +534,8 @@ namespace TeamSupport.Handlers
             int size = int.Parse(segments[3]);
             string type = segments.Length == 5 ? segments[4] : string.Empty;
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
-            bool isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
-
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-
-            cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", userId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
+            bool isIndexPage;
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetCacheFileName4(organizationParentId, userId, size, type, out isIndexPage);
 
             // found the last cache
             if (File.Exists(cacheFileName))
@@ -705,7 +545,7 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationParentId, AttachmentPath.Folder.ContactImages), userId.ToString() + "avatar");
+            string originalFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.OriginalFileName3(organizationParentId, userId);
 
             if (File.Exists(originalFileName))
             {
@@ -735,6 +575,7 @@ namespace TeamSupport.Handlers
 
             return;
         }
+
 
         private static Color GetInitialColor(string initial)
         {
@@ -931,32 +772,6 @@ namespace TeamSupport.Handlers
             return newImage;
         }
 
-        private void OpenActionAttachment(HttpContext context, HttpBrowserCapabilities browser, AttachmentProxy proxy)
-        {
-            if (!File.Exists(proxy.Path))
-            {
-                context.Response.Write("Invalid attachment.");
-                context.Response.ContentType = "text/html";
-                return;
-            }
-
-            string openType = "inline";
-            string fileType = proxy.FileType;
-            if (browser.Browser == "IE")
-            {
-                string lower = fileType.ToLower();
-                if (lower.IndexOf("audio") > -1)
-                    openType = "attachment";
-                else if (lower.IndexOf("-zip") > -1 || lower.IndexOf("/zip") > -1 || lower.IndexOf("zip-") > -1)
-                    fileType = "application/octet-stream";
-            }
-
-            context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + proxy.FileName + "\"");
-            context.Response.AddHeader("Content-Length", proxy.FileSize.ToString());
-            context.Response.ContentType = fileType;
-            context.Response.WriteFile(proxy.Path);
-        }
-
         private void ProcessAttachment(HttpContext context, string attachmentID)
         {
             //http://127.0.0.1/tsdev/dc/attachments/7401
@@ -966,124 +781,27 @@ namespace TeamSupport.Handlers
             if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             // the following is a big hack to get it out fast.... Please do not consider robust code.
             int id;
-            if (int.TryParse(attachmentID, out id))
+            bool fromGuid = false;
+            if (!int.TryParse(attachmentID, out id))
             {
-                //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by ID
-                //{
-                //    AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(id);
-                //    OpenActionAttachment(context, browser, proxy);
-                //    return;
-                //}
-
-                TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
-                Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
-                User user = null;
-                bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
-
-
-                if (isAuthenticated)
-                {
-                    user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
-                }
-                else
-                {
-                    try
-                    {
-                        FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(context.Request.Cookies["Portal_Session"].Value);
-                        int userID = int.Parse(authTicket.UserData.Split('|')[0]);
-                        user = Users.GetUser(attachment.Collection.LoginUser, userID);
-
-
-                        if (attachment.RefType == ReferenceType.Actions)
-                        {
-                            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-                            Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
-                            if (action.IsVisibleOnPortal)
-                            {
-                                if (ticket.IsVisibleOnPortal)
-                                {
-                                    Organizations organizations = new Organizations(attachment.Collection.LoginUser);
-                                    organizations.LoadByTicketID(ticket.TicketID);
-                                    isAuthenticated = organizations.FindByOrganizationID(user.OrganizationID) != null;
-                                }
-                            }
-
-                            if (!isAuthenticated)
-                            {
-                                isAuthenticated = ticket.IsKnowledgeBase && ticket.IsVisibleOnPortal && action.IsKnowledgeBase && action.IsVisibleOnPortal;
-                            }
-                        }
-
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-
-                if (!isAuthenticated)
-                {
-                    context.Response.Write("Unauthorized");
-                    context.Response.ContentType = "text/html";
-                    return;
-                }
-
-                if (!File.Exists(attachment.Path))
-                {
-                    context.Response.Write("Invalid attachment.");
-                    context.Response.ContentType = "text/html";
-                    return;
-                }
-
-                string openType = "inline";
-                string fileType = attachment.FileType;
-
-                if (browser.Browser == "IE")
-                {
-                    if (attachment.FileType.ToLower().IndexOf("audio") > -1)
-                    {
-                        openType = "attachment";
-                    }
-                    else if (attachment.FileType.ToLower().IndexOf("-zip") > -1 ||
-                                attachment.FileType.ToLower().IndexOf("/zip") > -1 ||
-                                attachment.FileType.ToLower().IndexOf("zip-") > -1)
-                    {
-                        fileType = "application/octet-stream";
-                    }
-                }
-
-                context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + attachment.FileName + "\"");
-                context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
-                context.Response.ContentType = fileType;
-                context.Response.WriteFile(attachment.Path);
-
-
-            }
-
-            else
-            {
-                //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by Guid
-                //{
-                //    int idFromGuid = ModelAPI.Model_API.AttachmentIDFromGUID(Guid.Parse(attachmentID));
-                //    AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(idFromGuid);
-                //    OpenActionAttachment(context, browser, proxy);
-                //    return;
-                //}
-
                 SqlCommand command = new SqlCommand();
                 command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
                 command.Parameters.AddWithValue("@AttachmentGUID", Guid.Parse(attachmentID));
 
                 id = SqlExecutor.ExecuteInt(LoginUser.Anonymous, command);
+                fromGuid = true;
+            }
 
-                TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
-                Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
-                User user = null;
+                AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(id);
+
+                //User user = null;
                 bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
 
 
                 if (isAuthenticated)
                 {
-                    user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
+                    // not used
+                    //user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
                 }
                 else
                 {
@@ -1091,20 +809,20 @@ namespace TeamSupport.Handlers
                     {
                         FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(context.Request.Cookies["Portal_Session"].Value);
                         int userID = int.Parse(authTicket.UserData.Split('|')[0]);
-                        user = Users.GetUser(attachment.Collection.LoginUser, userID);
+                        UserProxy user = Model_API.Read<UserProxy>(userID);
 
-
-                        if (attachment.RefType == ReferenceType.Actions)
+                        ActionAttachmentProxy actionAttachment = attachment as ActionAttachmentProxy;
+                        if (actionAttachment != null)
                         {
-                            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-                            Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
+                            ActionProxy action = Model_API.Read<ActionProxy>(actionAttachment.ActionID);
+                            TicketProxy ticket = Model_API.Read<TicketProxy>(action.TicketID);
                             if (action.IsVisibleOnPortal)
                             {
                                 if (ticket.IsVisibleOnPortal)
                                 {
-                                    Organizations organizations = new Organizations(attachment.Collection.LoginUser);
-                                    organizations.LoadByTicketID(ticket.TicketID);
-                                    isAuthenticated = organizations.FindByOrganizationID(user.OrganizationID) != null;
+                                    // find all the contact organizations associated with a ticket
+                                    OrganizationTicketModel[] orgs = Model_API.GetOrganizationTickets(ticket.TicketID);
+                                    isAuthenticated = orgs.Where(o => o.Organization.OrganizationID == user.OrganizationID).Any();
                                 }
                             }
 
@@ -1120,9 +838,14 @@ namespace TeamSupport.Handlers
                     }
                 }
 
+            // only check AllowUnsecureAttachmentViewing if it was set aboveF//if (proxies != null) 
+            if (fromGuid)
+            {
+                OrganizationProxy organization = Model_API.Read<OrganizationProxy>(attachment.OrganizationID);
                 isAuthenticated = isAuthenticated || organization.AllowUnsecureAttachmentViewing;
+            }
 
-                if (!isAuthenticated)
+            if (!isAuthenticated)
                 {
                     context.Response.Write("Unauthorized");
                     context.Response.ContentType = "text/html";
@@ -1157,12 +880,6 @@ namespace TeamSupport.Handlers
                 context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
                 context.Response.ContentType = fileType;
                 context.Response.WriteFile(attachment.Path);
-
-            }
-
-
-
-
         }
 
         private void ProcessImportLog(HttpContext context, int importID)
@@ -1189,9 +906,8 @@ namespace TeamSupport.Handlers
                 return;
             }
 
-            string logPath = AttachmentPath.GetPath(import.Collection.LoginUser, import.OrganizationID, AttachmentPath.Folder.ImportLogs, import.FilePathID);
-            string fileName = import.ImportID.ToString() + ".txt";
-            logPath = Path.Combine(logPath, fileName);
+            string logPath, fileName;
+            TeamSupport.Data.Quarantine.ContentHandlerQ.GetLogPath(import, out logPath, out fileName);
 
             if (!File.Exists(logPath))
             {
@@ -1218,6 +934,7 @@ namespace TeamSupport.Handlers
             context.Response.ContentType = fileType;
             context.Response.WriteFile(logPath);
         }
+
 
         private void ProcessTicketExport(HttpContext context)
         {
@@ -1605,9 +1322,8 @@ namespace TeamSupport.Handlers
                 return;
             }
 
-            string logPath = AttachmentPath.GetPath(scheduledReport.Collection.LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs, scheduledReport.FilePathID);
-            string fileName = scheduledReport.Id.ToString() + ".txt";
-            logPath = Path.Combine(logPath, fileName);
+            string logPath, fileName;
+            TeamSupport.Data.Quarantine.ContentHandlerQ.GetLogPath1(scheduledReport, out logPath, out fileName);
 
             if (!File.Exists(logPath))
             {
@@ -1629,12 +1345,9 @@ namespace TeamSupport.Handlers
         {
             HttpBrowserCapabilities browser = context.Request.Browser;
             if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
+            AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(attachmentID);
 
-            string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads, (int)attachment.FilePathID);
-            attachmentPath += "\\" + chatID;
-
-            attachmentPath = Path.Combine(attachmentPath, attachment.FileName);
+            string attachmentPath = TeamSupport.Data.Quarantine.ContentHandlerQ.GetAttachmentPath3(organizationID, chatID, attachment);
 
             if (!File.Exists(attachmentPath))
             {

@@ -18,17 +18,17 @@ namespace TeamSupport.WebUtils
   public class TSUtils
   {
 
-    public static string GetAttachmentPath(string folderName, int itemID)
-    {
-      string root = AttachmentPath.GetRoot(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-      return Path.Combine(Path.Combine(root, folderName), itemID.ToString()) + "\\";
-    }
+    //public static string GetAttachmentPath(string folderName, int itemID)
+    //{
+    //  string root = AttachmentPath.GetRoot(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+    //  return Path.Combine(Path.Combine(root, folderName), itemID.ToString()) + "\\";
+    //}
 
-    public static string GetAttachmentPath(string folderName, int itemID, int filePathID)
-    {
-      string root = AttachmentPath.GetRoot(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, filePathID);
-      return Path.Combine(Path.Combine(root, folderName), itemID.ToString()) + "\\";
-    }
+    //public static string GetAttachmentPath(string folderName, int itemID, int filePathID)
+    //{
+    //  string root = AttachmentPath.GetRoot(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, filePathID);
+    //  return Path.Combine(Path.Combine(root, folderName), itemID.ToString()) + "\\";
+    //}
 
     public static void CreatePagerItem(GridItem item, int maxPageSize)
     {

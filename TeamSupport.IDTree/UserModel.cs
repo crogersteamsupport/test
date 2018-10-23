@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamSupport.Data;
+using System.IO;
 
 namespace TeamSupport.IDTree
 {
-    public class UserModel : IDNode
+    public class UserModel : IDNode, IAttachmentDestination, ITaskAssociation, INoteDestination
     {
         public OrganizationModel Organization { get; private set; }
         public int UserID { get; private set; }
+        int IAttachmentDestination.RefID => UserID;
 
         public UserModel(ConnectionContext connection) : this(connection.Organization, connection.Authentication.UserID, false)
         {
@@ -32,10 +34,10 @@ namespace TeamSupport.IDTree
         }
 
         // slow :(
-        public UserProxy UserProxy()
-        {
-            return ExecuteQuery<UserProxy>($"SELECT * FROM Users WHERE UserID={UserID}").First();
-        }
+        //public UserProxy UserProxy()
+        //{
+        //    return ExecuteQuery<UserProxy>($"SELECT * FROM Users WHERE UserID={UserID}").First();
+        //}
 
         public override void Verify()
         {
@@ -51,6 +53,32 @@ namespace TeamSupport.IDTree
         {
             return ExecuteQuery<bool>($"SELECT MarkDeleted FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First();
         }
+        //public string AttachmentPath
+        //{
+        //    get
+        //    {
+        //        // References.Users - C:\TSData\Organizations\1078\Images\Avatars\4787299avatar.jpg
+        //        string path = Connection.Organization.AttachmentPath;
+        //        path = Path.Combine(path, "Images\\Avatars");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
+        //        //path = Path.Combine(path, UserID.ToString() + "avatar.jpg");
+        //        if (!Directory.Exists(path))
+        //            Directory.CreateDirectory(path);
+        //        return path;
+        //    }
+        //}
 
+        public string AttachmentPath
+        {
+            get
+            {
+                // References.UserPhoto
+                string path = Connection.Organization.AttachmentPath;
+                path = Path.Combine(path, "UserAttachments");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
+                path = Path.Combine(path, UserID.ToString());
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                return path;
+            }
+        }
     }
 }

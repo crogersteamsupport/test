@@ -14,7 +14,7 @@ namespace TeamSupport.Data
 {
     public partial class Action
     {
-        public Attachments GetAttachments()
+        internal Attachments GetAttachments()
         {
             Attachments attachments = new Attachments(BaseCollection.LoginUser);
             attachments.LoadByActionID(ActionID);

@@ -9,40 +9,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-    [DataContract(Namespace = "http://teamsupport.com/")]
-    [KnownType(typeof(WatercoolerAttachmentProxy))]
-    public class WatercoolerAttachmentProxy
-    {
-        public WatercoolerAttachmentProxy() { }
-        [DataMember]
-        public int MessageID { get; set; }
-        [DataMember]
-        public int AttachmentID { get; set; }
-        [DataMember]
-        public WaterCoolerAttachmentType RefType { get; set; }
-        [DataMember]
-        public int CreatorID { get; set; }
-        [DataMember]
-        public string CreatorName { get; set; }
-        [DataMember]
-        public DateTime DateCreated { get; set; }
-        [DataMember]
-        public string GroupName { get; set; }
-        [DataMember]
-        public string TicketName { get; set; }
-        [DataMember]
-        public string ProductName { get; set; }
-        [DataMember]
-        public string CompanyName { get; set; }
-        [DataMember]
-        public string UserName { get; set; }
-        [DataMember]
-        public ReferenceType ActivityRefType { get; set; }
-        [DataMember]
-        public string ActivityTitle { get; set; }
-        [DataMember]
-        public int ActivityRefID { get; set; }
-    }
 
     public partial class WatercoolerAttachment : BaseItem
     {

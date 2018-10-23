@@ -487,7 +487,7 @@ Namespace TeamSupport
 
                             'Check if Ticket Description Action has Attachment
                             If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
-                                Dim actionDescriptionAttachment As Data.Attachment = Attachments.GetAttachment(User, actionDescriptionId)
+                                Dim actionDescriptionAttachment As Data.AttachmentProxy = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentProxy(User, actionDescriptionId)
                                 'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
                                 Dim actionPosition As Integer = 1
                                 PushAttachments(actionDescriptionId, ticket.TicketNumber, issue, issue("key"), attachmentFileSizeLimit, actionPosition)
@@ -1490,8 +1490,7 @@ Namespace TeamSupport
             ByVal fileSizeLimit As Integer,
             ByVal actionPosition As Integer)
 
-                Dim attachments As Attachments = New Attachments(User)
-                attachments.LoadForJira(actionID)
+                Dim attachments As AttachmentProxy() = TeamSupport.Data.Quarantine.ServiceQ.LoadForJira(User, actionID)
 
                 Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(User)
                 crmLinkAttachmentErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
@@ -1500,11 +1499,10 @@ Namespace TeamSupport
                                                                 GetDescription(ObjectType.Attachment),
                                                                 attachments.Select(Function(p) p.AttachmentID.ToString()).ToList(),
                                                                 isCleared:=False)
-                Dim updateAttachments As Boolean = False
                 Dim crmLinkError As CRMLinkError = Nothing
                 Dim attachmentError As String = String.Empty
 
-                For Each attachment As Data.Attachment In attachments
+                For Each attachment As Data.AttachmentProxy In attachments
                     crmLinkError = crmLinkAttachmentErrors.FindByObjectIDAndFieldName(attachment.AttachmentID.ToString(), "file")
 
                     If (Not File.Exists(attachment.Path)) Then
@@ -1575,7 +1573,8 @@ Namespace TeamSupport
                                 content.Flush()
                                 content.Close()
                                 attachment.SentToJira = True
-                                updateAttachments = True
+                                TeamSupport.Data.Quarantine.ServiceQ.SetAttachmentSentToJira(User, attachment.AttachmentID)
+
 
                                 ClearCrmLinkError(crmLinkError)
                             Catch ex As Exception
@@ -1594,9 +1593,6 @@ Namespace TeamSupport
                     End If
                 Next
 
-                If updateAttachments Then
-                    attachments.Save()
-                End If
             End Sub
 
             Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String, ByVal actionPosition As Integer, creatorId As Integer) As String

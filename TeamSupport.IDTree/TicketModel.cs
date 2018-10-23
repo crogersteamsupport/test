@@ -13,7 +13,7 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for valid TicketID
     /// </summary>
-    public class TicketModel : IDNode
+    public class TicketModel : IDNode, ITaskAssociation
     {
         public OrganizationModel Organization { get; private set; }
         public int TicketID { get; private set; }
@@ -40,7 +40,7 @@ namespace TeamSupport.IDTree
         /// <summary> bottom up - existing action </summary>
         public TicketModel(ConnectionContext connection, int ticketID) : base(connection)
         {
-            Organization = new OrganizationModel(connection, connection.Organization.OrganizationID);
+            Organization = connection.Organization;
             TicketID = ticketID;
             Verify();
         }
@@ -57,7 +57,7 @@ namespace TeamSupport.IDTree
 
         public override void Verify()
         {
-            //Verify($"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={Organization.OrganizationID}");
+            Verify($"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={Organization.OrganizationID}");
         }
 
         /// <summary> Existing Data.Action </summary>
@@ -72,8 +72,8 @@ namespace TeamSupport.IDTree
         public OrganizationTicketModel[] OrganizationTickets() { return OrganizationTicketModel.GetOrganizationTickets(this); }
         public TicketReminderModel[] Reminders() { return TicketReminderModel.GetTicketReminders(this); }
         public SubscriptionModel[] Subscriptions() { return SubscriptionModel.GetSubscriptions(this); }
-        public TaskAssociationModel[] TaskAssociations() { return TaskAssociationModel.GetTaskAssociations(this); }
-        public TicketQueueModel[] TicketQueue() { return TicketQueueModel.GetQueuedTicket(this); }
+        //public TaskAssociationModel[] TaskAssociations() { return TaskAssociationModel.GetTaskAssociations(this); }
+        //public TicketQueueModel[] TicketQueue() { return TicketQueueModel.GetQueuedTicket(this); }
 
 
         public TicketModel[] ChildTickets()

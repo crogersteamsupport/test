@@ -133,7 +133,6 @@
   <ItemGroup>
     <Compile Include="RestCommandHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RestCommand.cs" />
     <Compile Include="RestCommandModule.cs" />
     <Compile Include="RestData\RestActionLogs.cs" />
     <Compile Include="RestData\RestActions.cs" />
@@ -161,7 +160,6 @@
     <Compile Include="RestData\RestUsers.cs" />
     <Compile Include="RestData\RestVersions.cs" />
     <Compile Include="RestData\RestWikiArticles.cs" />
-    <Compile Include="RestException.cs" />
     <Compile Include="RestProcessor.cs" />
     <Compile Include="RestXmlWriter.cs" />
   </ItemGroup>
@@ -172,6 +170,14 @@
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
       <Project>{1943ac11-1f2d-4b85-9f0f-4d67284814be}</Project>
       <Name>TeamSupport.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TeamSupport.ModelAPI\TeamSupport.ModelAPI.csproj">
+      <Project>{7e2b2e07-518a-47a4-a39a-502654e8c8ed}</Project>
+      <Name>TeamSupport.ModelAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
+      <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
+      <Name>TeamSupport.Proxy</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

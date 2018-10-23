@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TeamSupport.IDTree;
 using TeamSupport.Data;
-using TeamSupport.Proxy;
 using TeamSupport.DataAPI;
 using TeamSupport.ModelAPI;
 using System.Configuration;
@@ -15,7 +14,7 @@ namespace TeamSupport.UnitTest
     public class IDTreeTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void TicketMerge()
         {
             string userData = "4787299|1078|0|51dab274-5d73-4f56-8df9-da97d20cdc5b|1";
             string connectionString = "Application Name=App;Data Source=dev-sql.corp.teamsupport.com; Initial Catalog=TeamSupportNightly;Persist Security Info=True;User ID=Dev-Sql-WebApp;Password=TeamSupportDev;Connect Timeout=500;";
@@ -37,7 +36,8 @@ namespace TeamSupport.UnitTest
         {
             // new ticket
             TicketProxy inTicketProxy = EmptyTicket();
-            TicketModel ticket = Data_API.Create(user, inTicketProxy) as TicketModel;  // user created a ticketD
+            TicketModel ticket = (TicketModel)Data_API.Create(user, inTicketProxy);  // user created a ticketD
+
             TicketProxy outTicketProxy = Data_API.Read<TicketProxy>(ticket);
             Assert.AreEqual(inTicketProxy, outTicketProxy);
 
@@ -140,6 +140,19 @@ namespace TeamSupport.UnitTest
                 SystemActionTypeID = 0,
                 ActionTypeID = 2119
             };
+        }
+
+        public static AttachmentProxy CreateAttachment(int organizationID, AttachmentProxy.References refType, int refID, string path)
+        {
+            ActionAttachmentProxy attachmentProxy = (ActionAttachmentProxy)AttachmentProxy.ClassFactory(AttachmentProxy.References.Actions);
+            attachmentProxy.OrganizationID = organizationID;
+            attachmentProxy.ActionID = refID;
+            attachmentProxy.FileName = "stuff";
+            attachmentProxy.FilePathID = 3;
+            attachmentProxy.FileSize = 256;
+            attachmentProxy.FileType = "text something...";
+            attachmentProxy.Path = path;  // IAttachmentDestination
+            return attachmentProxy;
         }
     }
 }

@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -46,11 +48,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionAttachmentModel.cs" />
+    <Compile Include="AttachmentModel.cs" />
     <Compile Include="ActionModel.cs" />
     <Compile Include="AssetModel.cs" />
     <Compile Include="AssetTicketModel.cs" />
     <Compile Include="AttachmentFile.cs" />
+    <Compile Include="AuthenticationModel.cs" />
+    <Compile Include="ChatModel.cs" />
+    <Compile Include="NoteModel.cs" />
+    <Compile Include="ProductModel.cs" />
+    <Compile Include="ProductVersionModel.cs" />
+    <Compile Include="TaskModel.cs" />
     <Compile Include="TicketQueueModel.cs" />
     <Compile Include="TSDataTable.cs" />
     <Compile Include="TicketRelationshipModel.cs" />
@@ -67,8 +75,8 @@
     <Compile Include="TagLinkModel.cs" />
     <Compile Include="TagModel.cs" />
     <Compile Include="TaskAssociationModel.cs" />
-    <Compile Include="TicketTaskModel.cs" />
     <Compile Include="TicketModel.cs" />
+    <Compile Include="WatercoolerMsgModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

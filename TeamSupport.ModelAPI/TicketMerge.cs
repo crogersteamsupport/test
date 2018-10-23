@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamSupport.Data;
 using TeamSupport.IDTree;
-using TeamSupport.Proxy;
 using TeamSupport.DataAPI;
 
 namespace TeamSupport.ModelAPI
 {
-    /// <summary> Raquel writes awesome code </summary>
+    /// <summary>
+    /// prototype code for ticket merge
+    /// </summary>
     class TicketMerge
     {
         public ConnectionContext Connection { get; private set; }
@@ -51,7 +52,7 @@ namespace TeamSupport.ModelAPI
         void MergeQueuedTickets()
         {
             // all the instances where this ticket is in a queue
-            TicketQueueModel[] ticketQueues = Source.TicketQueue();
+            //TicketQueueModel[] ticketQueues = Source.TicketQueue();
 
             //foreach(TicketQueueModel ticketQueue in ticketQueues)
             //{
@@ -237,10 +238,10 @@ namespace TeamSupport.ModelAPI
 
         void MergeTaskAssociations()
         {
-            TaskAssociationModel[] taskAssociations = Source.TaskAssociations();
-            UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
-            foreach (TaskAssociationModel task in taskAssociations)
-                Data_API.Update(Destination, args);
+            //TaskAssociationModel[] taskAssociations = Source.TaskAssociations();
+            //UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
+            //foreach (TaskAssociationModel task in taskAssociations)
+            //    Data_API.Update(Destination, args);
         }
 
         public void Merge()

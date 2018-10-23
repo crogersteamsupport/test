@@ -592,7 +592,7 @@ namespace TSWebServices
                     //_importUser = new Data.LoginUser(LoginUser.ConnectionString, -5, imports[0].OrganizationID, null);
                     Imports import = new Imports(loginUser);
                     import.LoadByImportID(importFileID);
-                    string path = AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.ImportLogs, import[0].FilePathID);
+                    string path = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath1(loginUser, import);
                     //string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
                     //logPath = Path.Combine(logPath, imports[0].OrganizationID.ToString());
                     ImportLog _importLog = new ImportLog(path, importFileID);

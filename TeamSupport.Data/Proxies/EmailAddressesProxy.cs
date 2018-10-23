@@ -8,22 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(EmailAddressProxy))]
-  public class EmailAddressProxy
-  {
-    public EmailAddressProxy() {}
-    [DataMember] public int Id { get; set; }
-    [DataMember] public int RefID { get; set; }
-    [DataMember] public int RefType { get; set; }
-    [DataMember] public string Email { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
-    [DataMember] public int? ImportFileID { get; set; }
-          
-  }
   
   public partial class EmailAddress : BaseItem
   {
