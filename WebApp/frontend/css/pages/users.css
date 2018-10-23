@@ -1,7 +1,15 @@
-.ui-layout-west {
-    min-width:200px;
+#user-tasks {
+    position: absolute;
+    overflow-y: scroll;
+    top: 100px;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
+.ui-layout-west {
+    min-width: 200px;
+}
 
 .ui-layout-resizer {
     background: #8AAEDE;
