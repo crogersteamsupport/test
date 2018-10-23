@@ -55,16 +55,14 @@ namespace TSWebServices {
             {
                 List<DeflectorReturn> filteredList = new List<DeflectorReturn>();
 
-                //Customer Hub
-                if (customerHubID != null)
-                {
-                    filteredList = Deflector.FetchHubDeflections(organization, phrase, (int)customerHubID);
+                if (Settings.OrganizationDB.ReadBool("ChatTicketDeflectionEnabled", false)) { 
+                    //Customer Hub
+                    if (customerHubID != null)
+                    {
+                        filteredList = Deflector.FetchHubDeflections(organization, phrase, (int)customerHubID);
+                    }
+                    //Portal
                 }
-                ////Portal
-                //else if (!String.IsNullOrEmpty(portalName))
-                //{
-
-                //}
 
                 return JsonConvert.SerializeObject(filteredList);
             }
