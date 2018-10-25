@@ -90,4 +90,8 @@
     <Compile Include="RefType\WebHooksPendingProxy.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y "$(TargetDir)Teamsupport.Proxy.dll" "$(ProjectDir)..\..\ts-support-hub\TeamSupport.Hub\dependencies\"
+xcopy /y "$(TargetDir)Teamsupport.Proxy.dll" "$(ProjectDir)..\..\ts-support-hub\TeamSupport.Authentication\dependencies\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
