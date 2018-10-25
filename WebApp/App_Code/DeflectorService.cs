@@ -55,7 +55,7 @@ namespace TSWebServices {
             {
                 List<DeflectorReturn> filteredList = new List<DeflectorReturn>();
 
-                if (Settings.OrganizationDB.ReadBool("ChatTicketDeflectionEnabled", false)) { 
+                if (Convert.ToBoolean(OrganizationSettings.ReadString(LoginUser.Anonymous, organization, "ChatTicketDeflectionEnabled", "False"))) { 
                     //Customer Hub
                     if (customerHubID != null)
                     {
