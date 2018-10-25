@@ -67,6 +67,12 @@ partial class Attachment : System.Web.UI.Page
   
   private void OpenAttachment()
   {
+    if (!TeamSupport.Permissions.UserRights.CanOpenAttachment(UserSession.LoginUser, _attachment))
+    {
+      Response.Redirect("Message.aspx?Message=invalid_request");
+      return;
+    }
+
     Response.Clear();
     Response.ClearContent();
     Response.ClearHeaders();
