@@ -178,6 +178,20 @@ namespace TSWebServices {
             }
         }
 
+        public void RemoveTag(int organizationID, int ticketID, string value)
+        {
+
+            try
+            {
+                DeflectorAPI deflectorAPI = new DeflectorAPI();
+                deflectorAPI.RemoveTagAsync(organizationID, ticketID, value);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+            }
+        }
+
         //private List<DeflectorReturn> GetHubDeflectionResults(int organizationID, string phrase, int customerHubID)
         //{
 
@@ -201,6 +215,6 @@ namespace TSWebServices {
 
         //    return result;
         //}
- }
+    }
 
 }
