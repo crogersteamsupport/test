@@ -9,6 +9,15 @@ using Newtonsoft.Json;
 
 namespace TeamSupport.Data.BusinessObjects.Reporting
 {
+    public class TabularReport
+    {
+        public TabularReport() { }
+        public int Subcategory { get; set; }
+        public ReportSelectedField[] Fields { get; set; }
+        public ReportFilter[] Filters { get; set; }
+    }
+
+
     public class TabularReportSql
     {
         public static void GetTabularSql(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID, bool useUserFilter, string sortField = null, string sortDir = null)

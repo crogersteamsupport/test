@@ -2348,46 +2348,6 @@ IF @@ROWCOUNT=0
     }
 
 
-    public class SummaryReport
-    {
-        public SummaryReport() { }
-        public int Subcategory { get; set; }
-        public ReportSummaryFields Fields { get; set; }
-        public ReportFilter[] Filters { get; set; }
-    }
-
-    public class ReportSummaryFields
-    {
-        public ReportSummaryFields() { }
-        public ReportSummaryDescriptiveField[] Descriptive { get; set; }
-        public ReportSummaryCalculatedField[] Calculated { get; set; }
-    }
-
-    public class ReportSummaryDescriptiveField
-    {
-        public ReportSummaryDescriptiveField() { }
-        public SummarySelectedField Field { get; set; }
-        public string Value1 { get; set; }
-    }
-
-    public class ReportSummaryCalculatedField
-    {
-        public ReportSummaryCalculatedField() { }
-        public SummarySelectedField Field { get; set; }
-        public string Aggregate { get; set; }
-        public string Comparator { get; set; }
-        public string Value1 { get; set; }
-        public string Value2 { get; set; }
-    }
-
-    public class TabularReport
-    {
-        public TabularReport() { }
-        public int Subcategory { get; set; }
-        public ReportSelectedField[] Fields { get; set; }
-        public ReportFilter[] Filters { get; set; }
-    }
-
     public class UserTabularSettings
     {
         public UserTabularSettings() { }

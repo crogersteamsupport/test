@@ -9,6 +9,39 @@ using Newtonsoft.Json;
 
 namespace TeamSupport.Data.BusinessObjects.Reporting
 {
+    public class SummaryReport
+    {
+        public SummaryReport() { }
+        public int Subcategory { get; set; }
+        public ReportSummaryFields Fields { get; set; }
+        public ReportFilter[] Filters { get; set; }
+    }
+
+    public class ReportSummaryFields
+    {
+        public ReportSummaryFields() { }
+        public ReportSummaryDescriptiveField[] Descriptive { get; set; }
+        public ReportSummaryCalculatedField[] Calculated { get; set; }
+    }
+
+    public class ReportSummaryDescriptiveField
+    {
+        public ReportSummaryDescriptiveField() { }
+        public SummarySelectedField Field { get; set; }
+        public string Value1 { get; set; }
+    }
+
+    public class ReportSummaryCalculatedField
+    {
+        public ReportSummaryCalculatedField() { }
+        public SummarySelectedField Field { get; set; }
+        public string Aggregate { get; set; }
+        public string Comparator { get; set; }
+        public string Value1 { get; set; }
+        public string Value2 { get; set; }
+    }
+
+
     public class SummaryReportSql
     {
         public static void GetSummarySql(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, int? reportID, bool useUserFilter, bool useDefaultOrderBy)
@@ -359,6 +392,38 @@ namespace TeamSupport.Data.BusinessObjects.Reporting
             }
 
             return "";
+        }
+
+        public static string GetReportChartData(LoginUser loginUser, int reportID)
+        {
+            Report report = Reports.GetReport(loginUser, reportID, loginUser.UserID);
+            Reports.UpdateReportView(loginUser, report.ReportID);
+            SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
+            DataTable table = Reports.GetSummaryData(loginUser, summaryReport, true, report);
+            return Reports.BuildChartData(loginUser, table, summaryReport);
+        }
+
+        public static string GetChartReportData(LoginUser loginUser, int reportID)
+        {
+            Report report = Reports.GetReport(loginUser, reportID, loginUser.UserID);
+            Reports.UpdateReportView(loginUser, report.ReportID);
+            SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
+            DataTable table = Reports.GetSummaryData(loginUser, summaryReport, true, report);
+            return Reports.BuildChartData(loginUser, table, summaryReport);
+        }
+
+        public static string GetChartData(LoginUser loginUser, string summaryReportFields)
+        {
+            SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(summaryReportFields);
+            DataTable table = Reports.GetSummaryData(loginUser, summaryReport, true);
+            return Reports.BuildChartData(loginUser, table, summaryReport);
+        }
+
+        public static string GetHubChartData(LoginUser loginUser, Report report)
+        {
+            SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
+            DataTable table = Reports.GetSummaryData(loginUser, summaryReport, true, report);
+            return Reports.BuildChartData(loginUser, table, summaryReport);
         }
 
     }
