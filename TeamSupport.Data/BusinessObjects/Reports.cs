@@ -313,19 +313,19 @@ namespace TeamSupport.Data
             switch (ReportDefType)
             {
                 case ReportType.Table:
-                    TabularSql.GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
+                    TabularReportSql.GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
                     break;
                 case ReportType.Chart:
                     GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null, false, true);
                     break;
                 case ReportType.Custom:
-                    GetCustomSql(command, isSchemaOnly, useUserFilter);
+                    CustomReportSql.GetCustomSql(Collection.LoginUser, command, isSchemaOnly, useUserFilter, this);
                     break;
                 case ReportType.Summary:
                     GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter, false);
                     break;
                 case ReportType.TicketView:
-                    TabularSql.GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
+                    TabularReportSql.GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
                     break;
                 default:
                     break;
@@ -344,19 +344,19 @@ namespace TeamSupport.Data
             switch (ReportDefType)
             {
                 case ReportType.Table:
-                    TabularSql.GetTabularSqlForExports(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
+                    TabularReportSql.GetTabularSqlForExports(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
                     break;
                 case ReportType.Chart:
                     GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null, false, true);
                     break;
                 case ReportType.Custom:
-                    GetCustomSqlForExport(command, useUserFilter);
+                    CustomReportSql.GetCustomSqlForExport(Collection.LoginUser, command, useUserFilter, this);
                     break;
                 case ReportType.Summary:
                     GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter, false);
                     break;
                 case ReportType.TicketView:
-                    TabularSql.GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
+                    TabularReportSql.GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
                     break;
                 default:
                     break;
@@ -405,91 +405,6 @@ namespace TeamSupport.Data
             {
                 // throw new Exception("Missing OrganizationID parameter in report query.");
             }
-        }
-
-        private void GetCustomSql(SqlCommand command, bool isSchemaOnly, bool useUserFilter)
-        {
-            if (isSchemaOnly)
-            {
-                command.CommandText = string.Format("WITH q AS ({0}) SELECT * FROM q WHERE (0=1)", Query);
-                return;
-            }
-
-            Report report = Reports.GetReport(Collection.LoginUser, ReportID, Collection.LoginUser.UserID);
-            if (report != null && report.Row["Settings"] != DBNull.Value)
-            {
-                try
-                {
-                    UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
-                    StringBuilder builder = new StringBuilder();
-                    if (userFilters != null && userFilters.Filters != null && userFilters.Filters.Length > 0)
-                    {
-                        GetWhereClause(Collection.LoginUser, command, builder, userFilters.Filters);
-                        builder.Remove(0, 4);
-                        command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c WHERE {1})", Query, builder.ToString());
-                    }
-                    else
-                    {
-                        command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c)", Query);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ExceptionLogs.LogException(Collection.LoginUser, ex, "Tabular SQL - User filters");
-                    throw;
-                }
-            }
-            else
-            {
-                command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c)", Query);
-
-            }
-
-
-        }
-
-        private void GetCustomSqlForExport(SqlCommand command, bool useUserFilter)
-        {
-            //if (isSchemaOnly)
-            //{
-            //    command.CommandText = string.Format("WITH q AS ({0}) SELECT * FROM q WHERE (0=1)", Query);
-            //    return;
-            //}
-
-            Report report = Reports.GetReport(Collection.LoginUser, ReportID, Collection.LoginUser.UserID);
-            if (report != null && report.Row["Settings"] != DBNull.Value)
-            {
-                try
-                {
-                    UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
-                    StringBuilder builder = new StringBuilder();
-                    if (userFilters != null && userFilters.Filters != null && userFilters.Filters.Length > 0)
-                    {
-                        GetWhereClause(Collection.LoginUser, command, builder, userFilters.Filters);
-                        builder.Remove(0, 4);
-                        //command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c WHERE {1})", Query, builder.ToString());
-                        command.CommandText = string.Format("WITH c AS ({0}) SELECT * FROM c WHERE {1}", Query, builder.ToString());
-                    }
-                    else
-                    {
-                        //command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c)", Query);
-                        command.CommandText = Query;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ExceptionLogs.LogException(Collection.LoginUser, ex, "Tabular SQL - User filters");
-                    throw;
-                }
-            }
-            else
-            {
-                //command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c)", Query);
-                command.CommandText = Query;
-
-            }
-
-
         }
 
         public static void UseTicketRights(LoginUser loginUser, int subCAtID, ReportTables tables, SqlCommand command, StringBuilder builder)
