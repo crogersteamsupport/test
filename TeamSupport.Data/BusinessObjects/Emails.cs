@@ -180,7 +180,7 @@ WHERE EmailID IN (
         public static int GetMaxEmailsForTrial(LoginUser loginUser, int organizationID)
         {
             int maxEmails = 5;
-            int.TryParse(OrganizationSettings.ReadString(loginUser, organizationID, "Emails_MaxForTrial", "5"), out maxEmails);
+            int.TryParse(OrganizationSettings.ReadString(loginUser, organizationID, "Emails_MaxForTrial", "50"), out maxEmails);
             return maxEmails;
         }
 
@@ -202,14 +202,14 @@ WHERE EmailID IN (
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-SELECT COUNT(*) FROM Emails 
+SELECT COUNT(*) FROM Emails WITH(NOLOCK) 
 WHERE IsWaiting = 0 
 AND OrganizationID = @OrganizationID 
 ";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
-                o = command.ExecuteScalar();
-            }
+				o = emails.ExecuteScalar(command);
+			}
 
             if (o == null || o == DBNull.Value) return 0;
             return (int)o;
