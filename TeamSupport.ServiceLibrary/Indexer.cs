@@ -383,6 +383,23 @@ namespace TeamSupport.ServiceLibrary
                 }
 
 
+                bool doCompress = false;
+                if (_threadPosition % 2 == 0 && (DateTime.Now.DayOfWeek == DayOfWeek.Saturday))
+                {
+                    IndexInfo info = new IndexInfo();
+                    info = IndexJob.GetIndexInfo(path);
+                    LogVerbose("Info - Doc Count:" + info.DocCount.ToString());
+                    LogVerbose("Info - Obsolete:" + info.ObsoleteCount.ToString());
+
+                    doCompress = info.DocCount > 0 && (info.ObsoleteCount / info.DocCount) > 0.2;
+                    if (doCompress)
+                    {
+                        job.ActionCompress = true;
+                        job.ActionVerify = true;
+                        LogVerbose("Compressing");
+                    }
+                }
+
                 try
                 {
                     job.ExecuteInThread();
@@ -412,7 +429,6 @@ namespace TeamSupport.ServiceLibrary
                     LogVerbose("Info - Doc Count:" + info.DocCount.ToString());
                     LogVerbose("Info - Obsolete:" + info.ObsoleteCount.ToString());
                 }
-
 
                 if (!IsStopped)
                 {

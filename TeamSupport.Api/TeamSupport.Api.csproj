@@ -173,6 +173,10 @@
       <Project>{1943ac11-1f2d-4b85-9f0f-4d67284814be}</Project>
       <Name>TeamSupport.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TeamSupport.Permissions\TeamSupport.Permissions.csproj">
+      <Project>{ea4d4d19-dbfa-45ca-bb1e-6bb676bd6f0f}</Project>
+      <Name>TeamSupport.Permissions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
