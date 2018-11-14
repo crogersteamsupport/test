@@ -145,6 +145,7 @@ namespace TeamSupport.Data
             Match DetectDeflector = Regex.Match(Body, @"{{Deflector(.+?)?}}", RegexOptions.IgnoreCase);
             if (DetectDeflector.Success) {
                 string ActionText = StripHTML(Actions.GetTicketFirstAction(loginUser, ticketId).Description);
+                ActionText = Exclusions(ActionText);
                 List<DeflectorReturn> DeflectionResults = Deflector.FetchHubDeflections(organizationId, ActionText, null, productFamilyId);
                 string Deflection;
                 if (DeflectionResults.Count > 0) {
@@ -157,6 +158,11 @@ namespace TeamSupport.Data
                 Body = Regex.Replace(Body, "{{Deflector(.+?)?}}", Deflection, RegexOptions.IgnoreCase);
             }
             return this;
+        }
+
+        private static string Exclusions (string phrase) {
+            phrase = Regex.Replace(phrase, "<(.+?)?exclude>.*?</(.+?)?>", "", RegexOptions.IgnoreCase);
+            return phrase;
         }
 
         private static string StripHTML(string html) {
