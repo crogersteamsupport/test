@@ -6,7 +6,7 @@
 
     <div class="header flexbox">
         <div class="avatar flex pull">{{{UserImageTag}}}</div>
-        <div class="info flexpush">
+        <div class="info flex push">
             {{#if item.IsPinned}}
             <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned" aria-hidden="true"></a>
             {{else}}
@@ -20,7 +20,7 @@
         <div class="extras flex pull">
             <div class="flexbox">
                 {{#unless item.IsWC}}
-                <div class="indicators flexpush">
+                <div class="indicators flex push">
                     {{#if item.IsKnowledgeBase}}
                     <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb" aria-hidden="true"></a>
                     {{else}}
@@ -31,7 +31,7 @@
                 {{/unless}}
 
                 {{#if item.IsWC}}
-                <div class="indicators flexpush"></div>
+                <div class="indicators flex push"></div>
                 {{/if}}
 
                 <div class="badges flex pull">
