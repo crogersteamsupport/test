@@ -5,7 +5,7 @@
 {{/if}}
 
     <div class="header flexbox">
-        <div class="avatar flexpull">{{{UserImageTag}}}</div>
+        <div class="avatar flex pull">{{{UserImageTag}}}</div>
         <div class="info flexpush">
             {{#if item.IsPinned}}
             <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned" aria-hidden="true"></a>
@@ -17,7 +17,7 @@
             <div class="text-muted">{{item.MessageType}} added on {{FormatDateTime item.DateCreated}}</div>
             <div class="text-muted">{{TimeSpent}} <span id="watson-{{item.RefID}}">{{Watson}}</span></div>
         </div>
-        <div class="extras flexpull">
+        <div class="extras flex pull">
             <div class="flexbox">
                 {{#unless item.IsWC}}
                 <div class="indicators flexpush">
@@ -27,14 +27,14 @@
                     <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb hidden" aria-hidden="true"></a>
                     {{/if}}
                 </div>
-                <div class="applause flexpull">{{{Applause}}}</div>
+                <div class="applause flex pull">{{{Applause}}}</div>
                 {{/unless}}
 
                 {{#if item.IsWC}}
                 <div class="indicators flexpush"></div>
                 {{/if}}
 
-                <div class="badges flexpull">
+                <div class="badges flex pull">
                     {{#if item.IsWC}}
                     <span class="number ticket-action-number">&nbsp;</span>
                     {{else}}

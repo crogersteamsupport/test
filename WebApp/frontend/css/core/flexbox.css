@@ -41,6 +41,7 @@ div.flexbox .flex.push {
 }
 div.flexbox .flex.pull {
     flex:0 1 !important;
+    -webkit-flex:0 1 !important;
 }
 div.flexbox .flex.full {
     flex:0 0 100%;
