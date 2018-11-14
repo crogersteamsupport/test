@@ -1,4 +1,4 @@
-/* Last Updated: 2018-10-22 */
+/* Last Updated: 2018-11-14 */
 
 div.flexbox {
     display:-webkit-box;
@@ -27,21 +27,26 @@ div.flexbox.align {
 div.flexbox.justify {
     justify-content:center;
 }
+div.flexbox.full {
+    width:100%;
+}
 
-div.flex,
-div.flex.push,
-div.flexpush {
+div.flexbox .flex  {
+    flex:0 1 auto;
+    -webkit-flex:0 1 auto;
+}
+div.flexbox .flex.push {
     flex:1 0 auto;
     -webkit-flex:1 0 auto;
 }
-div.flex.full {
-    flex:0 0 100%;
-}
-div.flex.grey {
-    background-color:rgba(0,0,0,0.05);
-}
 div.flexbox .flex.pull {
     flex:0 1 !important;
+}
+div.flexbox .flex.full {
+    flex:0 0 100%;
+}
+div.flexbox .flex.grey {
+    background-color:rgba(0,0,0,0.05);
 }
 div.flexbox .flex.nowrap {
     white-space:nowrap !important;
@@ -53,39 +58,39 @@ div.flexbox .flex.even {
     flex-grow:1 !important;
 }
 
-div.flex1 {
+div.flexbox .flex1 {
     flex:1;
     -webkit-flex:1;
 }
-div.flex2 {
+div.flexbox .flex2 {
     flex:2;
     -webkit-flex:2;
 }
-div.flex3 {
+div.flexbox .flex3 {
     flex:3;
     -webkit-flex:3;
 }
-div.flex4 {
+div.flexbox .flex4 {
     flex:4;
     -webkit-flex:4;
 }
-div.flex5 {
+div.flexbox .flex5 {
     flex:5;
     -webkit-flex:5;
 }
-div.flex6 {
+div.flexbox .flex6 {
     flex:6;
     -webkit-flex:6;
 }
-div.flex7 {
+div.flexbox .flex7 {
     flex:7;
     -webkit-flex:7;
 }
-div.flex8 {
+div.flexbox .flex8 {
     flex:8;
     -webkit-flex:8;
 }
-div.flex9 {
+div.flexbox .flex9 {
     flex:9;
     -webkit-flex:9;
 }
@@ -122,7 +127,7 @@ div.flexbox .flex.basis120 {
     flex:0 0 120px;
     flex-grow:0;
     flex-shrink:0;
-    flex-basis:120px !important;
+    flex-basis:100px !important;
     -webkit-flex-basis:120px;
 }
 div.flexbox .flex.basis150 {
@@ -171,17 +176,13 @@ div.flexbox .flex.basis600 {
     flex:0 0 600px;
     flex-grow:0;
     flex-shrink:0;
-    flex-basis:00px !important;
+    flex-basis:600px !important;
     -webkit-flex-basis:600px;
 }
-div.flexbox .flex.basis600 {
-    flex:0 0 600px;
+div.flexbox .flex.basis700 {
+    flex:0 0 700px;
     flex-grow:0;
     flex-shrink:0;
-    flex-basis:00px !important;
-    -webkit-flex-basis:600px;
-}
-
-.mgn-rt-10 {
-    margin-right:10px !important;
+    flex-basis:700px !important;
+    -webkit-flex-basis:700px;
 }
