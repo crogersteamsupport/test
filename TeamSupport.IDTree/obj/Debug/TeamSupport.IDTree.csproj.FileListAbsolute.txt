@@ -1,0 +1,12 @@
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\bin\Debug\TeamSupport.IDTree.dll
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\bin\Debug\TeamSupport.IDTree.pdb
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\bin\Debug\TeamSupport.IDTree.dll.CodeAnalysisLog.xml
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\bin\Debug\TeamSupport.IDTree.dll.lastcodeanalysissucceeded
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\bin\Debug\System.Runtime.InteropServices.RuntimeInformation.dll
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\bin\Debug\TeamSupport.Proxy.dll
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\bin\Debug\TeamSupport.Proxy.pdb
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\obj\Debug\TeamSupport.IDTree.csprojAssemblyReference.cache
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\obj\Debug\TeamSupport.IDTree.csproj.CoreCompileInputs.cache
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\obj\Debug\TeamSupport.IDTree.csproj.CopyComplete
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\obj\Debug\TeamSupport.IDTree.dll
+C:\SRC\ts-app\ts-app\TeamSupport.IDTree\obj\Debug\TeamSupport.IDTree.pdb

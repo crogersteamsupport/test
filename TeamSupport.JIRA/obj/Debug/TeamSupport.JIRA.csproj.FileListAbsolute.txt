@@ -1,0 +1,17 @@
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\TeamSupport.JIRA.dll
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\TeamSupport.JIRA.pdb
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\Newtonsoft.Json.dll
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\RestSharp.dll
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\System.Runtime.InteropServices.RuntimeInformation.dll
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\TeamSupport.EFData.dll
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\EntityFramework.dll
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\TeamSupport.EFData.pdb
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\TeamSupport.EFData.dll.config
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\Newtonsoft.Json.xml
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\RestSharp.xml
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\bin\Debug\EntityFramework.xml
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\obj\Debug\TeamSupport.JIRA.csprojAssemblyReference.cache
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\obj\Debug\TeamSupport.JIRA.csproj.CoreCompileInputs.cache
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\obj\Debug\TeamSupport.JIRA.csproj.CopyComplete
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\obj\Debug\TeamSupport.JIRA.dll
+C:\SRC\ts-app\ts-app\TeamSupport.JIRA\obj\Debug\TeamSupport.JIRA.pdb

@@ -1,0 +1,8 @@
+C:\SRC\ts-app\ts-app\TeamSupport.Proxy\bin\Debug\TeamSupport.Proxy.dll
+C:\SRC\ts-app\ts-app\TeamSupport.Proxy\bin\Debug\TeamSupport.Proxy.pdb
+C:\SRC\ts-app\ts-app\TeamSupport.Proxy\bin\Debug\System.Runtime.InteropServices.RuntimeInformation.dll
+C:\SRC\ts-app\ts-app\TeamSupport.Proxy\obj\Debug\TeamSupport.Proxy.csproj.CoreCompileInputs.cache
+C:\SRC\ts-app\ts-app\TeamSupport.Proxy\obj\Debug\TeamSupport.Proxy.csproj.CopyComplete
+C:\SRC\ts-app\ts-app\TeamSupport.Proxy\obj\Debug\TeamSupport.Proxy.dll
+C:\SRC\ts-app\ts-app\TeamSupport.Proxy\obj\Debug\TeamSupport.Proxy.pdb
+C:\SRC\ts-app\ts-app\TeamSupport.Proxy\obj\Debug\TeamSupport.Proxy.csprojAssemblyReference.cache

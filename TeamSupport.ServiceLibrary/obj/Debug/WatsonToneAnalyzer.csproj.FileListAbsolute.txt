@@ -1,0 +1,16 @@
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\bin\Debug\WatsonToneAnalyzer.exe.config
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\bin\Debug\WatsonToneAnalyzer.exe
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\bin\Debug\WatsonToneAnalyzer.pdb
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\bin\Debug\Newtonsoft.Json.dll
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\bin\Debug\System.Net.Http.Formatting.dll
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\bin\Debug\Newtonsoft.Json.xml
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\bin\Debug\System.Net.Http.Formatting.xml
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\obj\Debug\WatsonToneAnalyzer.csprojAssemblyReference.cache
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\obj\Debug\WatsonToneAnalyzer.exe.config
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\obj\Debug\WatsonToneAnalyzer.ProjectInstaller.resources
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\obj\Debug\WatsonToneAnalyzer.WatsonToneAnalyzerService.resources
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\obj\Debug\WatsonToneAnalyzer.csproj.GenerateResource.cache
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\obj\Debug\WatsonToneAnalyzer.csproj.CoreCompileInputs.cache
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\obj\Debug\WatsonToneAnalyzer.csproj.CopyComplete
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\obj\Debug\WatsonToneAnalyzer.exe
+C:\SRC\ts-app\ts-app\TeamSupport.ServiceLibrary\obj\Debug\WatsonToneAnalyzer.pdb
