@@ -44,6 +44,20 @@ namespace TeamSupport.Handlers
             get { return false; }
         }
 
+        static void EnsurePathExists(string path)
+        {
+            try
+            {
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("WikiHandler.ProcessRequest failed with: " + ex.Message);
+            }
+        }
 
         public void ProcessRequest(HttpContext context)
         {
@@ -69,6 +83,7 @@ namespace TeamSupport.Handlers
                 }
 
 				string path = HttpUtility.UrlDecode(builder.ToString().TrimEnd('\\'));
+                EnsurePathExists(path);//Checks to see if the path exists. If not, it creates it.
                 //string root = SystemSettings.ReadString("FilePath", "");
                 FilePaths filePaths = new FilePaths(TSAuthentication.GetLoginUser());
                 filePaths.LoadByID(1);
