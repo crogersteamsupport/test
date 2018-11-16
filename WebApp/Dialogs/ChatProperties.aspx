@@ -71,6 +71,9 @@
             <asp:CheckBox ID="cbChatTOKScreenEnabled" runat="server" Text="Enable Screen Sharing"/>
         </div>
         <div>
+            <asp:CheckBox ID="cbChatTicketDeflectionEnabled" runat="server" Text="Enable Ticket Deflection"/>
+        </div>
+        <div>
             <asp:CheckBox ID="cbChatTOKVoiceEnabled" runat="server" Text="Enable Voice Calls"/>
         </div>
         <div>
