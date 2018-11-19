@@ -1247,7 +1247,7 @@ namespace TSWebServices
                 }
                 else //custom values
                 {
-                    note.ActivityTypeString = activities.Where(x => x.ActivityTypeID == note.ActivityType).Select(x => x.Name).ToString();
+                    note.ActivityTypeString = activities.First(x => x.ActivityTypeID == note.ActivityType).Name;
                 }
             }
 
