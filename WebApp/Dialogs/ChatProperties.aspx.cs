@@ -59,6 +59,7 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
             cbChatTOKScreenEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", false);
             cbChatTOKVoiceEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", false);
             cbChatTOKVideoEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", false);
+
         }
         else
         {
@@ -67,6 +68,7 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
             cbChatTOKVideoEnabled.Enabled = false;
         }
 
+        cbChatTicketDeflectionEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTicketDeflectionEnabled", false);
         cbChatAvatars.Checked = Settings.OrganizationDB.ReadBool("ChatAvatarsEnabled", false);
     }
 
@@ -103,6 +105,7 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
         Settings.OrganizationDB.WriteBool("ChatTOKVoiceEnabled", cbChatTOKVoiceEnabled.Checked);
         Settings.OrganizationDB.WriteBool("ChatTOKVideoEnabled", cbChatTOKVideoEnabled.Checked);
         Settings.OrganizationDB.WriteBool("ChatAvatarsEnabled", cbChatAvatars.Checked);
+        Settings.OrganizationDB.WriteBool("ChatTicketDeflectionEnabled", cbChatTicketDeflectionEnabled.Checked);
 
         return true;
     }

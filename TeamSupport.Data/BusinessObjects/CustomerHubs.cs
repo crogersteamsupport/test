@@ -25,6 +25,17 @@ namespace TeamSupport.Data
 			}
 		}
 
+        public static int? LoadFirstNonProductAssociatedHubID(int organizationID)
+        {
+            CustomerHubs customerHubHelper = new CustomerHubs(LoginUser.Anonymous);
+            customerHubHelper.LoadByOrganizationID(organizationID);
+
+            CustomerHub returnHub = customerHubHelper.Where(hub => hub.ProductFamilyID == null && hub.IsActive == true).First();
+
+            return returnHub?.CustomerHubID; 
+        }
+
+
         public void LoadByHubName(string name, string cnameURL, bool isActive = true)
         {
             using (SqlCommand command = new SqlCommand())

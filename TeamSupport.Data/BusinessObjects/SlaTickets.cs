@@ -248,7 +248,6 @@ namespace TeamSupport.Data
             {
                 //The Violation needs to be calculated first, which means the start date is already valid.
                 int startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                int endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
 
                 //When converted the input to UTC the end time might be less than the start time. E.g. central 8 to 22, is stored as utc 14 to 4
                 if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
@@ -258,7 +257,6 @@ namespace TeamSupport.Data
                     slaDayEnd = slaDayEnd.Value.AddMinutes(-adjustedMinutes);
                     ViolationDate = ViolationDate.AddMinutes(-adjustedMinutes);
                     startOfDayMinutes = slaDayStart.Value.Minute + (slaDayStart.Value.Hour * 60);
-                    endOfDayMinutes = slaDayEnd.Value.Minute + (slaDayEnd.Value.Hour * 60);
                 }
 
                 int slaDays = (slaWarningTime / 60) / 24;
@@ -325,11 +323,6 @@ namespace TeamSupport.Data
                     {
                         slaMinutes--;
                     }
-                }
-
-                if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day)
-                {
-                    ExpireDate = ExpireDate.Value.AddMinutes(adjustedMinutes);
                 }
 
 				//last check to make sure it didn't fall into a Holiday, if so move onto the next valid day

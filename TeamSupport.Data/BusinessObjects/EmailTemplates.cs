@@ -6,6 +6,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace TeamSupport.Data
 {
@@ -136,6 +139,40 @@ namespace TeamSupport.Data
                 return Regex.Replace(text, parameterName, value, RegexOptions.IgnoreCase);
             }
             return text;
+        }
+
+        public EmailTemplate ReplaceDeflector(LoginUser loginUser, int organizationId, int productFamilyId, int ticketId) {
+            Match DetectDeflector = Regex.Match(Body, @"{{Deflector(.+?)?}}", RegexOptions.IgnoreCase);
+            if (DetectDeflector.Success) {
+                string ActionText = Actions.GetTicketFirstAction(loginUser, ticketId).Description;
+                ActionText = Exclusions(ActionText);
+                ActionText = StripHTML(ActionText);
+                List<DeflectorReturn> DeflectionResults = Deflector.FetchHubDeflections(organizationId, ActionText, null, productFamilyId);
+                string Deflection;
+                if (DeflectionResults.Count > 0) {
+                    Match MatchTitle = Regex.Match(Body, @"{{deflector title=""(.[^""]+)""}}", RegexOptions.IgnoreCase);
+                    string Title = (MatchTitle.Success) ? MatchTitle.Groups[1].Value : null;
+                    Deflection = EmailTemplates.GenerateEmailDeflectionTemplate(DeflectionResults, Title);
+                } else {
+                    Deflection = null;
+                }
+                Body = Regex.Replace(Body, "{{Deflector(.+?)?}}", Deflection, RegexOptions.IgnoreCase);
+            }
+            return this;
+        }
+
+        private static string Exclusions (string phrase) {
+            return Regex.Replace(phrase, "<(.+?)?exclude>.*?</(.+?)?>", "", RegexOptions.IgnoreCase);
+        }
+
+        private static string StripHTML(string html) {
+            var sanitizedStringBuilder = new StringBuilder();
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            foreach (var node in doc.DocumentNode.ChildNodes) {
+                sanitizedStringBuilder.Append(node.InnerText);
+            }
+            return sanitizedStringBuilder.ToString();
         }
 
         public EmailTemplate ReplaceParameter(string parameterName, string value)
@@ -546,7 +583,7 @@ namespace TeamSupport.Data
                             OR IsTSOnly = 0
                         )
                         AND EmailTemplateID NOT IN (22,23,24)
-                    ORDER BY 
+                    ORDER BY
                         Position";
                 }
                 else
@@ -563,7 +600,7 @@ namespace TeamSupport.Data
                             OR IsTSOnly = 0
                         )
                         AND EmailTemplateID NOT IN (35,36,37,38,39)
-                    ORDER BY 
+                    ORDER BY
                         Position";
                 }
                 command.CommandType = CommandType.Text;
@@ -697,23 +734,42 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetNewTicketAdvPortal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)
-        {
+        public static MailMessage GetNewTicketAdvPortal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket) {
             int productFamilyID = -1;
             Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
-            if (organization.UseProductFamilies && ticket.ProductFamilyID != null)
-            {
+
+            if (organization.UseProductFamilies && ticket.ProductFamilyID != null) {
                 productFamilyID = (int)ticket.ProductFamilyID;
             }
 
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 1, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
+
+            template.ReplaceDeflector(loginUser, ticket.OrganizationID, productFamilyID, ticket.TicketID);
+
             template.ReplaceActions(ticket, true);
-            if (creator != null) template.ReplaceFields("Creator", creator);
+            if (creator != null) {
+                template.ReplaceFields("Creator", creator);
+            }
             template.ReplaceContacts(ticket);
             template.ReplaceModifierAvatar(ticket, byCreator: true);
 
             return template.GetMessage();
+        }
+
+        public static string GenerateEmailDeflectionTemplate(List<DeflectorReturn> deflectionResults, string title) {
+            StringBuilder sb = new StringBuilder();
+            if (deflectionResults.Any()) {
+                sb.Append("<table border=\"0\" style\"margin-top:10px;\">\r\n");
+                if (title != null) {
+                    sb.Append("<tr><td style=\"margin-bottom:7px;font-size:12px;font-weight:normal;font-family:Arial;color:#555555;\">" + title + "</td></tr>\r\n");
+                }
+                foreach (var deflectionResult in deflectionResults) {
+                    sb.Append("<tr><td><a href='" + deflectionResult.ReturnURL + "' target='_blank' style='margin-bottom:7px;font-size:12px;font-weight:normal;font-family:Arial;'>" + deflectionResult.Name + "</a></td></tr>\r\n");
+                }
+                sb.Append("</table>");
+            }
+            return sb.ToString();
         }
 
         public static MailMessage GetNewTicketInternal(LoginUser loginUser, UsersViewItem creator, TicketsViewItem ticket)

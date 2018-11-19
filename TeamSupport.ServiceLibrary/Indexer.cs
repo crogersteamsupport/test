@@ -361,21 +361,19 @@ namespace TeamSupport.ServiceLibrary
                 job.ActionAdd = true;
                 job.CreateRelativePaths = false;
                 job.StoredFields = Server.Tokenize(storedFields);
+                job.IndexingFlags = IndexingFlags.dtsAlwaysAdd;
                 //string tempPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "TempIndexFiles" + indexPath);
                 //if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
                 //job.TempFileDir = tempPath;
-
-                job.IndexingFlags = IndexingFlags.dtsAlwaysAdd;
-
                 bool doCompress = false;
-                if (_threadPosition % 2 == 0 && (DateTime.Now.DayOfWeek == DayOfWeek.Saturday))
+                if (_threadPosition % 2 == 0 && (DateTime.Now.DayOfWeek == DayOfWeek.Saturday || DateTime.Now.DayOfWeek == DayOfWeek.Sunday))
                 {
                     IndexInfo info = new IndexInfo();
                     info = IndexJob.GetIndexInfo(path);
                     LogVerbose("Info - Doc Count:" + info.DocCount.ToString());
                     LogVerbose("Info - Obsolete:" + info.ObsoleteCount.ToString());
 
-                    doCompress = info.DocCount > 0 && (info.ObsoleteCount / info.DocCount) > 0.2;
+                    doCompress = (info.ObsoleteCount / info.DocCount) > 0.2;
                     if (doCompress)
                     {
                         job.ActionCompress = true;
@@ -404,7 +402,6 @@ namespace TeamSupport.ServiceLibrary
                     Logs.WriteException(ex);
                     throw;
                 }
-
 
                 if (doCompress)
                 {

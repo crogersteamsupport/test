@@ -6,6 +6,7 @@ $(document).ready(function () {
     var fname = Ts.Utils.getQueryValue("fname", window);
     var lname = Ts.Utils.getQueryValue("lname", window);
     var email = Ts.Utils.getQueryValue("email", window);
+    var customerHubID = Ts.Utils.getQueryValue("HubID", window);
     var msg = Ts.Utils.getQueryValue("msg", window);
     _groupName = Ts.Utils.getQueryValue("Group", window);
     _groupID = Ts.Utils.getQueryValue("GroupID", window);
@@ -23,10 +24,10 @@ $(document).ready(function () {
         }
         
         $('.chatRequestForm').show();
-        GetChatSettings(chatID);
+        GetChatSettings(chatID, customerHubID);
     },
     function (error) {
-        console.log(error)
+        console.log(error);
     });
 
 
@@ -38,21 +39,21 @@ $(document).ready(function () {
         if (chatOffline) {
             IssueAjaxRequest("OfflineChat", contactInfo,
             function (result) {
-                console.log(result)
+                console.log(result);
                 window.location.replace('ChatThankYou.html');
             },
             function (error) {
-                console.log(error)
+                console.log(error);
             });
         }
         else {
             IssueAjaxRequest("RequestChat", contactInfo,
             function (result) {
-                console.log(result)
+                console.log(result);
                 window.location.replace('Chat.html?chatid=' + result.ChatID + '&pid=' + result.RequestorID);
             },
             function (error) {
-                console.log(error)
+                console.log(error);
             });
         }
     });
@@ -74,11 +75,49 @@ $(document).ready(function () {
     }
 });
 
-function GetChatSettings(chatID) {
+function SetupDeflectionListener(organizationID, customerHubID) {
+    var deflector = new TSWebServices.DeflectorService();
+    //var returnURL = Ts.Utils.getQueryValue("ReturnURL", window);
+
+    if (customerHubID) {
+        var typingTimer;
+        var doneTypingInterval = 500;  //time in ms
+        var $input = $('#userIssue');
+
+        $input.on('keyup', function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        });
+
+        $input.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
+    }
+
+    function doneTyping() {
+        $('#deflection-results').html('');
+        if ($input.val()) {
+            deflector.FetchDeflections(organizationID, $input.val(), customerHubID, function (result) {
+                debugger;
+                var deflectionResults = JSON.parse(result.Result);
+                if (deflectionResults.length > 0) {
+                    $('#deflection-results').append('<h4>Suggested Solutions</h4>');
+                }
+
+                for (x = 0; x < deflectionResults.length; x++) {
+                    $('#deflection-results').append('<a target="_blank" class="list-group-item" href="' + returnURL + '/knowledgeBase/' + deflectionResults[x].TicketId + '">' + deflectionResults[x].Name +'</a>');
+                }
+            });
+        }
+    }
+}
+
+function GetChatSettings(chatID, customerHubID) {
     var chatObject = { chatGuid: chatID };
 
     IssueAjaxRequest("GetClientChatPropertiesByChatGUID", chatObject,
     function (result) {
+
         if (!chatOffline) {
             $('.panel-heading').text(result.ChatIntro);
         }
@@ -86,7 +125,9 @@ function GetChatSettings(chatID) {
         $("input:text:visible:first").focus();
 		
 		var imageUrl = '/dc/' + result.OrganizationID + '/chat/logo';
-		$('.chat-logo').css('background-image', 'url(' + imageUrl + ')');
+        $('.chat-logo').css('background-image', 'url(' + imageUrl + ')');
+
+        SetupDeflectionListener(result.OrganizationID, customerHubID);
     },
     function (error) {
 
