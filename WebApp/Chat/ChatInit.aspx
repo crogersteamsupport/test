@@ -1,59 +1,101 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ChatInit.aspx.cs" Inherits="Chat_ChatInit" %>
-
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ChatInit.aspx.cs" Inherits="Chat_ChatInit" %>
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head runat="server">
     <title></title>
-    <%-- CSS --%>
-    <link href="../vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
-    <link href="../vcr/1_9_0/Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="../vcr/1_9_0/Pages/CustomerChatInit.css" rel="stylesheet" />
-
-</head>
-<body>
-    <div class="panel panel-default chatRequestForm" style="display:none;">
-        <div class="panel-heading">Welcome to our live chat!</div>
-        <div class="panel-body">
-            <form id="newChatForm" class="container">
-                <div class="row">
-                    <div class="col-xs-9 col-sm-10 col-md-11">
-                        <div class="alert alert-info chatOfflineWarning" role="alert">
-                            Our live chat is not available at this time.  Please submit a ticket request in the form below, and a member of our team will follow up with you as soon as possible.<br />Thank you!
-                        </div>
-                        <div class="form-group">
-                            <label for="userFirstName">First Name</label>
-                            <input type="text" class="form-control" id="userFirstName" placeholder="First Name" />
-                        </div>
-                        <div class="form-group">
-                            <label for="userLastName">Last Name</label>
-                            <input type="text" class="form-control" id="userLastName" placeholder="Last Name" />
-                        </div>
-                        <div class="form-group">
-                            <label for="userEmail">Email address</label>
-                            <input type="email" class="form-control" id="userEmail" placeholder="Email" />
-                        </div>
-                    </div>
-                    <div class="col-xs-3 col-sm-2 col-md-1">
-                        <div class="chat-logo pull-right"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <label for="userIssue" class="description-label">How can we help you?</label>
-                        <textarea class="form-control" id="userIssue" rows="5"></textarea>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-default" style="margin-top:10px;">Submit</button>
-            </form>
-        </div>
-    </div>
-</body>
-    <%-- JS --%>
+    <link href="/frontend/library/fontawesome-5.3.1/css/all.min.css?1540232401" rel="stylesheet" />
+    <link href="/frontend/css/core/flexbox.css?1540232401" rel="stylesheet" />
+    <link href="/frontend/css/features/customerchat-init.css?1540232401" rel="stylesheet" />
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
     <script src="/frontend/library/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="/frontend/library/jquery.placeholder.js" type="text/javascript"></script>
-    <script src="/frontend/library/bootstrap3.min.js" type="text/javascript"></script>
     <script src="../vcr/1_9_0/Js/Ts/ts.utils.js"></script>
-    <script src="../vcr/1_9_0/Pages/CustomerChatInit.js"></script>
+
+    <!-- HANDLEBARS. -->
+    <script src="/frontend/library/handlebars/handlebars.runtime-v4.0.12.js"></script>
+    <script src="/frontend/handlebars/chatinit.js?1540232401" type="text/javascript"></script>
+
+    <script src="/frontend/javascript/features/customerchat-init.js?1540232401"></script>
+</head>
+
+<body>
+
+    <div style="max-width:100%;width:100%;">
+
+        <div class="flexbox column">
+            <div cla="flex" style="padding:5px 10px;background-color:#2e3f52;color:white;">
+                <div>Welcome to our live chat!</div>
+            </div>
+            <div cla="flex">
+                <div class="alert alert-info chatOfflineWarning" role="alert" style="display:none;">Our live chat is not available at this time. Please submit a ticket request in the form below, and a member of our team will follow up with you as
+                    soon as possible. Thank you for your patience.</div>
+            </div>
+        </div>
+
+        <form id="newChatForm" class="container" runat="server">
+
+            <asp:ScriptManager ID="ScriptManager1" runat="server" ScriptMode="Release" EnableScriptGlobalization="True">
+                <services>
+                    <asp:ServiceReference Path="~/Services/DeflectorService.asmx" />
+                </services>
+            </asp:ScriptManager>
+
+            <div class="flexbox" style="max-width:100%;width:100%;">
+                <div class="flex push">
+                    <div class="flexbox column" style="max-width:100%;width:100%;">
+                        <div class="flex">
+                            <div style="padding:10px;">
+                                <input type="text" id="userFirstName" placeholder="First Name" style="width:100%;">
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <div style="padding:10px;">
+                                <input type="text" id="userLastName" placeholder="Last Name" style="width:100%;">
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <div style="padding:10px;">
+                                <input type="text" id="userEmail" placeholder="Email Address" style="width:100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex basis120">
+                    <div class="chat-logo pull-right"></div>
+                </div>
+            </div>
+
+            <div class="flexbox column" style="width:100%;">
+                <div class="flex">
+                    <div style="padding:10px;">
+                        <textarea id="userIssue" rows="5" placeholder="How can we help you?" style="width:100%;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div id="deflection-box" style="width:100%;">
+                <div class="flexbox align" style="margin:0px 10px 2px;">
+                    <div class="flex pull" style="padding:0px 5px 5px;vertical-align:top;"><i class="fas fa-exclamation-triangle" style="font-size:12px;"></i></div>
+                    <div class="flex push" style="font-size:12px;">Would one of these articles help you?</div>
+                </div>
+                <div>
+                    <div id="deflection-results"></div>
+                </div>
+            </div>
+
+            <div class="flexbox column" style="max-width:100%;">
+                <div class="flex">
+                    <div style="text-align:right;padding:15px;">
+                        <button type="submit">SUBMIT</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+
 </html>
