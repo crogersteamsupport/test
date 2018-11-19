@@ -144,7 +144,9 @@ namespace TeamSupport.Data
         public EmailTemplate ReplaceDeflector(LoginUser loginUser, int organizationId, int productFamilyId, int ticketId) {
             Match DetectDeflector = Regex.Match(Body, @"{{Deflector(.+?)?}}", RegexOptions.IgnoreCase);
             if (DetectDeflector.Success) {
-                string ActionText = StripHTML(Actions.GetTicketFirstAction(loginUser, ticketId).Description);
+                string ActionText = Actions.GetTicketFirstAction(loginUser, ticketId).Description;
+                ActionText = Exclusions(ActionText);
+                ActionText = StripHTML(ActionText);
                 List<DeflectorReturn> DeflectionResults = Deflector.FetchHubDeflections(organizationId, ActionText, null, productFamilyId);
                 string Deflection;
                 if (DeflectionResults.Count > 0) {
@@ -157,6 +159,10 @@ namespace TeamSupport.Data
                 Body = Regex.Replace(Body, "{{Deflector(.+?)?}}", Deflection, RegexOptions.IgnoreCase);
             }
             return this;
+        }
+
+        private static string Exclusions (string phrase) {
+            return Regex.Replace(phrase, "<(.+?)?exclude>.*?</(.+?)?>", "", RegexOptions.IgnoreCase);
         }
 
         private static string StripHTML(string html) {
