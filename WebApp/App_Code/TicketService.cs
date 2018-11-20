@@ -721,6 +721,8 @@ namespace TSWebServices
             Tag Tag = Tags.GetTag(Tags.LoginUser, TagId);
             Tags.LoadByValue(TSAuthentication.OrganizationID, Value);
 
+            string OldTagValue = Tag.Value;
+
             // MERGE TAG.
             if (Tags.Count > 0 && Tag.TagID != Tags[0].TagID) {
                 TagLinks Links = new TagLinks(Tags.LoginUser);
@@ -728,20 +730,19 @@ namespace TSWebServices
                 Tag.Delete();
                 Tag.Collection.Save();
                 Result = Tags[0].TagID;
-
-                // DEFLECTOR.
-                DeflectorService Deflection = new DeflectorService();
-                //Deflection.MergeTag(TSAuthentication.OrganizationID, TagId, Value);
             }
-
             // RENAME TAG.
             else {
-                Tag.Value =Value;
+                Tag.Value = Value;
                 Tag.Collection.Save();
+            }
 
-                // DEFLECTOR.
-                DeflectorService Deflection = new DeflectorService();
-                //Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
+            try {
+                DeflectorAPI deflectorAPI = new DeflectorAPI();
+                deflectorAPI.RenameTagAsync(TSAuthentication.OrganizationID, OldTagValue, Value);
+            }
+            catch (Exception ex) {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
             }
 
             return Result;
@@ -3339,7 +3340,7 @@ WHERE t.TicketID = @TicketID
 
             // DEFLECTOR
             DeflectorService Deflection = new DeflectorService();
-            Deflection.DeleteTag(ticket.OrganizationID, tagValue);
+            Deflection.RemoveTag(ticket.OrganizationID, ticketID, tagValue);
 
             return GetTicketTags(ticketID);
         }
