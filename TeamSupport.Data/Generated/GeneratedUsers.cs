@@ -2018,8 +2018,9 @@ namespace TeamSupport.Data
 		  }
 		  //transaction.Commit();
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
+                Console.WriteLine(ex.Message);
 		  //transaction.Rollback();
 		  throw;
 		}

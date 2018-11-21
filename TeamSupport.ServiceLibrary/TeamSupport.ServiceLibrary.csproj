@@ -234,6 +234,15 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="TeamSupport.Data">
+      <HintPath>..\TeamSupport.Data\bin\x86\Debug\TeamSupport.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="TeamSupport.ModelAPI">
+      <HintPath>..\TeamSupport.ModelAPI\bin\Debug\TeamSupport.ModelAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="TeamSupport.Proxy">
+      <HintPath>..\TeamSupport.Proxy\bin\Debug\TeamSupport.Proxy.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomerInsightsProcessor.cs" />
@@ -292,20 +301,6 @@
     <Compile Include="ZohoCRM\ZohoAccountData.cs" />
     <Compile Include="ZohoCRM\ZohoContactData.cs" />
     <Compile Include="ZohoCRM\ZohoCRMv2.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
-      <Project>{1943AC11-1F2D-4B85-9F0F-4D67284814BE}</Project>
-      <Name>TeamSupport.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.ModelAPI\TeamSupport.ModelAPI.csproj">
-      <Project>{7e2b2e07-518a-47a4-a39a-502654e8c8ed}</Project>
-      <Name>TeamSupport.ModelAPI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
-      <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
-      <Name>TeamSupport.Proxy</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

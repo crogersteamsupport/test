@@ -13,51 +13,51 @@ namespace TeamSupport.UnitTest
     [TestClass]
     public class IDTreeTest
     {
-        [TestMethod]
-        public void TicketMerge()
-        {
-            string userData = "4787299|1078|0|51dab274-5d73-4f56-8df9-da97d20cdc5b|1";
-            string connectionString = "Application Name=App;Data Source=dev-sql.corp.teamsupport.com; Initial Catalog=TeamSupportNightly;Persist Security Info=True;User ID=Dev-Sql-WebApp;Password=TeamSupportDev;Connect Timeout=500;";
-            AuthenticationModel authentication = AuthenticationModel.AuthenticationModelTest(userData, connectionString);
+        //[TestMethod]
+        //public void TicketMerge()
+        //{
+        //    string userData = "4787299|1078|0|51dab274-5d73-4f56-8df9-da97d20cdc5b|1";
+        //    string connectionString = "Application Name=App;Data Source=dev-sql.corp.teamsupport.com; Initial Catalog=TeamSupportNightly;Persist Security Info=True;User ID=Dev-Sql-WebApp;Password=TeamSupportDev;Connect Timeout=500;";
+        //    AuthenticationModel authentication = AuthenticationModel.AuthenticationModelTest(userData, connectionString);
 
-            using (ConnectionContext connection = new ConnectionContext(authentication))
-            {
-                // validated user on organization
-                OrganizationModel organization = connection.Organization;
-                UserModel user = connection.User;
+        //    using (ConnectionContext connection = new ConnectionContext(authentication))
+        //    {
+        //        // validated user on organization
+        //        OrganizationModel organization = connection.Organization;
+        //        UserModel user = connection.User;
 
-                TicketModel source = InsertTicket(user);
-                TicketModel destination = InsertTicket(user);
-                Model_API.MergeTickets(source.TicketID, destination.TicketID);
-            }
-        }
+        //        TicketModel source = InsertTicket(user);
+        //        TicketModel destination = InsertTicket(user);
+        //        Model_API.MergeTickets(source.TicketID, destination.TicketID);
+        //    }
+        //}
 
-        public static TicketModel InsertTicket(UserModel user)
-        {
-            // new ticket
-            TicketProxy inTicketProxy = EmptyTicket();
-            TicketModel ticket = (TicketModel)Data_API.Create(user, inTicketProxy);  // user created a ticketD
+        //public static TicketModel InsertTicket(UserModel user)
+        //{
+        //    // new ticket
+        //    TicketProxy inTicketProxy = EmptyTicket();
+        //    TicketModel ticket = (TicketModel)Data_API.Create(user, inTicketProxy);  // user created a ticketD
 
-            TicketProxy outTicketProxy = Data_API.Read<TicketProxy>(ticket);
-            Assert.AreEqual(inTicketProxy, outTicketProxy);
+        //    TicketProxy outTicketProxy = Data_API.Read<TicketProxy>(ticket);
+        //    Assert.AreEqual(inTicketProxy, outTicketProxy);
 
-            // Actions
-            ActionModel[] actions = new ActionModel[4];
-            for (int j = 0; j < 4; ++j)
-            {
-                // new action
-                ActionProxy inActionProxy = EmptyAction();
-                actions[j] = Data_API.Create(ticket, inActionProxy) as ActionModel;
-                Assert.AreEqual(actions[j], ticket.Action(actions[j].ActionID));
-                ActionProxy outActionProxy = Data_API.Read<ActionProxy>(actions[j]);
-                Assert.AreEqual(inActionProxy, outActionProxy);
-            }
+        //    // Actions
+        //    ActionModel[] actions = new ActionModel[4];
+        //    for (int j = 0; j < 4; ++j)
+        //    {
+        //        // new action
+        //        ActionProxy inActionProxy = EmptyAction();
+        //        actions[j] = Data_API.Create(ticket, inActionProxy) as ActionModel;
+        //        Assert.AreEqual(actions[j], ticket.Action(actions[j].ActionID));
+        //        ActionProxy outActionProxy = Data_API.Read<ActionProxy>(actions[j]);
+        //        Assert.AreEqual(inActionProxy, outActionProxy);
+        //    }
 
-            ActionModel[] readActions = ticket.Actions();
-            CollectionAssert.AreEqual(actions, readActions);
+        //    ActionModel[] readActions = ticket.Actions();
+        //    CollectionAssert.AreEqual(actions, readActions);
 
-            return ticket;
-        }
+        //    return ticket;
+        //}
 
         public static TicketProxy EmptyTicket()
         {
