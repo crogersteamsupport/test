@@ -285,7 +285,7 @@ namespace TeamSupport.Data
                         ExpireDate = GetPreviousBusinessDay(ExpireDate.Value, slaBusinessDays);
                         TimeSpan difference = (new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayStart.Value.Hour, slaDayStart.Value.Minute, 0)) - (DateTime)ExpireDate;
                         ExpireDate = new DateTime(ExpireDate.Value.Year, ExpireDate.Value.Month, ExpireDate.Value.Day, slaDayEnd.Value.Hour, slaDayEnd.Value.Minute, 0);
-                        ExpireDate = ExpireDate.Value.AddMinutes(-1 * difference.Minutes).AddSeconds(-1 * difference.Seconds);
+                        ExpireDate = ExpireDate.Value.AddHours(-1 * difference.Hours).AddMinutes(-1 * difference.Minutes).AddSeconds(-1 * difference.Seconds);
                     }
 
                     if (IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))
@@ -324,6 +324,13 @@ namespace TeamSupport.Data
                         slaMinutes--;
                     }
                 }
+
+				//And only if the ExpireDate falls outside business hours, due to start > end business hours because of the UTC
+				if (businessHours.DayEndUtc.Hour < businessHours.DayStartUtc.Hour && businessHours.DayEndUtc.Day > businessHours.DayStartUtc.Day
+					&& ExpireDate.Value.Hour < businessHours.DayStartUtc.Hour)
+				{
+					ExpireDate = ExpireDate.Value.AddMinutes(adjustedMinutes);
+				}
 
 				//last check to make sure it didn't fall into a Holiday, if so move onto the next valid day
 				while (!IsValidDay(ExpireDate.Value, slaBusinessDays, daysToPause, holidays))

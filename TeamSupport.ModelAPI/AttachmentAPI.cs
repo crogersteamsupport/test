@@ -78,6 +78,22 @@ namespace TeamSupport.ModelAPI
             }
         }
 
+        public static void CreateAttachment(AttachmentProxy attachment)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    IAttachmentDestination model = ClassFactory(connection, attachment);
+                    Data_API.Create(model as IDNode, attachment);
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO - tell user we failed 
+                Data_API.LogMessage(ActionLogType.Insert, (ReferenceType)attachment.RefType, 0, "choke", ex);
+            }
+        }
 
         public static IAttachmentDestination ClassFactory(ConnectionContext connection, AttachmentProxy proxy)
         {

@@ -102,32 +102,6 @@ body.white, div.white {
 
 
 
-
-div.flexbox       { display:flex;display:-webkit-flex; }
-div.flexrow       { flex-direction:row; }
-div.flexcolumn    { flex-direction:column; }
-div.flexwrap      { flex-wrap:wrap;-webkit-flex-wrap:wrap; }
-div.flexalign     { align-items:center; }
-div.flexbox .flex { flex:auto;-webkit-flex:auto; }
-div.flexcell      { flex:1;-webkit-flex:1;flex-basis:auto;flex-grow:0; }
-div.flexpush      { flex:auto;-webkit-flex:auto; }
-div.flexpull      { flex:auto;-webkit-flex:auto;flex-basis:auto;flex-grow:0; }
-div.flex1         { flex:1;-webkit-flex:1; }
-div.flex2         { flex:2;-webkit-flex:2; }
-div.flex3         { flex:3;-webkit-flex:3; }
-div.flex4         { flex:4;-webkit-flex:4; }
-div.flex5         { flex:5;-webkit-flex:5; }
-div.flex6         { flex:6;-webkit-flex:6; }
-div.flex7         { flex:7;-webkit-flex:7; }
-div.flex8         { flex:8;-webkit-flex:8; }
-div.flex9         { flex:9;-webkit-flex:9; }
-
-
-
-
-
-
-
 <!-- HEADER // Tabs -->
 header, div.headerDiv {
     position:relative;

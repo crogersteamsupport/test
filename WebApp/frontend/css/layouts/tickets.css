@@ -32,7 +32,7 @@ button:focus {
 
 #frame-container {
     position:absolute !important;
-    top:0px;
+    top:50px !important;
     bottom:0px;
     left:0px;
     right:0px;
@@ -383,7 +383,7 @@ div.popover {
     margin-bottom:2px;
     font-size:11px;
 }
-#new-action-toolbar .flexpull {
+#new-action-toolbar .flex.pull {
     padding-right:5px;
 }
 #new-action-toolbar input,
