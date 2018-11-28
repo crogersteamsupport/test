@@ -1,0 +1,117 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using TeamSupport.EFData.Models;
+
+namespace TeamSupport.EFData
+{
+    public class JiraRepository : IJiraRepository, IDisposable
+    {
+        readonly IGenericRepository<TicketLinkToJira> ticketLinkrepository;
+        readonly IGenericRepository<CrmLinkTable> crmRepository;
+        readonly IGenericRepository<TicketsView> ticketsViewRepository;
+        readonly IGenericRepository<Tickets> ticketsRepository;
+
+        public JiraRepository(IGenericRepository<TicketLinkToJira> repository)
+        {
+            this.ticketLinkrepository = repository;
+        }
+
+        public JiraRepository(IGenericRepository<CrmLinkTable> crmRepository)
+        {
+            this.crmRepository = crmRepository;
+        }
+
+        public JiraRepository(IGenericRepository<TicketsView> ticketsViewRepository, IGenericRepository<Tickets> ticketsRepository)
+        {
+            this.ticketsViewRepository = ticketsViewRepository;
+            this.ticketsRepository = ticketsRepository;
+        }
+        
+        public TicketsView GetTicketsFromView(int ticketId)
+        {
+            var tickets = ticketsRepository.FindBy(a=>a.TicketID == ticketId).FirstOrDefault();
+            var ticketsView = ticketsViewRepository.FindBy(a => a.OrganizationID == tickets.OrganizationID && a.TicketNumber == tickets.TicketNumber).FirstOrDefault();
+
+            return ticketsView;            
+        }
+
+        public IQueryable<TicketLinkToJira> GetAllJiraTickets()
+        {
+            return ticketLinkrepository.GetAll();
+        }
+
+        public IQueryable<TicketLinkToJira> GetSingleJiraTicket(int id)
+        {
+            return ticketLinkrepository.FindBy(a => a.id == id);
+        }
+
+        public async Task<TicketLinkToJira> GetSingleJiraTicketAsync(int id)
+        {
+            return await ticketLinkrepository.FindByAsync(a => a.id == id).ConfigureAwait(false);
+        }
+
+        public void SaveJiraTickets(TicketLinkToJira jiraTickets)
+        {
+            ticketLinkrepository.Add(jiraTickets);
+        }
+
+        /// <summary>
+        /// Asynchronous save is done at the GenericRepository level
+        /// </summary>
+        /// <param name="jiraTickets"></param>
+        /// <returns>Single Jira Link Ticket</returns>
+        public TicketLinkToJira SaveJiraTicketsAsync(TicketLinkToJira jiraTickets)
+        {
+            return  ticketLinkrepository.AddAsync(jiraTickets).Result;
+        }
+
+        public void DeleteJiraTicket(TicketLinkToJira jiraTickets)
+        {
+            ticketLinkrepository.Delete(jiraTickets);
+        }
+
+        public IQueryable<CrmLinkTable> GetCrmLinkTableById(int? id)
+        {
+           return crmRepository.FindBy(a => a.CRMLinkID == id);
+        }
+
+        public async Task<IQueryable<TicketLinkToJira>> GetTicketsToPushAsIssuesAsync()
+        {
+            return await ticketLinkrepository.GetAllAsync().ConfigureAwait(false);
+        }
+
+        public async Task<IList<TicketLinkToJira>> GetTicketsToPushAsIssuesAsyncByExpression()
+        {
+            return await ticketLinkrepository.GetAllAsync(IsSynced).ConfigureAwait(false);
+        }
+
+        public void DeleteJiraTicketAsync(TicketLinkToJira jiraTicket)
+        {
+            ticketLinkrepository.DeleteAsync(jiraTicket);
+        }
+
+        public void UpdateTicket(TicketLinkToJira jiraTicket)
+        {
+            ticketLinkrepository.Edit(jiraTicket);
+        }
+
+        public void UpdateTicketAsync(TicketLinkToJira jiraTicket)
+        {
+            ticketLinkrepository.EditAsync(jiraTicket);
+        }
+
+        public void Dispose()
+        {
+            var temp = ticketLinkrepository as IDisposable;
+            if (temp != null)
+                temp.Dispose();
+            GC.SuppressFinalize(this);
+        }
+               
+        Expression<Func<TicketLinkToJira, bool>> IsSynced = a => a.SyncWithJira == true;
+
+    }
+}

@@ -1910,7 +1910,8 @@ $(document).ready(function () {
 
   $('#newJiraIssue').click(function (e) {
     e.preventDefault();
-    var parent = $(this).parent().hide();
+  //  var parent = $(this).parent().hide();
+      $('.ts-jira-buttons-container').show();
     var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
     top.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function (result) {
     	if (result != null) {

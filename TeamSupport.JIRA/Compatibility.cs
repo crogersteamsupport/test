@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using TeamSupport.JIRA.JiraJSONSerializedModels;
 
 namespace TeamSupport.JIRA
 {
@@ -11,7 +13,7 @@ namespace TeamSupport.JIRA
 		IssueMetaData.RootObject GetIssueMetaData(string projectKey, string issueType);
 
 		/// <summary>Returns all issues for the given project</summary>
-		IEnumerable<Issue> GetIssues(String projectKey);
+		IEnumerable<Issue> GetIssuesViaProjectKey(String projectKey);
         /// <summary>Returns all issues of the specified type for the given project</summary>
         IEnumerable<Issue> GetIssues(String projectKey, String issueType);
         /// <summary>Enumerates through all issues for the given project</summary>
@@ -23,10 +25,12 @@ namespace TeamSupport.JIRA
         Issue LoadIssue(String issueRef);
         /// <summary>Returns the issue identified by the given ref</summary>
         Issue LoadIssue(IssueRef issueRef);
+        IssueRef CreateIssueViaRestClient(String projectKey, String issueType, IssueFields issueFields);
         /// <summary>Creates an issue of the specified type for the given project</summary>
         Issue CreateIssue(String projectKey, String issueType, String summary);
         /// <summary>Creates an issue of the specified type for the given project</summary>
         Issue CreateIssue(String projectKey, String issueType, IssueFields issueFields);
+        Comment UpdateCommentViaProjectKey(string projectKey, int commentId, String comment);
         /// <summary>Updates the given issue on the remote system</summary>
         Issue UpdateIssue(Issue issue);
 		/// <summary>Updates the specific field on the given issue (by id)</summary>
@@ -46,8 +50,11 @@ namespace TeamSupport.JIRA
 
         /// <summary>Returns all comments for the given issue</summary>
         IEnumerable<Comment> GetComments(IssueRef issue);
+        IEnumerable<Issue<IssueFields>> GetAllIssues();
+
         /// <summary>Adds a comment to the given issue</summary>
         Comment CreateComment(IssueRef issue, String comment);
+        HttpStatusCode CreateCommentViaProjectKey(string projectKey, string comment);
         /// <summary>Deletes the given comment</summary>
         void DeleteComment(IssueRef issue, Comment comment);
 
@@ -60,6 +67,8 @@ namespace TeamSupport.JIRA
 
         /// <summary>Returns all links for the given issue</summary>
         IEnumerable<IssueLink> GetIssueLinks(IssueRef issue);
+        HttpStatusCode UpdateIssueViaProjectKey(string v, UpdateObject updateObject);
+
         /// <summary>Returns the link between two issues of the given relation</summary>
         IssueLink LoadIssueLink(IssueRef parent, IssueRef child, String relationship);
         /// <summary>Creates a link between two issues with the given relation</summary>
@@ -71,6 +80,8 @@ namespace TeamSupport.JIRA
         IEnumerable<RemoteLink> GetRemoteLinks(IssueRef issue);
         /// <summary>Creates a remote link (attached url) for the given issue</summary>
         RemoteLink CreateRemoteLink(IssueRef issue, RemoteLink remoteLink, string globalId);
+        HttpStatusCode DeleteIssueViaProjectKey(string projectKey);
+
         /// <summary>Updates the given remote link (attached url) of the specified issue</summary>
         RemoteLink UpdateRemoteLink(IssueRef issue, RemoteLink remoteLink);
         /// <summary>Removes the given remote link (attached url) of the specified issue</summary>
@@ -84,6 +95,14 @@ namespace TeamSupport.JIRA
 
         /// <summary>Returns information about the JIRA server</summary>
         ServerInfo GetServerInfo();
+        IEnumerable<Comment> GetCommentsViaProjectKey(string projectKey);
+        HttpStatusCode DeleteCommentViaProjectKey(string projectKey, int commentId);
+        HttpStatusCode CreateRemoteLinkViaProjectKey(string projectKey, RemoteLinkAbbreviated remoteLinkObject);
+        IEnumerable<RemoteLinkRoot> GetRemoteLinkViaProjectKey(string projectKey);
+        HttpStatusCode UpdateRemoteLinkViaProjectKeyAndRemoteLinkId(string projectKey, int internalId, RemoteLinkAbbreviated remoteLink);
+        HttpStatusCode DeleteRemoteLinkViaInternalId(string projectKey, int internalId);
+        HttpStatusCode CreateAttachmentViaProjectKey(string projectKey, byte[] octetStream);
+        IEnumerable<Attachment> GetAttachmentsViaProjectKey(string key);
     }
 
     public class JiraClient : IJiraClient
@@ -104,9 +123,9 @@ namespace TeamSupport.JIRA
 			return client.GetIssueMetaData(projectKey, issueType);
 		}
 
-        public IEnumerable<Issue> GetIssues(String projectKey)
+        public IEnumerable<Issue> GetIssuesViaProjectKey(String projectKey)
         {
-            return client.GetIssues(projectKey).Select(Issue.From).ToArray();
+            return client.GetIssuesViaProjectKey(projectKey).Select(Issue.From).ToArray();
         }
 
         public IEnumerable<Issue> GetIssues(String projectKey, String issueType)
@@ -192,6 +211,11 @@ namespace TeamSupport.JIRA
         public Comment CreateComment(IssueRef issue, string comment)
         {
             return client.CreateComment(issue, comment);
+        }
+
+        public HttpStatusCode CreateCommentViaProjectKey(string projectKey, string comment)
+        {
+            return client.CreateCommentViaProjectKey(projectKey, comment);
         }
 
 		public Comment UpdateComment(IssueRef issue, int commentId, string comment)
@@ -287,6 +311,71 @@ namespace TeamSupport.JIRA
 		public ServerInfo GetServerInfo()
         {
             return client.GetServerInfo();
+        }
+
+        public IssueRef CreateIssueViaRestClient(string v1, string v2, IssueFields issueFields)
+        {
+            return client.CreateIssueViaRestClient(v1, v2, issueFields);
+        }
+
+        public IEnumerable<Comment> GetCommentsViaProjectKey(string v)
+        {
+            return client.GetCommentsViaProjectKey(v);
+        }
+
+        public Comment UpdateCommentViaProjectKey(string v1, int x, string v2  )
+        {
+            return client.UpdateCommentViaProjectKey(v1, x, v2);
+        }
+
+        public HttpStatusCode UpdateIssueViaProjectKey(string v, UpdateObject updateObject)
+        {
+            return client.UpdateIssueViaProjectKey(v, updateObject);
+        }
+
+        public HttpStatusCode DeleteCommentViaProjectKey(string projectKey, int commentId)
+        {
+            return client.DeleteCommentViaProjectKey(projectKey, commentId);
+        }
+
+       public IEnumerable<Issue<IssueFields>> GetAllIssues()
+        {
+            return client.GetAllIssues();
+        }
+
+        public HttpStatusCode DeleteIssueViaProjectKey(string projectKey)
+        {
+            return client.DeleteIssueViaProjectKey(projectKey);
+        }
+
+        public HttpStatusCode CreateRemoteLinkViaProjectKey(string projectKey, RemoteLinkAbbreviated remoteLink)
+        {
+            return client.CreateRemoteLinkViaProjectKey(projectKey, remoteLink);
+        }
+
+        public IEnumerable<RemoteLinkRoot> GetRemoteLinkViaProjectKey(string projectKey)
+        {
+            return client.GetRemoteLinkViaProjectKey(projectKey);
+        }
+
+        public HttpStatusCode UpdateRemoteLinkViaProjectKeyAndRemoteLinkId(string projectKey, int internalId, RemoteLinkAbbreviated remoteLink)
+        {
+            return client.UpdateRemoteLinkViaProjectKeyAndRemoteLinkId(projectKey, internalId, remoteLink);
+        }
+
+        public HttpStatusCode DeleteRemoteLinkViaInternalId(string projectKey, int internalId)
+        {
+            return client.DeleteRemoteLinkViaInternalId(projectKey, internalId);
+        }
+
+        public HttpStatusCode CreateAttachmentViaProjectKey(string projectKey, byte[] octetStream)
+        {
+            return client.CreateAttachmentViaProjectKey(projectKey, octetStream);
+        }
+
+        public IEnumerable<Attachment> GetAttachmentsViaProjectKey(string projectKey)
+        {
+            return client.GetAttachmentsViaProjectKey(projectKey);
         }
     }
 

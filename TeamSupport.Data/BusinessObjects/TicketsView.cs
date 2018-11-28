@@ -260,6 +260,7 @@ namespace TeamSupport.Data
 
     public partial class TicketsView
     {
+    
 
         public int GetUserTicketCount(int userID, int closed)
         {
