@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TechTalk.JiraRestClient</name>
+    </assembly>
+    <members>
+        <member name="P:TechTalk.JiraRestClient.Agile.SprintContents.issuesNotCompletedInCurrentSprint">
+            <remarks>
+            Newer APIs uses this. Try first, then <see cref="P:TechTalk.JiraRestClient.Agile.SprintContents.incompletedIssues"/>.
+            </remarks>
+        </member>
+        <member name="P:TechTalk.JiraRestClient.Agile.SprintContents.issuesCompletedInAnotherSprint">
+            <remarks>
+            Newer APIs method.
+            </remarks>
+        </member>
+        <member name="P:TechTalk.JiraRestClient.Agile.SprintContents.completedIssuesInitialEstimateSum">
+            <remarks>
+            Newer APIs method.
+            </remarks>
+        </member>
+        <member name="P:TechTalk.JiraRestClient.Agile.SprintContents.issuesNotCompletedInitialEstimateSum">
+            <remarks>
+            Newer APIs method.
+            </remarks>
+        </member>
+        <member name="P:TechTalk.JiraRestClient.Agile.SprintContents.issuesNotCompletedEstimateSum">
+            <remarks>
+            Newer APIs uses this. Try first, then <see cref="P:TechTalk.JiraRestClient.Agile.SprintContents.incompletedIssuesEstimateSum"/>.
+            </remarks>
+        </member>
+        <member name="P:TechTalk.JiraRestClient.Agile.SprintContents.puntedIssuesInitialEstimateSum">
+            <remarks>
+            Newer APIs method.
+            </remarks>
+        </member>
+        <member name="P:TechTalk.JiraRestClient.Agile.SprintContents.issuesCompletedInAnotherSprintInitialEstimateSum">
+            <remarks>
+            Newer APIs method.
+            </remarks>
+        </member>
+        <member name="P:TechTalk.JiraRestClient.Agile.SprintContents.issuesCompletedInAnotherSprintEstimateSum">
+            <remarks>
+            Newer APIs method.
+            </remarks>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetIssues(System.String)">
+            <summary>Returns all issues for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetIssues(System.String,System.String)">
+            <summary>Returns all issues of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.EnumerateIssues(System.String)">
+            <summary>Enumerates through all issues for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.EnumerateIssues(System.String,System.String)">
+            <summary>Enumerates through all issues of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetIssuesByQuery(System.String,System.String,System.String)">
+            <summary>Returns all issues of the given type and the given project filtered by the given JQL query</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.EnumerateIssues(System.String,System.String,System.String)">
+            <summary>Enumerates through all issues of the specified type for the given project, returning the given issue fields</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.LoadIssue(System.String)">
+            <summary>Returns the issue identified by the given ref</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.LoadIssue(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns the issue identified by the given ref</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.CreateIssue(System.String,System.String,System.String)">
+            <summary>Creates an issue of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.CreateIssue(System.String,System.String,TechTalk.JiraRestClient.IssueFields)">
+            <summary>Creates an issue of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.UpdateIssue(TechTalk.JiraRestClient.Issue)">
+            <summary>Updates the given issue on the remote system</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.DeleteIssue(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Deletes the given issue from the remote system</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetTransitions(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all transitions available to the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.TransitionIssue(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.Transition)">
+            <summary>Changes the state of the given issue as described by the transition</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetWatchers(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all watchers for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetComments(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all comments for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.CreateComment(TechTalk.JiraRestClient.IssueRef,System.String)">
+            <summary>Adds a comment to the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.DeleteComment(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.Comment)">
+            <summary>Deletes the given comment</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetAttachments(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Return all attachments for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.CreateAttachment(TechTalk.JiraRestClient.IssueRef,System.IO.Stream,System.String)">
+            <summary>Creates an attachment to the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.DeleteAttachment(TechTalk.JiraRestClient.Attachment)">
+            <summary>Deletes the given attachment</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetIssueLinks(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all links for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.LoadIssueLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.IssueRef,System.String)">
+            <summary>Returns the link between two issues of the given relation</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.CreateIssueLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.IssueRef,System.String)">
+            <summary>Creates a link between two issues with the given relation</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.DeleteIssueLink(TechTalk.JiraRestClient.IssueLink)">
+            <summary>Removes the given link of two issues</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetRemoteLinks(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all remote links (attached urls) for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.CreateRemoteLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.RemoteLink)">
+            <summary>Creates a remote link (attached url) for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.UpdateRemoteLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.RemoteLink)">
+            <summary>Updates the given remote link (attached url) of the specified issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.DeleteRemoteLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.RemoteLink)">
+            <summary>Removes the given remote link (attached url) of the specified issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetIssueTypes">
+            <summary>Returns all issue types</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient.GetServerInfo">
+            <summary>Returns information about the JIRA server</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetIssues(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Func{TechTalk.JiraRestClient.Issue{`0},System.Boolean})">
+            <summary>Returns all issues of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetIssueCount(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String,System.Func{TechTalk.JiraRestClient.Issue{`0},System.Boolean})">
+            <summary>Returns a count of all issues of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetIssueCount(System.String,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Func{TechTalk.JiraRestClient.Issue{`0},System.Boolean})">
+            <summary>Returns a count of all issues of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetStatuses">
+            <summary>Returns all statuses</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetUsers(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>Returns all users</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetIssues(System.String)">
+            <summary>Returns all issues for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetIssues(System.String,System.String)">
+            <summary>Returns all issues of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.EnumerateIssues(System.String)">
+            <summary>Enumerates through all issues for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.EnumerateIssues(System.String,System.String)">
+            <summary>Enumerates through all issues of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.EnumerateIssuesByQuery(System.String,System.String[],System.Int32)">
+            <summary>Enumerates through all issues filtered by the specified jqlQuery starting form the specified startIndex</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.QueryIssues">
+            <summary>Returns a query provider for this JIRA connection</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetIssuesByQuery(System.String,System.String,System.String)">
+            <summary>Returns all issues of the given type and the given project filtered by the given JQL query</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.EnumerateIssues(System.String,System.String,System.String)">
+            <summary>Enumerates through all issues of the specified type for the given project, returning the given issue fields</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.LoadIssue(System.String)">
+            <summary>Returns the issue identified by the given ref</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.LoadIssue(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns the issue identified by the given ref</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.CreateIssue(System.String,System.String,System.String)">
+            <summary>Creates an issue of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.CreateIssue(System.String,System.String,`0)">
+            <summary>Creates an issue of the specified type for the given project</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.UpdateIssue(TechTalk.JiraRestClient.Issue{`0})">
+            <summary>Updates the given issue on the remote system</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.DeleteIssue(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Deletes the given issue from the remote system</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetTransitions(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all transitions avilable to the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.TransitionIssue(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.Transition)">
+            <summary>Changes the state of the given issue as described by the transition</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetWatchers(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all watchers for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetComments(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all comments for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.CreateComment(TechTalk.JiraRestClient.IssueRef,System.String)">
+            <summary>Adds a comment to the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.DeleteComment(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.Comment)">
+            <summary>Deletes the given comment</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetAttachments(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Return all attachments for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.CreateAttachment(TechTalk.JiraRestClient.IssueRef,System.IO.Stream,System.String)">
+            <summary>Creates an attachment to the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.DeleteAttachment(TechTalk.JiraRestClient.Attachment)">
+            <summary>Deletes the given attachment</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetIssueLinks(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all links for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.LoadIssueLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.IssueRef,System.String)">
+            <summary>Returns the link between two issues of the given relation</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.CreateIssueLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.IssueRef,System.String)">
+            <summary>Creates a link between two issues with the given relation</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.DeleteIssueLink(TechTalk.JiraRestClient.IssueLink)">
+            <summary>Removes the given link of two issues</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetRemoteLinks(TechTalk.JiraRestClient.IssueRef)">
+            <summary>Returns all remote links (attached urls) for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.CreateRemoteLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.RemoteLink)">
+            <summary>Creates a remote link (attached url) for the given issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.UpdateRemoteLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.RemoteLink)">
+            <summary>Updates the given remote link (attached url) of the specified issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.DeleteRemoteLink(TechTalk.JiraRestClient.IssueRef,TechTalk.JiraRestClient.RemoteLink)">
+            <summary>Removes the given remote link (attached url) of the specified issue</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetIssueTypes">
+            <summary>Returns all issue types</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.IJiraClient`1.GetServerInfo">
+            <summary>Returns information about the JIRA server</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.JiraClient`1.GetStatuses">
+            <summary>Returns all statuses</summary>
+        </member>
+        <member name="M:TechTalk.JiraRestClient.JiraClient`1.GetUsers(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>Returns all users</summary>
+        </member>
+    </members>
+</doc>

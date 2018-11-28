@@ -1,24 +1,17 @@
-﻿using Microsoft.SqlServer.Server;
-using System;
+﻿using System;
 using System.Web;
 using System.Web.Services;
-using System.Web.Services.Protocols;
 using System.Collections.Generic;
-using System.Collections;
-using System.Web.Script.Serialization;
 using System.Web.Script.Services;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
-using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
 using dtSearch.Engine;
-using HtmlAgilityPack;
 using System.IO;
-using TidyNet;
 using ImageResizer;
 using System.Net;
 using Newtonsoft.Json;
@@ -28,7 +21,20 @@ using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
 using TeamSupport.ModelAPI;
-using System.Threading;
+using TeamSupport.JIRA;
+using RestSharp;
+using TeamSupport.JIRA.JiraJSONSerializedModels;
+using TeamSupport.EFData;
+using TeamSupport.EFData.Models;
+//using TicketLinkToJira = TeamSupport.Data.TicketLinkToJira;
+using System.Configuration;
+using TicketsView = TeamSupport.Data.TicketsView;
+using TicketLinkToJira = TeamSupport.Data.TicketLinkToJira;
+using Tickets = TeamSupport.Data.Tickets;
+using System.Threading.Tasks;
+
+//using TeamSupport.JIRA;
+//using CustomField = TeamSupport.Data.CustomField;
 
 namespace TSWebServices
 {
@@ -1503,7 +1509,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public DateTime? SetDueDate(int ticketID, Object dueDate)
+        public DateTime? SetDueDate(int ticketID, System.Object dueDate)
         {
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
             if (!CanEditTicket(ticket)) return null;
@@ -1734,9 +1740,9 @@ namespace TSWebServices
             newFields.LoadByTicketTypeID(TSAuthentication.OrganizationID, newTicketTypeID);
 
 
-            foreach (CustomField oldField in oldFields)
+            foreach (TeamSupport.Data.CustomField oldField in oldFields)
             {
-                CustomField newField = newFields.FindByName(oldField.Name);
+                TeamSupport.Data.CustomField newField = newFields.FindByName(oldField.Name);
                 if (newField != null)
                 {
                     CustomValue newValue = CustomValues.GetValue(oldFields.LoginUser, newField.CustomFieldID, ticketID);
@@ -2060,7 +2066,7 @@ namespace TSWebServices
                                                 client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + authorization);
                                             }
 
-                                            Object[] patchDocument = new Object[1];
+                                            System.Object[] patchDocument = new object[1];
                                             patchDocument[0] = new
                                             {
                                                 op = "remove",
@@ -4395,10 +4401,47 @@ WHERE t.TicketID = @TicketID
             return true;
         }
 
+        static byte[] ReadFileFromPathAsBytes(string path)
+        {
+            // Load file meta data with FileInfo
+            FileInfo fileInfo = new FileInfo(path);
+
+            // The byte[] to save the data in
+            byte[] data = new byte[fileInfo.Length];
+
+            // Load a filestream and put its content into the byte[]
+            using (FileStream fs = fileInfo.OpenRead())
+            {
+                fs.Read(data, 0, data.Length);
+            }
+
+            // Delete the temporary file
+            fileInfo.Delete();
+            return data;
+        }
+        string GetIssueTypes()
+        {
+            try
+            {
+                var client = new RestClient("https://teamsupportio.atlassian.net");
+                var request = new RestRequest("rest/api/3/issuetype/", Method.GET);
+                request.AddHeader("ContentType", "application/json");
+                request.AddHeader("Authorization", "Basic " + "amlyYXRlc3RAdGVhbXN1cHBvcnQuY29tOk11cm9jMjAwOCE");
+                var response = client.Execute(request);
+                return response.Content;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("GetIssueTypes() error: {0}", ex);
+                throw new JiraClientException("Could not load issue types", ex);
+            }
+        }
+
         private string SetSyncWithJira(LoginUser loginUser, int ticketId, string jiraIssueKey)
         {
             dynamic result = new ExpandoObject();
-
+            var jiraService = new JiraService();
+            var ticket = jiraService.GetTicketData(ticketId);
             TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(loginUser);
             ticketLinkToJira.LoadByTicketID(ticketId);
 
@@ -4410,11 +4453,10 @@ WHERE t.TicketID = @TicketID
                     ticketLinkToJiraItem.TicketID = ticketId;
                     ticketLinkToJiraItem.JiraKey = jiraIssueKey;
                     ticketLinkToJiraItem.SyncWithJira = true;
-                    ticketLinkToJiraItem.CreatorID = loginUser.UserID;
-
-                    TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
+                    ticketLinkToJiraItem.CreatorID = loginUser.UserID;                    
+                   
                     ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, IntegrationType.Jira.ToString().ToLower(), ticket.ProductID, loginUser);
-
+                    
                     //If product is not associated to an instance then get the 'default' instance
                     if (ticketLinkToJiraItem.CrmLinkID == null || ticketLinkToJiraItem.CrmLinkID <= 0)
                     {
@@ -4427,10 +4469,18 @@ WHERE t.TicketID = @TicketID
                     }
 
                     if (ticketLinkToJiraItem.CrmLinkID != null && ticketLinkToJiraItem.CrmLinkID > 0)
-                    {
+                    {                       
                         ticketLinkToJiraItem.Collection.Save();
                         result.IsSuccessful = true;
                         result.Error = null;
+                        var crmLinkTable = jiraService.GetCRMLinkTableData(ticketLinkToJiraItem.CrmLinkID);
+                        if (crmLinkTable != null)
+                        {                            
+                            var issueFields = new TechTalk.JiraRestClient.IssueFields();
+                            issueFields.description = string.Empty;//Where does this come from?
+                            issueFields.summary = ticket.Name;
+                            var isTicketCreatedSuccessfully = jiraService.CreateNewJiraTicket(crmLinkTable.HostName, crmLinkTable.Username, crmLinkTable.Password, crmLinkTable.DefaultProject, "Story",  issueFields);
+                        }
                     }
                     else
                     {
@@ -4445,8 +4495,18 @@ WHERE t.TicketID = @TicketID
                     ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
                 }
             }
-
+            
             return JsonConvert.SerializeObject(result);
+        }
+
+     
+        private RestRequest CreateRequest(Method method, String path)
+        {
+            var token = "OrAAOQKY6MSPFRB9fakw4786";
+            var userName = "teamsupport@cnlsoftware.com";
+            var request = new RestRequest { Method = method, Resource = path, RequestFormat = RestSharp.DataFormat.Json };
+            request.AddHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(String.Format("{0}:{1}", userName, token))));
+            return request;
         }
 
         private string SetSyncWithTFS(LoginUser loginUser, int ticketId, string TFSWorkItemID)
