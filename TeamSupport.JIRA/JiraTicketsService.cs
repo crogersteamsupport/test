@@ -22,7 +22,10 @@ namespace TeamSupport.JIRA
         public void UpdateTicketAsync(TicketLinkToJira jiraTicket) => jiraRepo.UpdateTicketAsync(jiraTicket);
         public async Task<TicketLinkToJira> GetSingleJiraTicketAsync(int id) => await jiraRepo.GetSingleJiraTicketAsync(id);
         public IQueryable<CrmLinkTable> GetCrmLinkTableById(int? id) => jiraRepo.GetCrmLinkTableById(id);
+<<<<<<< HEAD
         public TicketsView GetTicketsFromViewAsync(int ticketId) =>  jiraRepo.GetTicketsFromView(ticketId);
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
         public TicketLinkToJira GetTicketsToPushAsIssuesById(int id)
         {
             jiraRepo = new JiraRepository(new GenericRepository<TicketLinkToJira>());

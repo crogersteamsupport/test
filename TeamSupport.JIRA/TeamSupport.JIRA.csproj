@@ -79,7 +79,10 @@
     <Compile Include="Compatibility.cs" />
     <Compile Include="Icon.cs" />
     <Compile Include="IJiraClient.cs" />
+<<<<<<< HEAD
     <Compile Include="IJiraService.cs" />
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     <Compile Include="IJiraTicketsService.cs" />
     <Compile Include="Issue.cs" />
     <Compile Include="IssueContainer.cs" />
@@ -104,7 +107,10 @@
     <Compile Include="JiraJSONSerializedModels\Summary.cs" />
     <Compile Include="JiraJSONSerializedModels\Update.cs" />
     <Compile Include="JiraJSONSerializedModels\UpdateObject.cs" />
+<<<<<<< HEAD
     <Compile Include="JiraService.cs" />
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     <Compile Include="JiraTicketsService.cs" />
     <Compile Include="JiraUser.cs" />
     <Compile Include="Mimes.cs" />
@@ -127,10 +133,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
       <Project>{1943AC11-1F2D-4B85-9F0F-4D67284814BE}</Project>
       <Name>TeamSupport.Data</Name>
     </ProjectReference>
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     <ProjectReference Include="..\TeamSupport.EFData\TeamSupport.EFData.csproj">
       <Project>{9fac467c-0138-4567-a3d7-89ca86261dff}</Project>
       <Name>TeamSupport.EFData</Name>

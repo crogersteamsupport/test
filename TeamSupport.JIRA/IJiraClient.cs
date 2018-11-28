@@ -113,7 +113,10 @@ namespace TeamSupport.JIRA
         HttpStatusCode UpdateRemoteLinkViaProjectKeyAndRemoteLinkId(string projectKey, int internalId, RemoteLinkAbbreviated remoteLink);
         HttpStatusCode DeleteRemoteLinkViaInternalId(string projectKey, int internalId);
         HttpStatusCode CreateAttachmentViaProjectKey(string projectKey, byte[] octetStream);
+<<<<<<< HEAD
         IEnumerable<Attachment> GetAttachmentsViaProjectKey(string key);
         IEnumerable<Issue> GetIssuesViaProjectKey(String projectKey);
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     }
 }

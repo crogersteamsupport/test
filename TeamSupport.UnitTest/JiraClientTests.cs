@@ -106,6 +106,7 @@ namespace TeamSupport.UnitTest
         }
 
         [Test]
+<<<<<<< HEAD
         public void JiraClient_ShouldBeAbleToGetIssueViaProjectKey_Successfully()
         {
             //Act
@@ -115,6 +116,8 @@ namespace TeamSupport.UnitTest
         }
 
         [Test]
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
         public void JiraClient_UpdateIssueViaProjectKeyShouldBeAbleToUpdateIssue_Successfully()
         {
             //Arrange
@@ -1517,17 +1520,32 @@ XXbfrPxR4+uu/cfj8VLLpvLLLLKlledX3v4osAfvtX3n48WWfvPx+G1102002m4LAAlSdwpqLlZa
             }
         }
 
+<<<<<<< HEAD
        
+=======
+        [Test]
+        public void JiraClient_ShouldCreateAnAttachmentForExistingIssue_ForAverageCaseWithPerformanceCheck()
+        {
+
+        }
+
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
 
         [Test]
         public void JiraClient_ShouldCreateAnAttachmentForExistingIssueWithLargeFile_WithValidParams()
         {
+<<<<<<< HEAD
             //Arrange
+=======
+            var timer = new Stopwatch();
+            timer.Start();
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
             var base64String = string.Empty;
             var myBuiltString = new StringBuilder();
             if (projectKeys.Any())
             {
                 //Going to need a buffer to read in
+<<<<<<< HEAD
                 //// pathSource = @"C:\images\SomeDoc.txt";
                var pathSource = @"C:\images\largeVideo.mp4";
                 IntPtr mimeTypePtr = new IntPtr();
@@ -1535,6 +1553,16 @@ XXbfrPxR4+uu/cfj8VLLpvLLLLKlledX3v4osAfvtX3n48WWfvPx+G1102002m4LAAlSdwpqLlZa
                 {
                     //Act
                     mimeTypePtr = GetFileAndPerformanceTest( pathSource);
+=======
+                var pathSource = @"C:\Images\Sample.jpg";
+                pathSource = @"C:\Images\Untitled1.png";
+                // pathSource = @"C:\images\SomeDoc.txt";
+                pathSource = @"C:\images\largeVideo1.mp4";
+                IntPtr mimeTypePtr = new IntPtr();
+                try
+                {
+                    mimeTypePtr = GetFileAndPerformanceTest(timer, pathSource);
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
                 }
                 catch (Exception ex)
                 {
@@ -1545,24 +1573,60 @@ XXbfrPxR4+uu/cfj8VLLpvLLLLKlledX3v4osAfvtX3n48WWfvPx+G1102002m4LAAlSdwpqLlZa
             }
         }
 
+<<<<<<< HEAD
         private IntPtr GetFileAndPerformanceTest(string pathSource)
         {
             //Arrange
+=======
+        private IntPtr GetFileAndPerformanceTest(Stopwatch timer, string pathSource)
+        {
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
             IntPtr mimeTypePtr;
             using (FileStream fsSource = new FileStream(pathSource,
                 FileMode.Open, FileAccess.Read))
             {
                 byte[] bytes = new byte[fsSource.Length];
+<<<<<<< HEAD
                 uint mimetype;
+=======
+                int numBytesToRead = (int)fsSource.Length;
+                int numBytesRead = 0;
+                while (numBytesToRead > 0)
+                {
+                    // Read may return anything from 0 to numBytesToRead.
+                    int n = fsSource.Read(bytes, numBytesRead, numBytesToRead);
+                    if (n == 0)
+                        break;
+
+                    numBytesRead += n;
+                    numBytesToRead -= n;
+                }
+                numBytesToRead = bytes.Length;
+                uint mimetype;
+                //Reads first 2048 bytes of file to determine mime-type
+                //FindMimeFromData(0, null, bytes, 2048 , null, 0, out mimetype, 0);
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
                 FindMimeFromData(0, null, bytes, (uint)fsSource.Length, null, 0, out mimetype, 0);
                 mimeTypePtr = new IntPtr(mimetype);
                 string mime = Marshal.PtrToStringUni(mimeTypePtr);
                 Marshal.FreeCoTaskMem(mimeTypePtr);
+<<<<<<< HEAD
                
                 HttpStatusCode expected = HttpStatusCode.OK;
                 byte[] octetStream = bytes;
                 var actual = jiraClient.CreateAttachmentViaProjectKey(projectKeys.LastOrDefault().key, octetStream);
                 //Assert
+=======
+                timer.Stop();
+                var howLong = timer.Elapsed;
+                HttpStatusCode expected = HttpStatusCode.OK;
+                byte[] octetStream = bytes;
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                var actual = jiraClient.CreateAttachmentViaProjectKey(projectKeys.LastOrDefault().key, octetStream);
+                stopwatch.Stop();
+                var timeElapsed = stopwatch.Elapsed;
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
                 Assert.AreEqual(expected, actual);
             }
 
@@ -1574,7 +1638,11 @@ XXbfrPxR4+uu/cfj8VLLpvLLLLKlledX3v4osAfvtX3n48WWfvPx+G1102002m4LAAlSdwpqLlZa
         {
             if (projectKeys.Any())
             {
+<<<<<<< HEAD
                 byte[] octetStream = new byte['a'];
+=======
+                byte[] octetStream = new byte['c'];
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
                 HttpStatusCode expected = HttpStatusCode.OK;
 
                 var actual = jiraClient.CreateAttachmentViaProjectKey(projectKeys.LastOrDefault().key, octetStream);
@@ -1595,6 +1663,7 @@ XXbfrPxR4+uu/cfj8VLLpvLLLLKlledX3v4osAfvtX3n48WWfvPx+G1102002m4LAAlSdwpqLlZa
         [Test]
         public void JiraClient_GetAnAttachmentShouldReturnContents_WithValidParams()
         {
+<<<<<<< HEAD
             if (projectKeys.Any())
             {
                 //Arrange
@@ -1605,6 +1674,9 @@ XXbfrPxR4+uu/cfj8VLLpvLLLLKlledX3v4osAfvtX3n48WWfvPx+G1102002m4LAAlSdwpqLlZa
                 //Assert
                 Assert.AreEqual(expected, actual);
             }
+=======
+
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
         }
 
         [Test]

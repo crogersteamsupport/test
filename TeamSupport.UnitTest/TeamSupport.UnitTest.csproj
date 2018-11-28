@@ -136,14 +136,20 @@
     <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
     </Reference>
+<<<<<<< HEAD
     <Reference Include="TechTalk.JiraRestClient, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null" />
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttachmentTest.cs" />
     <Compile Include="GenericRepositoryTests.cs" />
     <Compile Include="IDTreeTest.cs" />
     <Compile Include="JiraClientTests.cs" />
+<<<<<<< HEAD
     <Compile Include="JiraServiceTests.cs" />
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     <Compile Include="JiraTicketServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyTest.cs" />

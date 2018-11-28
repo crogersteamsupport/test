@@ -102,7 +102,10 @@ namespace TeamSupport.JIRA
         HttpStatusCode UpdateRemoteLinkViaProjectKeyAndRemoteLinkId(string projectKey, int internalId, RemoteLinkAbbreviated remoteLink);
         HttpStatusCode DeleteRemoteLinkViaInternalId(string projectKey, int internalId);
         HttpStatusCode CreateAttachmentViaProjectKey(string projectKey, byte[] octetStream);
+<<<<<<< HEAD
         IEnumerable<Attachment> GetAttachmentsViaProjectKey(string key);
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     }
 
     public class JiraClient : IJiraClient
@@ -372,11 +375,14 @@ namespace TeamSupport.JIRA
         {
             return client.CreateAttachmentViaProjectKey(projectKey, octetStream);
         }
+<<<<<<< HEAD
 
         public IEnumerable<Attachment> GetAttachmentsViaProjectKey(string projectKey)
         {
             return client.GetAttachmentsViaProjectKey(projectKey);
         }
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     }
 
     public class Issue : Issue<IssueFields>

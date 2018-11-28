@@ -16,7 +16,10 @@ namespace TeamSupport.EFData
         }
         public DbSet<TicketLinkToJira> TicketLinkToJira { get; set; }
         public DbSet<CrmLinkTable> CrmLinkTables { get; set; }
+<<<<<<< HEAD
         public DbSet<TicketsView> TicketsView { get; set; }
         public DbSet<Tickets> Tickets { get; set; }
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     }
 }

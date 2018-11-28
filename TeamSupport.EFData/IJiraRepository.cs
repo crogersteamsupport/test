@@ -19,6 +19,10 @@ namespace TeamSupport.EFData
         TicketLinkToJira SaveJiraTicketsAsync(TicketLinkToJira jiraTickets);
         void DeleteJiraTicket(TicketLinkToJira jiraTickets);
         void DeleteJiraTicketAsync(TicketLinkToJira jiraTicket);
+<<<<<<< HEAD
         TicketsView GetTicketsFromView(int ticketId);
+=======
+        
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     }
 }

@@ -248,6 +248,7 @@ namespace TeamSupport.JIRA
 			}
 		}
 
+<<<<<<< HEAD
         //public IssueRef CreateIssueViaRestClient(String projectKey, String issueType, TIssueFields issueFields)
         //{
         //    try
@@ -291,6 +292,51 @@ namespace TeamSupport.JIRA
         //        throw new JiraClientException("Could not create issue", ex);
         //    }
         //}
+=======
+        public IssueRef CreateIssueViaRestClient(String projectKey, String issueType, TIssueFields issueFields)
+        {
+            try
+            {
+                var baseURL = @"https://teamsupportio.atlassian.net";
+                var client = new RestClient(baseURL);
+                var request = new RestRequest("rest/api/2/issue/", Method.POST);
+
+                var issueData = new Dictionary<string, object>();
+                issueData.Add("project", new { key = projectKey });
+                issueData.Add("issuetype", new { name = issueType });
+
+                if (issueFields.summary != null)
+                    issueData.Add("summary", issueFields.summary);
+                if (issueFields.description != null)
+                    issueData.Add("description", issueFields.description);
+                var project = new JIRA.JiraJSONSerializedModels.Project() { key = projectKey.ToString() };
+                var ticketToSendToJira = new RootObject()
+                {
+                    fields = new Fields()
+                    {
+                        project = project,//This is the rootObject.fields.project.key
+                        summary = issueFields.summary,
+                        description = issueFields.description,
+                        issuetype = new Issuetype()
+                        {
+                            name = issueType.ToString()
+                        }
+                    }
+                };
+                var ticketToSendToJiraSerialized = JsonConvert.SerializeObject(ticketToSendToJira);
+                request.AddParameter("application/json", ticketToSendToJiraSerialized, ParameterType.RequestBody);
+                request.AddHeader("Authorization", "Basic " + token);
+
+                var response = client.Execute(request);
+                return deserializer.Deserialize<IssueRef>(response);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("CreateIssue(projectKey, typeCode) error: {0}", ex);
+                throw new JiraClientException("Could not create issue", ex);
+            }
+        }
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
 
         public Issue<TIssueFields> UpdateIssue(Issue<TIssueFields> issue)
 		{
@@ -1282,6 +1328,11 @@ namespace TeamSupport.JIRA
             uint mimetype;
             IntPtr mimeTypePtr = new IntPtr();
             var mime = string.Empty;
+<<<<<<< HEAD
+=======
+            //Reads first 2048 bytes of file to determine mime-type
+            //reads entirety of file to make certain of what it is...inefficient!
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
             try
             {
                 Mimes.FindMimeFromData(0, null, octetStream, (uint)octetStream.Length, null, 0, out mimetype, 0);
@@ -1310,16 +1361,26 @@ namespace TeamSupport.JIRA
 
             try
             {
+<<<<<<< HEAD
                 var fileName = DateTime.Now.ToLocalTime().ToString();
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
                 var baseURL = @"https://teamsupportio.atlassian.net";
                 var client = new RestClient(baseURL);
                 var request = new RestRequest("rest/api/latest/issue/" + projectKey + "/attachments", Method.POST);
                 request.AddHeader("X-Atlassian-Token", "nocheck");
+<<<<<<< HEAD
                 request.AddFileBytes("file", octetStream, fileName, mimeType);
                 request.AddHeader("Authorization", "Basic " + token);
 
                 var response = client.Execute(request);
 
+=======
+                request.AddFileBytes("file", octetStream, projectKey + "_" + DateTime.Now, mimeType);
+                request.AddHeader("Authorization", "Basic " + token);
+
+                var response = client.Execute(request);
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
                 return response.StatusCode;
             }
             catch (Exception ex)
@@ -1329,6 +1390,7 @@ namespace TeamSupport.JIRA
             }
 
         }
+<<<<<<< HEAD
 
         //rest/api/latest/issue/{attachmentId}?fields=attachment
         //public byte[] GetSingleAttachmentViaAttachmentId(string attachmentId)
@@ -1415,5 +1477,7 @@ namespace TeamSupport.JIRA
         {
             throw new NotImplementedException();
         }
+=======
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
     }
 }

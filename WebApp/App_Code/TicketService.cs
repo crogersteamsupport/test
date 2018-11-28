@@ -26,12 +26,17 @@ using RestSharp;
 using TeamSupport.JIRA.JiraJSONSerializedModels;
 using TeamSupport.EFData;
 using TeamSupport.EFData.Models;
+<<<<<<< HEAD
 //using TicketLinkToJira = TeamSupport.Data.TicketLinkToJira;
 using System.Configuration;
 using TicketsView = TeamSupport.Data.TicketsView;
 using TicketLinkToJira = TeamSupport.Data.TicketLinkToJira;
 using Tickets = TeamSupport.Data.Tickets;
 using System.Threading.Tasks;
+=======
+using TicketLinkToJira = TeamSupport.Data.TicketLinkToJira;
+using System.Configuration;
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
 
 //using TeamSupport.JIRA;
 //using CustomField = TeamSupport.Data.CustomField;
@@ -725,6 +730,8 @@ namespace TSWebServices
             Tag Tag = Tags.GetTag(Tags.LoginUser, TagId);
             Tags.LoadByValue(TSAuthentication.OrganizationID, Value);
 
+            string OldTagValue = Tag.Value;
+
             // MERGE TAG.
             if (Tags.Count > 0 && Tag.TagID != Tags[0].TagID) {
                 TagLinks Links = new TagLinks(Tags.LoginUser);
@@ -732,20 +739,19 @@ namespace TSWebServices
                 Tag.Delete();
                 Tag.Collection.Save();
                 Result = Tags[0].TagID;
-
-                // DEFLECTOR.
-                DeflectorService Deflection = new DeflectorService();
-                //Deflection.MergeTag(TSAuthentication.OrganizationID, TagId, Value);
             }
-
             // RENAME TAG.
             else {
-                Tag.Value =Value;
+                Tag.Value = Value;
                 Tag.Collection.Save();
+            }
 
-                // DEFLECTOR.
-                DeflectorService Deflection = new DeflectorService();
-                //Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
+            try {
+                DeflectorAPI deflectorAPI = new DeflectorAPI();
+                deflectorAPI.RenameTagAsync(TSAuthentication.OrganizationID, OldTagValue, Value);
+            }
+            catch (Exception ex) {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
             }
 
             return Result;
@@ -3343,7 +3349,7 @@ WHERE t.TicketID = @TicketID
 
             // DEFLECTOR
             DeflectorService Deflection = new DeflectorService();
-            Deflection.DeleteTag(ticket.OrganizationID, tagValue);
+            Deflection.RemoveTag(ticket.OrganizationID, ticketID, tagValue);
 
             return GetTicketTags(ticketID);
         }
@@ -4460,6 +4466,7 @@ WHERE t.TicketID = @TicketID
                    // TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
                     ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, IntegrationType.Jira.ToString().ToLower(), ticket.ProductID, loginUser);
 
+<<<<<<< HEAD
                    // var crmLinkId = ticketLinkToJiraItem.CrmLinkID;
                   
                     //var token = @"amlyYXRlc3RAdGVhbXN1cHBvcnQuY29tOk11cm9jMjAwOCE=";//Base64 encoded username:password pattern gets back single-string token
@@ -4494,6 +4501,38 @@ WHERE t.TicketID = @TicketID
                   //  string hostName = GetHostName(crmLinkId);
                   //  var rootObject = new BaseIssue();
                   //  rootObject.fields.project.key = jiraProjectKey;
+=======
+                    var crmLinkId = ticketLinkToJiraItem.CrmLinkID;
+                    //ToDO: CHR -- For attachments of images use ReadFileFromPathAsBytes to send it via API call
+                    var token = @"amlyYXRlc3RAdGVhbXN1cHBvcnQuY29tOk11cm9jMjAwOCE=";//Base64 encoded username:password pattern gets back single-string token
+                    var baseURL = @"https://teamsupportio.atlassian.net";
+                    //Visual basic code doesn't CreateIssue it CreatesRemoteLink
+
+                    var jiraClient = new JiraClient(baseURL, "jiratest@teamsupport.com", token);
+                    var currentRemoteLink = new RemoteLinkAbbreviated();
+                    currentRemoteLink.Object = new Dictionary<string, string>();
+                    currentRemoteLink.Object.Add("url", "https://teamsupportio.atlassian.net/browse/SSP-79?filter=-6");
+                    currentRemoteLink.Object.Add("title", "Crazy customer support issue");
+
+                  //  var remoteLink = new RemoteLink() { url = "https://teamsupportio.atlassian.net/browse/SSP-79?filter=-6", title = "Some remote link..." };
+                    var testRemoteLinkCreation = jiraClient.CreateRemoteLinkViaProjectKey("SSP-79", currentRemoteLink);
+
+                    var comments = new List<Comment>() { new Comment() { body = "some comments" } };
+                    var issueFields = new IssueFields() { summary = "test summary", description = "some descr" };
+                    var testGetComments = jiraClient.GetCommentsViaProjectKey("SSP-79");
+                    //iterate over testGetComments to find an id to pass
+                    //Comment UpdateCommentViaProjectKey(string projectKey, int commentId, String comment)
+                    var testUpdateComments = jiraClient.UpdateCommentViaProjectKey("SSP-79", 12450, "some new comment");
+                    var testIssueCreation = jiraClient.CreateIssueViaRestClient("SSP", "Story", issueFields);
+                    var creatingComments = jiraClient.CreateCommentViaProjectKey(testIssueCreation.key.ToString(), "some comment");
+
+                    var jiraClientIssueTypes = jiraClient.GetIssueTypes();
+                    var jiraProjectKey = GetJiraProjectKey(crmLinkId);
+                    jiraClient.CreateIssue("SSP", jiraClientIssueTypes.ToString(), "test smmary");
+                    string hostName = GetHostName(crmLinkId);
+                    var rootObject = new RootObject();
+                    rootObject.fields.project.key = jiraProjectKey;
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
                     //Token is for jiratest@teamsupport.com w/ password Muroc2008!
                     
 
@@ -4514,6 +4553,7 @@ WHERE t.TicketID = @TicketID
                         ticketLinkToJiraItem.Collection.Save();
                         result.IsSuccessful = true;
                         result.Error = null;
+<<<<<<< HEAD
 
                         var crmLinkTable = GetCRMLinkTableData(ticketLinkToJiraItem.CrmLinkID);
                         if (crmLinkTable != null)
@@ -4528,6 +4568,11 @@ WHERE t.TicketID = @TicketID
                             
                             //var userInformation = loginUser.GetUser().UserInformation;
                             var isTicketCreatedSuccessfully =  CreateNewJiraTicket(crmLinkTable.HostName, crmLinkTable.Username, crmLinkTable.Password, crmLinkTable.DefaultProject, "Story",  issueFields);
+=======
+                        if (!string.IsNullOrEmpty(jiraProjectKey) )
+                        {
+                          var isTicketCreatedSuccessfully =  CreateNewJiraTicket(hostName, token, rootObject);
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
                         }
                     }
                     else
@@ -4547,6 +4592,7 @@ WHERE t.TicketID = @TicketID
             return JsonConvert.SerializeObject(result);
         }
 
+<<<<<<< HEAD
         private TeamSupport.EFData.Models.TicketsView GetTicketData(int ticketId)
         {
             var ticketData = new TeamSupport.EFData.Models.TicketsView();
@@ -4609,6 +4655,73 @@ WHERE t.TicketID = @TicketID
             }
 
             return response;
+=======
+        private string GetHostName(int? crmLinkId)
+        {
+            if (string.IsNullOrEmpty(crmLinkId.ToString()))
+                return string.Empty;
+            var hostName = string.Empty;
+            using (var jiraTicketsService = new JiraTicketsService(new JiraRepository(new GenericRepository<CrmLinkTable>())))
+            {
+                var crmLinkTable = jiraTicketsService.GetCrmLinkTableById(crmLinkId).FirstOrDefault();
+                if (crmLinkTable == null)
+                    return string.Empty;
+                hostName = crmLinkTable.HostName.ToString();
+            }
+            return hostName;
+        }
+
+        private string GetJiraProjectKey(int? crmLinkId)
+        {
+            if (string.IsNullOrEmpty(crmLinkId.ToString()))
+                return string.Empty;
+            var jiraProjectKey = string.Empty;
+            using (var jiraTicketsService = new JiraTicketsService(new JiraRepository(new GenericRepository<CrmLinkTable>())))
+            {
+                var crmLinkTable = jiraTicketsService.GetCrmLinkTableById(crmLinkId).FirstOrDefault();
+                if (crmLinkTable == null)
+                    return string.Empty;
+                jiraProjectKey = crmLinkTable.DefaultProject.ToString();
+            }
+            return jiraProjectKey;
+        }
+
+        /// <summary>
+        /// ToDo: Save jira ticket to [dbo].[TicketLinkToJira] table
+        /// </summary>
+        /// <param name="baseUrl"></param>
+        /// <param name="token"></param>
+        /// <param name="rootObject"></param>
+        /// <returns></returns>
+        private string CreateNewJiraTicket(string baseUrl, string token, RootObject rootObject)
+        {
+            var client = new RestClient(baseUrl);
+            var request = new RestRequest("rest/api/2/issue/", Method.POST);
+            var project = rootObject.fields.project;
+            var ticketToSendToJira = new RootObject()
+            {
+                fields = new Jira.JiraJSONSerializedModels.Fields()
+                {
+                    project = project,//This is the rootObject.fields.project.key
+                    summary = "Some summary",
+                    description = "Another thing...it's a description!",
+                    issuetype = new Issuetype()
+                    {
+                        name = "Task"
+                    }
+                }
+            };
+            var ticketToSendToJiraSerialized = JsonConvert.SerializeObject(ticketToSendToJira);
+            request.AddParameter("application/json", ticketToSendToJiraSerialized, ParameterType.RequestBody);
+            request.AddHeader("Authorization", "Basic " + token);
+            //ToDo: verify path octet-stream works as expected
+            //string path = @"C:\TSData\wikidocs\1078\images\Rick.png";
+            //request.AddParameter("application/octet-stream", ReadFileFromPathAsBytes(path));
+            var response = client.Execute(request);
+            if (string.IsNullOrEmpty(response.Content))
+                return string.Empty;
+            return response.Content;
+>>>>>>> c364012ad236c68b013e5deb1570f4103397046d
         }
 
 
