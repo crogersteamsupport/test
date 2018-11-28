@@ -23,18 +23,9 @@ using NR = NewRelic.Api;
 using TeamSupport.ModelAPI;
 using TeamSupport.JIRA;
 using RestSharp;
-using TeamSupport.JIRA.JiraJSONSerializedModels;
-using TeamSupport.EFData;
-using TeamSupport.EFData.Models;
-//using TicketLinkToJira = TeamSupport.Data.TicketLinkToJira;
-using System.Configuration;
 using TicketsView = TeamSupport.Data.TicketsView;
 using TicketLinkToJira = TeamSupport.Data.TicketLinkToJira;
 using Tickets = TeamSupport.Data.Tickets;
-using System.Threading.Tasks;
-
-//using TeamSupport.JIRA;
-//using CustomField = TeamSupport.Data.CustomField;
 
 namespace TSWebServices
 {

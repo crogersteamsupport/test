@@ -13,6 +13,7 @@ namespace TeamSupport.EFData
         readonly IGenericRepository<CrmLinkTable> crmRepository;
         readonly IGenericRepository<TicketsView> ticketsViewRepository;
         readonly IGenericRepository<Tickets> ticketsRepository;
+        Expression<Func<TicketLinkToJira, bool>> IsSynced = a => a.SyncWithJira == true;
 
         public JiraRepository(IGenericRepository<TicketLinkToJira> repository)
         {
@@ -108,10 +109,18 @@ namespace TeamSupport.EFData
             var temp = ticketLinkrepository as IDisposable;
             if (temp != null)
                 temp.Dispose();
+            var temp1 = crmRepository as IDisposable;
+            if (temp1 != null)
+                temp1.Dispose();
+            var temp2 = ticketsViewRepository as IDisposable;
+            if (temp2 != null)
+                temp2.Dispose();
+            var temp3 = ticketsRepository as IDisposable;
+            if (temp3 != null)
+                temp3.Dispose();
+
             GC.SuppressFinalize(this);
         }
-               
-        Expression<Func<TicketLinkToJira, bool>> IsSynced = a => a.SyncWithJira == true;
 
     }
 }

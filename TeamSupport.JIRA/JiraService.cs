@@ -29,14 +29,6 @@ namespace TeamSupport.JIRA
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="baseUrl"></param>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <param name="rootObject">Should contain ProjetKey, IssueType, and Summary</param>
-        /// <returns></returns>
         public TechTalk.JiraRestClient.Issue CreateNewJiraTicket(string baseUrl, string username, string password, string projectKey, string issueType, TechTalk.JiraRestClient.IssueFields issueFields)
         {
             issueFields.timetracking = null;//necessary for API rest call

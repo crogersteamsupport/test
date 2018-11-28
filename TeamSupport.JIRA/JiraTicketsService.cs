@@ -35,7 +35,6 @@ namespace TeamSupport.JIRA
 
         public void Dispose()
         {
-           // Dispose();
             GC.SuppressFinalize(this);
         }
     }

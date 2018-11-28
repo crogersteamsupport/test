@@ -4,21 +4,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Web;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using RestSharp;
 using RestSharp.Deserializers;
-using TeamSupport.JIRA.JiraJSONSerializedModels;
 
 namespace TeamSupport.JIRA
 {
-	//JIRA REST API documentation: https://docs.atlassian.com/jira/REST/latest
+    //JIRA REST API documentation: https://docs.atlassian.com/jira/REST/latest
 
-	public class JiraClient<TIssueFields> : IJiraClient<TIssueFields> where TIssueFields : IssueFields, new()
+    public class JiraClient<TIssueFields> : IJiraClient<TIssueFields> where TIssueFields : IssueFields, new()
 	{
 		private readonly string username;
         private readonly string token;
@@ -92,26 +87,7 @@ namespace TeamSupport.JIRA
 
 			return issueMetaData;
 		}
-
-        public IEnumerable<Issue<TIssueFields>> GetAllIssues()
-        {
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("/rest/api/latest/search", Method.GET);
-                request.AddHeader("Authorization", "Basic " + token);
-                var response = client.Execute(request);
-                var data = deserializer.Deserialize<IssueContainer<TIssueFields>>(response);
-                var issues = data.issues ?? Enumerable.Empty<Issue<TIssueFields>>();
-                return issues;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("GetAllIssues() error: {0}", ex);
-                throw new JiraClientException("Could not get all issues", ex);
-            }
-        }
+        
 
         public IEnumerable<Issue<TIssueFields>> GetIssues(String projectKey)
 		{
@@ -248,50 +224,7 @@ namespace TeamSupport.JIRA
 			}
 		}
 
-        //public IssueRef CreateIssueViaRestClient(String projectKey, String issueType, TIssueFields issueFields)
-        //{
-        //    try
-        //    {
-        //        var baseURL = @"https://teamsupportio.atlassian.net";
-        //        var client = new RestClient(baseURL);
-        //        var request = new RestRequest("rest/api/2/issue/", Method.POST);
-
-        //        var issueData = new Dictionary<string, object>();
-        //        issueData.Add("project", new { key = projectKey });
-        //        issueData.Add("issuetype", new { name = issueType });
-
-        //        if (issueFields.summary != null)
-        //            issueData.Add("summary", issueFields.summary);
-        //        if (issueFields.description != null)
-        //            issueData.Add("description", issueFields.description);
-        //        var project = new JIRA.JiraJSONSerializedModels.Project() { key = projectKey.ToString() };
-        //        var ticketToSendToJira = new BaseIssue()
-        //        {
-        //            fields = new Fields()
-        //            {
-        //                project = project,//This is the rootObject.fields.project.key
-        //                summary = issueFields.summary,
-        //                description = issueFields.description,
-        //                issuetype = new Issuetype()
-        //                {
-        //                    name = issueType.ToString()
-        //                }
-        //            }
-        //        };
-        //        var ticketToSendToJiraSerialized = JsonConvert.SerializeObject(ticketToSendToJira);
-        //        request.AddParameter("application/json", ticketToSendToJiraSerialized, ParameterType.RequestBody);
-        //        request.AddHeader("Authorization", "Basic " + token);
-
-        //        var response = client.Execute(request);
-        //        return deserializer.Deserialize<IssueRef>(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Trace.TraceError("CreateIssue(projectKey, typeCode) error: {0}", ex);
-        //        throw new JiraClientException("Could not create issue", ex);
-        //    }
-        //}
-
+    
         public Issue<TIssueFields> UpdateIssue(Issue<TIssueFields> issue)
 		{
 			try
@@ -607,50 +540,8 @@ namespace TeamSupport.JIRA
             }
         }
 
-        public IEnumerable<Comment> GetCommentsViaProjectKey(string projectKey)
-        {
-            if(string.IsNullOrEmpty(projectKey))
-                throw new JiraClientException("Could not get comments via project key");
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("rest/api/latest/issue/" + projectKey + "/comment", Method.GET);
-                request.AddHeader("Authorization", "Basic " + token);
-                var response = client.Execute(request);
+    
 
-                var data = deserializer.Deserialize<CommentsContainer>(response);
-                return data.comments ?? Enumerable.Empty<Comment>();
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("GetCommentsViaProjectKey(projectKey) error: {0}", ex);
-                throw new JiraClientException("Could not load comments", ex);
-            }
-        }
-
-        public HttpStatusCode CreateCommentViaProjectKey(string projectKey, string comment)
-        {
-            if(string.IsNullOrEmpty(projectKey) || string.IsNullOrEmpty(comment))
-                throw new JiraClientException("Project key or comment were empty");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("rest/api/latest/issue/" + projectKey +  "/comment", Method.POST);
-                var tmp = new Comment { body = comment };
-              //  var testSerialization = JsonConvert.SerializeObject(tmp);
-                request.AddParameter("application/json", JsonConvert.SerializeObject(tmp), ParameterType.RequestBody);
-                request.AddHeader("Authorization", "Basic " + token);
-                var response = client.Execute(request);
-                return response.StatusCode;
-            }
-            catch (Exception ex)
-            {
-                throw new JiraClientException("Could not create comment: ", ex.Message);
-            }
-        }
 
         public Comment CreateComment(IssueRef issue, String comment)
 		{
@@ -673,31 +564,7 @@ namespace TeamSupport.JIRA
 			}
 		}
 
-        //Ex.) /rest/api/latest/issue/SSP-79/comment/12450
-        public Comment UpdateCommentViaProjectKey(string projectKey, int commentId, String comment)
-        {
-            if (string.IsNullOrEmpty(projectKey))
-                throw new JiraClientException("Project key was empty");
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("/rest/api/latest/issue/" + projectKey + "/comment/" + commentId, Method.PUT);
-                var tmp = new Comment { body = comment };
-                var testSerialization = JsonConvert.SerializeObject(tmp);
-                request.AddParameter("application/json", JsonConvert.SerializeObject(tmp), ParameterType.RequestBody);
-                request.AddHeader("Authorization", "Basic " + token);
-                var response = client.Execute(request);
-
-                return deserializer.Deserialize<Comment>(response);
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("UpdateCommentViaProjectKey(projectKey, commentId, comment) error: {0}", ex);
-                throw new JiraClientException("Could not update comment", ex);
-            }
-        }
-
+       
         public Comment UpdateComment(IssueRef issue, int commentId, String comment)
 		{
 			try
@@ -853,31 +720,7 @@ namespace TeamSupport.JIRA
 			}
 		}
 
-        /// <summary>
-        /// Deletes single issue for a given project per user credentials
-        /// </summary>
-        /// <param name="projectKey"></param>
-        /// <returns></returns>
-        public HttpStatusCode DeleteIssueViaProjectKey(string projectKey)
-        {
-            if (string.IsNullOrEmpty(projectKey))
-                throw new JiraClientException("Project key was empty or null");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("/rest/api/latest/issue/" + projectKey, Method.DELETE);
-                request.AddHeader("Authorization", "Basic " + token);
-                var response = client.Execute(request);
-                return response.StatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("DeleteIssueViaProjectKey(projectKey) error: {0}", ex.Message);
-                throw new JiraClientException("Could not delete issue", ex.Message);
-            }
-        }
+        
 
 
         public IEnumerable<RemoteLink> GetRemoteLinks(IssueRef issue)
@@ -1123,297 +966,5 @@ namespace TeamSupport.JIRA
 			}
 		}
 
-        public HttpStatusCode UpdateIssueViaProjectKey(string projectKey, UpdateObject updateObject)
-        {
-            if (string.IsNullOrEmpty(projectKey) || updateObject == null)
-                throw new JiraClientException("Project key or update object was empty or null");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("/rest/api/latest/issue/" + projectKey, Method.PUT);
-                //var test = JsonConvert.SerializeObject(updateObject);
-                request.AddParameter("application/json", JsonConvert.SerializeObject(updateObject), ParameterType.RequestBody);
-                request.AddHeader("Authorization", "Basic " + token);
-                var response = client.Execute(request);
-                return response.StatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("UpdateIssueViaProjectKey(projectKey, updateObject) error: {0}", ex.Message);
-                throw new JiraClientException("Could not update issue", ex.Message);
-            }
-        }
-
-        public HttpStatusCode DeleteCommentViaProjectKey(string projectKey, int commentId)
-        {
-            if (string.IsNullOrEmpty(projectKey))
-                throw new JiraClientException("Project key was empty or null");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("/rest/api/latest/issue/" + projectKey + "/comment/" + commentId, Method.DELETE);
-                request.AddHeader("Authorization", "Basic " + token);
-                var response = client.Execute(request);
-                return response.StatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("DeleteCommentViaProjectKey(projectKey, commentId) error: {0}", ex.Message);
-                throw new JiraClientException("Could not delete comment", ex.Message);
-            }
-        }
-
-        public HttpStatusCode CreateRemoteLinkViaProjectKey(string projectKey, RemoteLinkAbbreviated remoteLink)
-        {
-            if (string.IsNullOrEmpty(projectKey) || remoteLink == null)
-                throw new JiraClientException("Project key or remote link was empty or null");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("rest/api/latest/issue/" + projectKey + "/remotelink", Method.POST);
-                //  var serializerSettings = new JsonSerializerSettings();
-                //  serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-
-                //request.AddParameter("application/json", JsonConvert.SerializeObject(remoteLink, serializerSettings), ParameterType.RequestBody);
-                request.AddParameter("application/json", JsonConvert.SerializeObject(remoteLink), ParameterType.RequestBody);
-                request.AddHeader("Authorization", "Basic " + token);
-
-                var response = client.Execute(request);
-               // var linkId = deserializer.Deserialize<RemoteLink>(response).id;
-                return response.StatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("CreateRemoteLink(issue, remoteLink) error: {0}", ex.Message);
-                throw new JiraClientException("Could not create external link for issue", ex.Message);
-            }
-        }
-
-        public IEnumerable<RemoteLinkRoot> GetRemoteLinkViaProjectKey(string projectKey)
-        {
-            if (string.IsNullOrEmpty(projectKey))
-                throw new JiraClientException("Project key or remote link was empty or null");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("rest/api/latest/issue/" + projectKey + "/remotelink", Method.GET);
-                request.AddHeader("Authorization", "Basic " + token);
-
-                var response = client.Execute(request);
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var remoteLink = deserializer.Deserialize<List<RemoteLinkRoot>>(response);
-                   // var linkId = deserializer.Deserialize<RemoteLink>(response).id;
-                    return remoteLink;
-                }
-                else
-                {
-                    return new List<RemoteLinkRoot>();
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("CreateRemoteLink(issue, remoteLink) error: {0}", ex.Message);
-                throw new JiraClientException("Could not create external link for issue", ex.Message);
-            }
-        }
-
-        public HttpStatusCode UpdateRemoteLinkViaProjectKeyAndRemoteLinkId(string projectKey, int internalId, RemoteLinkAbbreviated updateObject)
-        {
-            if (string.IsNullOrEmpty(projectKey))
-                throw new JiraClientException("Project key was empty or null");
-            if(internalId < 1)
-                throw new JiraClientException("Internal Id for remote link was zero or negative");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("rest/api/latest/issue/" + projectKey + "/remotelink/" + internalId, Method.PUT);//POST will not work with current version of Jira API (v7)
-                request.AddParameter("application/json", JsonConvert.SerializeObject(updateObject), ParameterType.RequestBody);
-                request.AddHeader("Authorization", "Basic " + token);
-
-                var response = client.Execute(request);
-                return response.StatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("UpdateRemoteLinkViaProjectKeyAndRemoteLinkId(projectKey, internalId) error: {0}", ex.Message);
-                throw new JiraClientException("Could not update external link for issue", ex.Message);
-            }
-        }
-
-        public HttpStatusCode DeleteRemoteLinkViaInternalId(string projectKey, int internalId)
-        {
-            if (string.IsNullOrEmpty(projectKey))
-                throw new JiraClientException("Project key was empty or null");
-            if (internalId < 1)
-                throw new JiraClientException("Internal Id for remote link was zero or negative");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("rest/api/latest/issue/" + projectKey + "/remotelink/" + internalId, Method.DELETE);
-                request.AddHeader("Authorization", "Basic " + token);
-
-                var response = client.Execute(request);
-                return response.StatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("DeleteRemoteLinkViaInternalId(projectKey, internalId) error: {0}", ex.Message);
-                throw new JiraClientException("Could not delete external link for issue", ex.Message);
-            }
-        }
-
-
-        private string DetermineMimeTypeFromOctetStream(byte[] octetStream)
-        {
-
-            uint mimetype;
-            IntPtr mimeTypePtr = new IntPtr();
-            var mime = string.Empty;
-            try
-            {
-                Mimes.FindMimeFromData(0, null, octetStream, (uint)octetStream.Length, null, 0, out mimetype, 0);
-                mimeTypePtr = new IntPtr(mimetype);
-                mime = Marshal.PtrToStringUni(mimeTypePtr);
-                Marshal.FreeCoTaskMem(mimeTypePtr);
-            }
-            catch(Exception ex)
-            {
-                Marshal.FreeCoTaskMem(mimeTypePtr);
-                Trace.TraceError("DetermineMimeTypeFromOctetStream(octetStream) error: {0}", ex.Message);
-                throw new JiraClientException("Failed Interop marshalling during Mime Type Sniffing operation", ex.Message);
-            }
-            return mime;
-        }
-
-        public HttpStatusCode CreateAttachmentViaProjectKey(string projectKey, byte[] octetStream)
-        {
-
-            var mimeType = DetermineMimeTypeFromOctetStream(octetStream);
-
-            if (string.IsNullOrEmpty(projectKey))
-                throw new JiraClientException("Project key was empty or null");
-            if (octetStream == null)
-                throw new JiraClientException("Attachment was empty or null");
-
-            try
-            {
-                var fileName = DateTime.Now.ToLocalTime().ToString();
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("rest/api/latest/issue/" + projectKey + "/attachments", Method.POST);
-                request.AddHeader("X-Atlassian-Token", "nocheck");
-                request.AddFileBytes("file", octetStream, fileName, mimeType);
-                request.AddHeader("Authorization", "Basic " + token);
-
-                var response = client.Execute(request);
-
-                return response.StatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("DeleteRemoteLinkViaInternalId(projectKey, internalId) error: {0}", ex.Message);
-                throw new JiraClientException("Could not delete external link for issue", ex.Message);
-            }
-
-        }
-
-        //rest/api/latest/issue/{attachmentId}?fields=attachment
-        //public byte[] GetSingleAttachmentViaAttachmentId(string attachmentId)
-        //{
-        //    //IEnumerable<Attachment> 
-        //}
-
-
-        /// <summary>
-        /// Attachment Id is retreived by doing a Get issue(s), first
-        /// </summary>
-        /// <param name="attachmentId"></param>
-        /// <returns>Returns single attachment</returns>
-        public IEnumerable<Attachment> GetAttachmentsViaProjectKey(string attachmentId)
-        {
-
-            if (string.IsNullOrEmpty(attachmentId))
-                throw new JiraClientException("Project key was empty or null");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("rest/api/latest/issue/attachment/" + attachmentId , Method.GET);
-                request.AddHeader("Authorization", "Basic " + token);
-
-                var response = client.Execute(request);
-
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var attachments = deserializer.Deserialize<List<Attachment>>(response);
-                    return attachments;
-                }
-                else
-                {
-                    return new List<Attachment>();
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("DeleteRemoteLinkViaInternalId(projectKey, internalId) error: {0}", ex.Message);
-                throw new JiraClientException("Could not delete external link for issue", ex.Message);
-            }
-        }
-
-        public IEnumerable<Issue> GetIssuesViaProjectKey(string projectKey)
-        {
-                if (string.IsNullOrEmpty(projectKey))
-                throw new JiraClientException("Project key was empty or null");
-
-            try
-            {
-                var baseURL = @"https://teamsupportio.atlassian.net";
-                TechTalk.JiraRestClient.IssueRef testRef = new TechTalk.JiraRestClient.IssueRef();
-                testRef.key = "SSP-80";
-                TechTalk.JiraRestClient.JiraClient currentClient = new TechTalk.JiraRestClient.JiraClient(baseURL, "jiratest@teamsupport.com", "Muroc2008!");
-                var test = currentClient.GetAttachments(testRef);
-                
-                var myContent = test.LastOrDefault().content;
-                var client = new RestClient(baseURL);
-                var request = new RestRequest("rest/api/latest/issue/" + projectKey, Method.GET);
-                request.AddHeader("Authorization", "Basic " + token);
-
-                var response = client.Execute(request);
-
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var issues = deserializer.Deserialize<List<Issue>>(response);
-                    return issues;
-                }
-                else
-                {
-                    return new List<Issue>();
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("DeleteRemoteLinkViaInternalId(projectKey, internalId) error: {0}", ex.Message);
-                throw new JiraClientException("Could not delete external link for issue", ex.Message);
-            }
-        }
-
-        public IssueRef CreateIssueViaRestClient(string projectKey, string issueType, TIssueFields issueFields)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

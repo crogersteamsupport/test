@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using TeamSupport.JIRA.JiraJSONSerializedModels;
 
 namespace TeamSupport.JIRA
 {
@@ -24,7 +22,6 @@ namespace TeamSupport.JIRA
         /// <summary>Returns the issue identified by the given ref</summary>
         Issue<TIssueFields> LoadIssue(IssueRef issueRef);
         /// <summary>Creates an issue of the specified type for the given project</summary>
-        IssueRef CreateIssueViaRestClient(String projectKey, String issueType, TIssueFields issueFields);
         Issue<TIssueFields> CreateIssue(String projectKey, String issueType, String summary);
         /// <summary>Creates an issue of the specified type for the given project</summary>
         Issue<TIssueFields> CreateIssue(String projectKey, String issueType, TIssueFields issueFields);
@@ -37,7 +34,6 @@ namespace TeamSupport.JIRA
 		bool UpdateIssueFieldByParameter(int issueId, string jsonBody);
 		/// <summary>Updates the specified fields of the issue.</summary>
 		bool UpdateIssueFields(int issueId, Dictionary<string, string> updateFields);
-        Comment UpdateCommentViaProjectKey(string projectKey, int commentId, String comment);
 
         /// <summary>Deletes the given issue from the remote system</summary>
         void DeleteIssue(IssueRef issue);
@@ -49,13 +45,11 @@ namespace TeamSupport.JIRA
 
         /// <summary>Returns all watchers for the given issue</summary>
         IEnumerable<JiraUser> GetWatchers(IssueRef issue);
-        IEnumerable<Comment> GetCommentsViaProjectKey(string projectKey);
 
         /// <summary>Returns all comments for the given issue</summary>
         IEnumerable<Comment> GetComments(IssueRef issue);
         /// <summary>Adds a comment to the given issue</summary>
         Comment CreateComment(IssueRef issue, String comment);
-        HttpStatusCode CreateCommentViaProjectKey(string projectKey, string comment);
 		/// <summary>Updates a comment on the given issue</summary>
 		Comment UpdateComment(IssueRef issue, int commentId, String comment);
 		/// <summary>Deletes the given comment</summary>
@@ -104,16 +98,5 @@ namespace TeamSupport.JIRA
 
 		/// <summary>Returns information about the JIRA server</summary>
 		ServerInfo GetServerInfo();
-        IEnumerable<Issue<TIssueFields>> GetAllIssues();
-        HttpStatusCode UpdateIssueViaProjectKey(string v, UpdateObject updateObject);
-        HttpStatusCode DeleteCommentViaProjectKey(string projectKey, int commentId);
-        HttpStatusCode DeleteIssueViaProjectKey(string projectKey);
-        HttpStatusCode CreateRemoteLinkViaProjectKey(string projectKey, RemoteLinkAbbreviated remoteLink);
-        IEnumerable<RemoteLinkRoot> GetRemoteLinkViaProjectKey(string projectKey);
-        HttpStatusCode UpdateRemoteLinkViaProjectKeyAndRemoteLinkId(string projectKey, int internalId, RemoteLinkAbbreviated remoteLink);
-        HttpStatusCode DeleteRemoteLinkViaInternalId(string projectKey, int internalId);
-        HttpStatusCode CreateAttachmentViaProjectKey(string projectKey, byte[] octetStream);
-        IEnumerable<Attachment> GetAttachmentsViaProjectKey(string key);
-        IEnumerable<Issue> GetIssuesViaProjectKey(String projectKey);
     }
 }
